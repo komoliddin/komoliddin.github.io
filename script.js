@@ -25,7 +25,7 @@ createApp({
 
         const projectImages = computed(() => {
             if (!repoName.value) return ['image/logo.png'];
-            const p = products.value.find(x => x.name === repoName.value);
+            const p = products.value.find(x => x.name === repoName.value) || githubProjects.value.find(x => x.name === repoName.value);
             if (p && p.images && p.images.length > 0) return p.images;
             return ['image/logo.png'];
         });
@@ -41,34 +41,15 @@ createApp({
         const socialLinks = ref({
             main: [
                 { name: 'Facebook', url: '#', icon: 'fab fa-facebook', color: '#1877F2' },
-                { name: 'Instagram', url: '#', icon: 'fab fa-instagram', color: '#E1306C' },
-                { name: 'Odnoklassniki', url: '#', icon: 'fab fa-odnoklassniki', color: '#EE8208' },
-                { name: 'Skype', url: '#', icon: 'fab fa-skype', color: '#00AFF0' },
-                { name: 'Twitter', url: '#', icon: 'fab fa-twitter', color: '#1DA1F2' },
-                { name: 'Viber', url: '#', icon: 'fab fa-viber', color: '#665CAC' },
-                { name: 'VKontakte', url: '#', icon: 'fab fa-vk', color: '#4C75A3' },
-                { name: 'WhatsApp', url: '#', icon: 'fab fa-whatsapp', color: '#25D366' }
+                { name: 'Instagram', url: '#', icon: 'fab fa-instagram', color: '#E1306C' }
             ],
-            others: [
-                { name: 'Discord', url: '#', icon: 'fab fa-discord', color: '#5865F2' },
-                { name: 'GitHub', url: 'https://github.com/komoliddin', icon: 'fab fa-github', color: '#fff' },
-                { name: 'Steam', url: '#', icon: 'fab fa-steam', color: '#000000' },
-                { name: 'Twitch', url: '#', icon: 'fab fa-twitch', color: '#9146FF' }
-            ]
+            others: []
         });
 
-        const donateMethods = ref([
-            { url: 'https://tirikchilik.uz/komoliddin', name: 'Uzcard, Humo, Click, Payme, Uzum', icon: 'uzcard.png', desc: 'Перейти к оплате' },
-            { id: '4100116824448677', name: 'ЮMoney', icon: 'yoomoney_yandex.png', desc: '4100 1168 2444 8677' },
-            { id: '1HuJa7E3TcQKrF7BYXgeGp3AwpzY2ZArgU', name: 'Bitcoin', icon: 'btc.png', desc: 'Bitcoin Network' },
-            { id: '0xdc61c5123db3110456d6ae61efdfa67521fb274b', name: 'Ethereum', icon: 'eth.png', desc: 'ERC-20' },
-            { id: 'UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy', name: 'Toncoin', icon: 'ton.png', desc: 'Network: TON' },
-            { id: 'UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy', name: 'Notcoin', icon: 'not.png', desc: 'Network: TON' },
-            { id: 'TQuGzNYXriigmbbkWmCJFaYvFRTshM6hbd', name: 'USDT (Tether)', icon: 'usdt-tether.png', desc: 'TRC-20' }
-        ]);
+        const donateMethods = ref([]);
 
         const githubStats = computed(() => {
-            const stars = githubProjects.value.reduce((acc, p) => acc + p.stars, 0);
+            const stars = githubProjects.value.reduce((acc, p) => acc + (p.stars || 0), 0);
             const langs = githubProjects.value.map(p => p.language).filter(l => l);
             const topLang = langs.length > 0 ? langs.sort((a,b) => langs.filter(v => v===a).length - langs.filter(v => v===b).length).pop() : 'Python';
             return { stars, topLang };
@@ -82,8 +63,9 @@ createApp({
 
         const loadData = async () => {
             loading.value = true;
-            const v = Date.now(); // Уникальная версия для каждого запроса
+            const v = Date.now();
             try {
+                // 1. Загрузка конфига
                 const conf = await fetch(`config.json?v=${v}`).then(r => r.ok ? r.json() : null).catch(() => null);
                 if (conf) {
                     if (conf.myContacts) myContacts.value = conf.myContacts;
@@ -91,6 +73,8 @@ createApp({
                     if (conf.donateMethods) donateMethods.value = conf.donateMethods;
                     if (conf.publicStats) publicStats.value = conf.publicStats;
                 }
+
+                // 2. Загрузка локальных проектов и категорий
                 const [pRes, cRes] = await Promise.all([
                     fetch(`projects.json?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => []),
                     fetch(`categories.json?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => [])
@@ -98,17 +82,19 @@ createApp({
                 products.value = pRes.filter(p => p.is_active !== false);
                 categories.value = cRes;
 
+                // 3. Загрузка GitHub (с кэшированием)
                 const ghCacheKey = `gh_repos_${repoOwner}`;
                 const cachedGh = localStorage.getItem(ghCacheKey);
                 const cacheTime = localStorage.getItem(ghCacheKey + '_time');
 
+                let repos = [];
                 if (cachedGh && cacheTime && (Date.now() - cacheTime < 3600000)) {
-                    githubProjects.value = JSON.parse(cachedGh);
+                    repos = JSON.parse(cachedGh);
                 } else {
                     const ghRes = await fetch(`https://api.github.com/users/${repoOwner}/repos?sort=updated&per_page=100`).catch(() => null);
                     if (ghRes && ghRes.ok) {
-                        const repos = await ghRes.json();
-                        githubProjects.value = repos.map(r => ({
+                        const rawRepos = await ghRes.json();
+                        repos = rawRepos.map(r => ({
                             id: 'gh-' + r.id,
                             name: r.name,
                             description: r.description,
@@ -119,11 +105,34 @@ createApp({
                             language: r.language,
                             is_github: true
                         }));
-                        localStorage.setItem(ghCacheKey, JSON.stringify(githubProjects.value));
+                        localStorage.setItem(ghCacheKey, JSON.stringify(repos));
                         localStorage.setItem(ghCacheKey + '_time', Date.now());
+                    } else if (cachedGh) {
+                        repos = JSON.parse(cachedGh); // Если API упал, но есть старый кэш - берем его
                     }
                 }
-            } catch (e) { console.error("Data load error:", e); }
+
+                // 4. Объединение данных
+                githubProjects.value = repos.map(gh => {
+                    const local = products.value.find(p => p.name === gh.name);
+                    if (local) {
+                        return { 
+                            ...gh, 
+                            images: local.images && local.images.length > 0 ? local.images : gh.images,
+                            price: local.price || 0,
+                            old_price: local.old_price || 0,
+                            is_recommended: local.is_recommended || false,
+                            subcategories: local.subcategories || []
+                        };
+                    }
+                    return gh;
+                });
+
+                // Убираем локальные копии, если есть GitHub оригинал
+                const ghNames = githubProjects.value.map(g => g.name);
+                products.value = products.value.filter(p => !ghNames.includes(p.name));
+
+            } catch (e) { console.error("Load error:", e); }
             finally { 
                 loading.value = false;
                 setTimeout(() => { if(typeof AOS !== 'undefined') AOS.init({duration: 800, once: true}); }, 100);
@@ -132,6 +141,7 @@ createApp({
 
         const fetchRepoInfo = async (name) => {
             loading.value = true;
+            readmeHtml.value = '';
             changelogText.value = '';
             try {
                 const [rRes, rdRes, relRes, chRes] = await Promise.all([
@@ -142,7 +152,7 @@ createApp({
                 ]);
                 if (rRes.ok) {
                     const data = await rRes.json();
-                    const localP = products.value.find(p => p.name === name);
+                    const localP = githubProjects.value.find(p => p.name === name) || products.value.find(p => p.name === name);
                     repoData.value = localP ? { ...data, ...localP } : data;
                 }
                 if (rdRes.ok) readmeHtml.value = marked.parse(await rdRes.text());
@@ -153,10 +163,12 @@ createApp({
         };
 
         const filteredProducts = computed(() => {
-            const all = [...products.value, ...githubProjects.value];
+            const all = [...githubProjects.value, ...products.value];
             const q = searchQuery.value.toLowerCase();
             return all.filter(p => {
-                const matchesSearch = (p.name || '').toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q);
+                const name = (p.name || '').toLowerCase();
+                const desc = (p.description || '').toLowerCase();
+                const matchesSearch = name.includes(q) || desc.includes(q);
                 const matchesCat = selectedCategory.value === 'all' || p.category === selectedCategory.value;
                 const matchesSub = selectedSubcategory.value === 'all' || (p.subcategories && p.subcategories.includes(selectedSubcategory.value));
                 return matchesSearch && matchesCat && matchesSub;
@@ -165,7 +177,7 @@ createApp({
 
         const displayGroups = computed(() => {
             const groups = {};
-            const all = filteredProducts.value.slice(0, 100);
+            const all = filteredProducts.value;
             const ghItems = all.filter(p => p.category === 'GitHub Проекты');
             if (ghItems.length > 0) groups['GitHub Проекты'] = ghItems;
             all.forEach(p => {

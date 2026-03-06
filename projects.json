@@ -7,8 +7,14 @@
         "old_price": 200000,
         "stock": 10,
         "category": "Утилиты",
-        "subcategories": ["Windows", "Скрипты"],
-        "images": ["image/logo.png"],
+        "subcategories": [
+            "Windows",
+            "Скрипты"
+        ],
+        "images": [
+            "image/logo.png",
+            "image/logo.png"
+        ],
         "description": "Профессиональный инструмент для автоматизации репаков и управления файлами. Поддержка множества форматов и скриптов.",
         "is_active": true,
         "is_recommended": true,
@@ -24,8 +30,12 @@
         "old_price": 75000,
         "stock": 100,
         "category": "Боты",
-        "subcategories": ["Telegram"],
-        "images": ["image/logo.png"],
+        "subcategories": [
+            "Telegram"
+        ],
+        "images": [
+            "image/logo.png"
+        ],
         "description": "Мощный шаблон для Telegram ботов с админ-панелью, базой данных и гибкими настройками.",
         "is_active": true,
         "is_recommended": false,
