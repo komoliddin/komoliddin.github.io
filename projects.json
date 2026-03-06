@@ -1,18 +1,36 @@
 [
     {
         "id": 1,
-        "name": "Repack Manager",
-        "category": "Утилиты",
+        "upc": "RB-001",
+        "name": "Repack Manager Pro",
         "price": 150000,
+        "old_price": 200000,
+        "stock": 10,
+        "category": "Утилиты",
+        "subcategories": ["Windows", "Скрипты"],
         "images": ["image/logo.png"],
-        "description": "Мощный инструмент для управления репаками."
+        "description": "Профессиональный инструмент для автоматизации репаков и управления файлами. Поддержка множества форматов и скриптов.",
+        "is_active": true,
+        "is_recommended": true,
+        "use_before": "01.01.2030",
+        "shipping_weight_kg": 0.1,
+        "manufacturer": "PRO Projects"
     },
     {
         "id": 2,
-        "name": "Telegram Bot Template",
-        "category": "Боты",
+        "upc": "TB-002",
+        "name": "Telegram Ultimate Bot",
         "price": 50000,
+        "old_price": 75000,
+        "stock": 100,
+        "category": "Боты",
+        "subcategories": ["Telegram"],
         "images": ["image/logo.png"],
-        "description": "Готовый шаблон для создания продвинутых ботов."
+        "description": "Мощный шаблон для Telegram ботов с админ-панелью, базой данных и гибкими настройками.",
+        "is_active": true,
+        "is_recommended": false,
+        "use_before": "01.01.2030",
+        "shipping_weight_kg": 0.05,
+        "manufacturer": "PRO Projects"
     }
 ]

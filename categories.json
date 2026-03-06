@@ -1,5 +1,28 @@
 [
-    {"name": "Утилиты"},
-    {"name": "Боты"},
-    {"name": "Прочее"}
+    {
+        "name": "Боты",
+        "subcategories": [
+            "Telegram",
+            "Discord",
+            "WhatsApp",
+            "Другие"
+        ]
+    },
+    {
+        "name": "Утилиты",
+        "subcategories": [
+            "Windows",
+            "Linux",
+            "macOS",
+            "Скрипты"
+        ]
+    },
+    {
+        "name": "Прочее",
+        "subcategories": [
+            "Веб-сайты",
+            "Дизайн",
+            "Консультации"
+        ]
+    }
 ]

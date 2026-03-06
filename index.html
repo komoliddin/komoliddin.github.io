@@ -76,6 +76,14 @@
                         GitHub Проекты
                     </div>
                     
+                    <div v-if="currentSubcategories.length > 0" class="mt-4">
+                        <h6 class="fw-bold mb-3 text-primary small">ПОДКАТЕГОРИИ</h6>
+                        <div class="filter-btn mb-2" :class="{ active: selectedSubcategory === 'all' }" @click="selectedSubcategory = 'all'">Все</div>
+                        <div v-for="sub in currentSubcategories" :key="sub" class="filter-btn mb-2" :class="{ active: selectedSubcategory === sub }" @click="selectedSubcategory = sub">
+                            {{ sub }}
+                        </div>
+                    </div>
+                    
                     <hr class="opacity-25 my-4">
 
                     <button class="btn btn-warning w-100 rounded-pill mb-2 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#donateModal">
@@ -104,16 +112,21 @@
                                 <div v-for="item in group" :key="item.id" class="col-12 col-sm-6 col-md-4 col-xl-3" data-aos="fade-up">
                                     <div class="card product-card shadow-sm border-0 h-100" @click="item.is_github ? goToProject(item.name) : null">
                                         <div class="product-img-wrapper">
+                                            <div v-if="item.is_recommended" class="sale-badge" style="background: #ffc107; color: #000;">HOT</div>
+                                            <div v-if="item.old_price > item.price" class="sale-badge" style="top: 40px;">SALE</div>
                                             <img :src="item.images[0] || 'image/logo.png'" class="product-img" loading="lazy">
-                                            <div v-if="item.is_github" class="sale-badge" style="background: #24292e;">Repo</div>
+                                            <div v-if="item.is_github" class="sale-badge" style="background: #24292e; left: auto; right: 10px;">Repo</div>
                                         </div>
                                         <div class="product-body">
                                             <div class="product-title">{{ item.name }}</div>
                                             <div class="mt-auto">
+                                                <div v-if="item.old_price > item.price" class="small text-muted text-decoration-line-through" style="font-size: 0.75rem;">
+                                                    {{ item.old_price.toLocaleString() }} сум
+                                                </div>
                                                 <div class="price text-primary fw-bold" style="font-size: 0.9rem;">
                                                     {{ item.price > 0 ? (item.price.toLocaleString() + ' сум') : (item.stars + ' ⭐') }}
                                                 </div>
-                                                <button class="btn btn-buy mt-2">{{ item.is_github ? 'Открыть' : 'Инфо' }}</button>
+                                                <button class="btn btn-buy mt-2 w-100">{{ item.is_github ? 'Открыть' : 'Инфо' }}</button>
                                             </div>
                                         </div>
                                     </div>

@@ -16,7 +16,7 @@ createApp({
         const loading = ref(true);
         const searchQuery = ref('');
         const selectedCategory = ref('all');
-        const view = ref('shop');
+        const selectedSubcategory = ref('all');
         const themeMode = ref(localStorage.getItem('theme_mode') || 'auto');
         const showTopButton = ref(false);
         const toasts = ref([]);
@@ -74,6 +74,12 @@ createApp({
             return { stars, topLang };
         });
 
+        const currentSubcategories = computed(() => {
+            if (selectedCategory.value === 'all') return [];
+            const cat = categories.value.find(c => c.name === selectedCategory.value);
+            return cat ? (cat.subcategories || []) : [];
+        });
+
         const loadData = async () => {
             loading.value = true;
             try {
@@ -88,7 +94,7 @@ createApp({
                     fetch('projects.json').then(r => r.ok ? r.json() : []).catch(() => []),
                     fetch('categories.json').then(r => r.ok ? r.json() : []).catch(() => [])
                 ]);
-                products.value = pRes.map(p => ({...p, images: (p.images || []).map(img => img.replace(/^\/+/, '').replace('static/', ''))}));
+                products.value = pRes.filter(p => p.is_active !== false);
                 categories.value = cRes;
 
                 const ghCacheKey = `gh_repos_${repoOwner}`;
@@ -116,9 +122,7 @@ createApp({
                         localStorage.setItem(ghCacheKey + '_time', Date.now());
                     }
                 }
-            } catch (e) { 
-                console.error("Data load error:", e);
-            }
+            } catch (e) { console.error("Data load error:", e); }
             finally { 
                 loading.value = false;
                 setTimeout(() => { if(typeof AOS !== 'undefined') AOS.init({duration: 800, once: true}); }, 100);
@@ -135,7 +139,11 @@ createApp({
                     fetch(`https://api.github.com/repos/${repoOwner}/${name}/releases/latest`),
                     fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/master/changelog.txt`).then(r => r.ok ? r.text() : fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/main/changelog.txt`).then(r2 => r2.ok ? r2.text() : ''))
                 ]);
-                if (rRes.ok) repoData.value = await rRes.json();
+                if (rRes.ok) {
+                    const data = await rRes.json();
+                    const localP = products.value.find(p => p.name === name);
+                    repoData.value = localP ? { ...data, ...localP } : data;
+                }
                 if (rdRes.ok) readmeHtml.value = marked.parse(await rdRes.text());
                 if (relRes.ok) latestRelease.value = await relRes.json();
                 if (chRes) changelogText.value = chRes;
@@ -146,16 +154,19 @@ createApp({
         const filteredProducts = computed(() => {
             const all = [...products.value, ...githubProjects.value];
             const q = searchQuery.value.toLowerCase();
-            return all.filter(p => (p.name || '').toLowerCase().includes(q) && (selectedCategory.value === 'all' || p.category === selectedCategory.value));
+            return all.filter(p => {
+                const matchesSearch = (p.name || '').toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q);
+                const matchesCat = selectedCategory.value === 'all' || p.category === selectedCategory.value;
+                const matchesSub = selectedSubcategory.value === 'all' || (p.subcategories && p.subcategories.includes(selectedSubcategory.value));
+                return matchesSearch && matchesCat && matchesSub;
+            });
         });
 
         const displayGroups = computed(() => {
             const groups = {};
             const all = filteredProducts.value.slice(0, 100);
-            
             const ghItems = all.filter(p => p.category === 'GitHub Проекты');
             if (ghItems.length > 0) groups['GitHub Проекты'] = ghItems;
-
             all.forEach(p => {
                 if (p.category === 'GitHub Проекты') return;
                 const c = p.category || 'Прочее';
@@ -185,10 +196,12 @@ createApp({
             });
         });
 
+        watch(selectedCategory, () => { selectedSubcategory.value = 'all'; });
+
         return {
             repoOwner, repoName, products, categories, githubProjects, repoData, readmeHtml, changelogText, latestRelease,
-            loading, searchQuery, selectedCategory, view, themeMode, donateMethods, socialLinks, myContacts,
-            filteredProducts, displayGroups, showTopButton, publicStats, githubStats,
+            loading, searchQuery, selectedCategory, selectedSubcategory, currentSubcategories, themeMode, donateMethods, socialLinks, myContacts,
+            filteredProducts, displayGroups, showTopButton, publicStats, githubStats, toasts, projectImages,
             goToProject: (n) => {
                 const u = new URL(window.location); u.searchParams.set('repo', n);
                 window.history.pushState({}, '', u); repoName.value = n; fetchRepoInfo(n); window.scrollTo(0,0);
@@ -196,28 +209,20 @@ createApp({
             goHome: () => {
                 const u = new URL(window.location); u.searchParams.delete('repo');
                 window.history.pushState({}, '', u); 
-                repoName.value = null; 
-                searchQuery.value = ''; 
-                selectedCategory.value = 'all';
+                repoName.value = null; searchQuery.value = ''; selectedCategory.value = 'all'; selectedSubcategory.value = 'all';
                 setTimeout(() => { if(typeof AOS !== 'undefined') AOS.refreshHard(); }, 100);
             },
             applyTheme, 
             handleDonate: (m) => {
-                if (m.url) {
-                    window.open(m.url, '_blank');
-                } else {
-                    navigator.clipboard.writeText(m.id).then(() => {
-                        showToast(`Реквизиты ${m.name} скопированы!`);
-                    });
-                }
+                if (m.url) window.open(m.url, '_blank');
+                else navigator.clipboard.writeText(m.id).then(() => showToast(`Реквизиты ${m.name} скопированы!`));
             },
             scrollToTop: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
             saveVCard: () => {
                 const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${myContacts.value.name}\nTEL:${myContacts.value.phone}\nEND:VCARD`;
                 const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([vcard], { type: "text/vcard" }));
                 a.download = "contact.vcf"; a.click();
-            },
-            toasts, projectImages
+            }
         };
     }
 }).mount('#app');
