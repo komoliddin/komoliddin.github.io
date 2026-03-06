@@ -1,12 +1,18 @@
 [
     {
-        "name": "Project 1",
-        "description": "This is the first project.",
-        "url": "https://example.com/project1"
+        "id": 1,
+        "name": "Repack Manager",
+        "category": "Утилиты",
+        "price": 150000,
+        "images": ["image/logo.png"],
+        "description": "Мощный инструмент для управления репаками."
     },
     {
-        "name": "Project 2",
-        "description": "This is the second project.",
-        "url": "https://example.com/project2"
+        "id": 2,
+        "name": "Telegram Bot Template",
+        "category": "Боты",
+        "price": 50000,
+        "images": ["image/logo.png"],
+        "description": "Готовый шаблон для создания продвинутых ботов."
     }
 ]

@@ -1,4 +1,6 @@
 /* --- ПОЛНЫЙ ОРИГИНАЛЬНЫЙ СТИЛЬ ИЗ ПАПКИ 1 --- */
+[v-cloak] { display: none; }
+
 :root {
     --primary-color: #0088cc;
     --accent-color: #28a745;

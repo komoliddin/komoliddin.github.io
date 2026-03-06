@@ -149,11 +149,17 @@
                 const newCatName = ref('');
 
                 const loadData = async () => {
+                    const pass = prompt("Введите пароль администратора:");
+                    if (pass !== '1234') {
+                        alert("Неверный пароль!");
+                        window.location.href = 'index.html';
+                        return;
+                    }
                     try {
-                        products.value = await fetch('products.json').then(r => r.json());
+                        products.value = await fetch('projects.json').then(r => r.json());
                         categories.value = await fetch('categories.json').then(r => r.json());
                         config.value = await fetch('config.json').then(r => r.json());
-                    } catch (e) { console.warn("Load error. Use Import if empty."); }
+                    } catch (e) { console.warn("Load error. Use Export to save new files."); }
                 };
 
                 const addProject = () => { if(newP.value.name) { products.value.unshift({...newP.value, id: Date.now()}); newP.value.name=''; } };
@@ -165,7 +171,7 @@
                 };
 
                 const exportAll = () => {
-                    exportFile(products.value, 'products.json');
+                    exportFile(products.value, 'projects.json');
                     exportFile(categories.value, 'categories.json');
                     exportFile(config.value, 'config.json');
                     alert("Все 3 файла скачаны! Замените ими старые файлы в папке проекта.");

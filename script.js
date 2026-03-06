@@ -70,28 +70,41 @@ createApp({
                     if (conf.donateMethods) donateMethods.value = conf.donateMethods;
                 }
                 const [pRes, cRes] = await Promise.all([
-                    fetch('products.json').then(r => r.ok ? r.json() : []).catch(() => []),
+                    fetch('projects.json').then(r => r.ok ? r.json() : []).catch(() => []),
                     fetch('categories.json').then(r => r.ok ? r.json() : []).catch(() => [])
                 ]);
                 products.value = pRes.map(p => ({...p, images: (p.images || []).map(img => img.replace(/^\/+/, '').replace('static/', ''))}));
                 categories.value = cRes;
 
-                const ghRes = await fetch(`https://api.github.com/users/${repoOwner}/repos?sort=updated&per_page=100`).catch(() => null);
-                if (ghRes && ghRes.ok) {
-                    const repos = await ghRes.json();
-                    githubProjects.value = repos.map(r => ({
-                        id: 'gh-' + r.id,
-                        name: r.name,
-                        description: r.description,
-                        price: 0,
-                        images: ['image/logo.png'],
-                        category: 'GitHub Проекты',
-                        stars: r.stargazers_count,
-                        language: r.language,
-                        is_github: true
-                    }));
+                const ghCacheKey = `gh_repos_${repoOwner}`;
+                const cachedGh = localStorage.getItem(ghCacheKey);
+                const cacheTime = localStorage.getItem(ghCacheKey + '_time');
+
+                if (cachedGh && cacheTime && (Date.now() - cacheTime < 3600000)) {
+                    githubProjects.value = JSON.parse(cachedGh);
+                } else {
+                    const ghRes = await fetch(`https://api.github.com/users/${repoOwner}/repos?sort=updated&per_page=100`).catch(() => null);
+                    if (ghRes && ghRes.ok) {
+                        const repos = await ghRes.json();
+                        githubProjects.value = repos.map(r => ({
+                            id: 'gh-' + r.id,
+                            name: r.name,
+                            description: r.description,
+                            price: 0,
+                            images: ['image/logo.png'],
+                            category: 'GitHub Проекты',
+                            stars: r.stargazers_count,
+                            language: r.language,
+                            is_github: true
+                        }));
+                        localStorage.setItem(ghCacheKey, JSON.stringify(githubProjects.value));
+                        localStorage.setItem(ghCacheKey + '_time', Date.now());
+                    }
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error("Data load error:", e);
+                alert("Ошибка при загрузке данных. Пожалуйста, обновите страницу позже.");
+            }
             finally { loading.value = false; }
         };
 
