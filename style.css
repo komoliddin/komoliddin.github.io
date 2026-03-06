@@ -23,13 +23,33 @@
     --card-bg: #1a222d;
     --muted-bg: #141b24;
     --border-soft: #2a3644;
-    --glass-surface: rgba(18, 28, 42, 0.48);
-    --glass-surface-strong: rgba(18, 28, 42, 0.62);
+    --glass-surface: rgba(18, 28, 42, 0.7) !important;
+    --glass-surface-strong: rgba(18, 28, 42, 0.8) !important;
     --glass-border: rgba(118, 152, 189, 0.28);
     --glass-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
 }
 
-/* --- СКРОЛЛБАР (ПАПКА 2) --- */
+/* Фикс белого фона Bootstrap в темной теме */
+[data-theme="dark"] .card {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+}
+
+/* SKELETON LOADER */
+.skeleton {
+    background: linear-gradient(90deg, var(--border-soft) 25%, var(--muted-bg) 50%, var(--border-soft) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 10px;
+}
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-card { height: 300px; width: 100%; border-radius: 22px; }
+
+/* --- СКРОЛЛБАР --- */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
 ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }

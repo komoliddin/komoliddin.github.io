@@ -1,8 +1,5 @@
 [
-    {
-        "name": "TEST",
-        "subcategories": [
-            "asd"
-        ]
-    }
+    {"name": "Утилиты"},
+    {"name": "Боты"},
+    {"name": "Прочее"}
 ]

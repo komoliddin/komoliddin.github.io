@@ -32,5 +32,11 @@
         { "id": "UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy", "name": "Toncoin", "icon": "ton.png", "desc": "Network: TON" },
         { "id": "UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy", "name": "Notcoin", "icon": "not.png", "desc": "Network: TON" },
         { "id": "TQuGzNYXriigmbbkWmCJFaYvFRTshM6hbd", "name": "USDT (Tether)", "icon": "usdt-tether.png", "desc": "TRC-20" }
-    ]
+    ],
+    "publicStats": {
+        "orders_total": 1250,
+        "users_total": 850,
+        "orders_delivered": 1100,
+        "reviews_total": 420
+    }
 }

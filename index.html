@@ -90,7 +90,7 @@
                                 <h4 class="fw-bold m-0">{{ catName }}</h4>
                             </div>
                             <div class="row g-3">
-                                <div v-for="item in group" :key="item.id" class="col-6 col-md-4 col-xl-3">
+                                <div v-for="item in group" :key="item.id" class="col-6 col-md-4 col-xl-3" data-aos="fade-up">
                                     <div class="card product-card shadow-sm border-0 h-100" @click="item.is_github ? goToProject(item.name) : null">
                                         <div class="product-img-wrapper">
                                             <img :src="item.images[0] || 'image/logo.png'" class="product-img" loading="lazy">
