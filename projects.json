@@ -2,14 +2,16 @@
     {
         "id": 1147342533,
         "name": "ReLoader",
-        "category": "GitHub Проекты",
+        "category": "Утилиты",
         "price": 0,
         "images": [
             "image\\reloader\\png.png",
             "image\\reloader\\png.png"
         ],
         "description": "",
-        "subcategories": [],
+        "subcategories": [
+            "Windows"
+        ],
         "is_active": true,
         "is_github": true,
         "stars": 0,
