@@ -82,8 +82,9 @@ createApp({
 
         const loadData = async () => {
             loading.value = true;
+            const v = Date.now(); // Уникальная версия для каждого запроса
             try {
-                const conf = await fetch('config.json').then(r => r.ok ? r.json() : null).catch(() => null);
+                const conf = await fetch(`config.json?v=${v}`).then(r => r.ok ? r.json() : null).catch(() => null);
                 if (conf) {
                     if (conf.myContacts) myContacts.value = conf.myContacts;
                     if (conf.socialLinks) socialLinks.value = conf.socialLinks;
@@ -91,8 +92,8 @@ createApp({
                     if (conf.publicStats) publicStats.value = conf.publicStats;
                 }
                 const [pRes, cRes] = await Promise.all([
-                    fetch('projects.json').then(r => r.ok ? r.json() : []).catch(() => []),
-                    fetch('categories.json').then(r => r.ok ? r.json() : []).catch(() => [])
+                    fetch(`projects.json?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => []),
+                    fetch(`categories.json?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => [])
                 ]);
                 products.value = pRes.filter(p => p.is_active !== false);
                 categories.value = cRes;

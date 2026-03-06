@@ -154,18 +154,39 @@
             <div class="admin-card">
                 <h5 class="fw-bold mb-4">Мои контакты</h5>
                 <div class="row g-3">
-                    <div class="col-md-6"><label class="small">Имя</label><input v-model="config.myContacts.name" class="form-control"></div>
-                    <div class="col-md-6"><label class="small">Телефон</label><input v-model="config.myContacts.phone" class="form-control"></div>
-                    <div class="col-md-6"><label class="small">Email</label><input v-model="config.myContacts.email" class="form-control"></div>
-                    <div class="col-md-6"><label class="small">Telegram URL</label><input v-model="config.myContacts.telegram" class="form-control"></div>
-                    <div class="col-md-12"><label class="small">Сайт</label><input v-model="config.myContacts.website" class="form-control"></div>
+                    <div class="col-md-6"><label class="small fw-bold">Имя</label><input v-model="config.myContacts.name" class="form-control"></div>
+                    <div class="col-md-6"><label class="small fw-bold">Телефон</label><input v-model="config.myContacts.phone" class="form-control"></div>
+                    <div class="col-md-6"><label class="small fw-bold">Email</label><input v-model="config.myContacts.email" class="form-control"></div>
+                    <div class="col-md-6"><label class="small fw-bold">Telegram URL</label><input v-model="config.myContacts.telegram" class="form-control"></div>
+                    <div class="col-md-12"><label class="small fw-bold">Сайт</label><input v-model="config.myContacts.website" class="form-control"></div>
                 </div>
             </div>
+
             <div class="admin-card">
-                <h5 class="fw-bold mb-4">Основные соцсети</h5>
-                <div v-for="s in config.socialLinks.main" class="row g-2 mb-3 align-items-center">
-                    <div class="col-md-4"><strong>{{ s.name }}</strong></div>
-                    <div class="col-md-8"><input v-model="s.url" class="form-control" placeholder="Ссылка..."></div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold m-0 text-primary">Основные соцсети</h5>
+                    <button @click="config.socialLinks.main.push({name: 'Новая сеть', url: '#', icon: 'fab fa-link', color: '#000'})" class="btn btn-outline-primary btn-sm rounded-pill">+ Добавить</button>
+                </div>
+                <div v-for="(s, idx) in config.socialLinks.main" :key="idx" class="row g-2 mb-3 border-bottom pb-3">
+                    <div class="col-md-2"><label class="tiny fw-bold">Название</label><input v-model="s.name" class="form-control form-control-sm"></div>
+                    <div class="col-md-4"><label class="tiny fw-bold">Ссылка (URL)</label><input v-model="s.url" class="form-control form-control-sm"></div>
+                    <div class="col-md-3"><label class="tiny fw-bold">Иконка (FontAwesome)</label><input v-model="s.icon" class="form-control form-control-sm"></div>
+                    <div class="col-md-2"><label class="tiny fw-bold">Цвет (HEX)</label><input v-model="s.color" class="form-control form-control-sm"></div>
+                    <div class="col-md-1 d-flex align-items-end"><button @click="config.socialLinks.main.splice(idx, 1)" class="btn btn-link text-danger p-0"><i class="fas fa-trash"></i></button></div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold m-0 text-secondary">Группа «Другие»</h5>
+                    <button @click="config.socialLinks.others.push({name: 'Другое', url: '#', icon: 'fab fa-link', color: '#000'})" class="btn btn-outline-secondary btn-sm rounded-pill">+ Добавить</button>
+                </div>
+                <div v-for="(s, idx) in config.socialLinks.others" :key="idx" class="row g-2 mb-3 border-bottom pb-3">
+                    <div class="col-md-2"><label class="tiny fw-bold">Название</label><input v-model="s.name" class="form-control form-control-sm"></div>
+                    <div class="col-md-4"><label class="tiny fw-bold">Ссылка (URL)</label><input v-model="s.url" class="form-control form-control-sm"></div>
+                    <div class="col-md-3"><label class="tiny fw-bold">Иконка (FontAwesome)</label><input v-model="s.icon" class="form-control form-control-sm"></div>
+                    <div class="col-md-2"><label class="tiny fw-bold">Цвет (HEX)</label><input v-model="s.color" class="form-control form-control-sm"></div>
+                    <div class="col-md-1 d-flex align-items-end"><button @click="config.socialLinks.others.splice(idx, 1)" class="btn btn-link text-danger p-0"><i class="fas fa-trash"></i></button></div>
                 </div>
             </div>
         </div>
@@ -173,12 +194,33 @@
         <!-- ТАБ: ДОНАТЫ -->
         <div v-if="tab === 'donate'">
             <div class="admin-card">
-                <h5 class="fw-bold mb-4">Методы доната</h5>
-                <div v-for="m in config.donateMethods" class="mb-4 border-bottom pb-3">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold m-0">Методы доната</h5>
+                    <button @click="config.donateMethods.push({name: 'Новый метод', id: '', desc: '', icon: 'donat.png'})" class="btn btn-primary btn-sm rounded-pill px-3">+ Добавить метод</button>
+                </div>
+                <div v-for="(m, idx) in config.donateMethods" :key="idx" class="mb-4 border-bottom pb-4">
                     <div class="row g-3">
-                        <div class="col-md-4"><label class="small">Метод</label><input v-model="m.name" class="form-control"></div>
-                        <div class="col-md-4"><label class="small">ID / Ссылка</label><input v-model="m.url || m.id" @input="m.url ? m.url = $event.target.value : m.id = $event.target.value" class="form-control"></div>
-                        <div class="col-md-4"><label class="small">Текст подписи</label><input v-model="m.desc" class="form-control"></div>
+                        <div class="col-md-3">
+                            <label class="small fw-bold">Название</label>
+                            <input v-model="m.name" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small fw-bold">Реквизиты (ID или Ссылка)</label>
+                            <!-- Умное поле: редактирует url если он есть, иначе id -->
+                            <input v-if="'url' in m" v-model="m.url" class="form-control" placeholder="https://...">
+                            <input v-else v-model="m.id" class="form-control" placeholder="Номер кошелька...">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small fw-bold">Текст подписи (desc)</label>
+                            <input v-model="m.desc" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="small fw-bold">Иконка (файл)</label>
+                            <input v-model="m.icon" class="form-control">
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button @click="config.donateMethods.splice(idx, 1)" class="btn btn-outline-danger w-100"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -186,12 +228,18 @@
     </div>
 
     <script>
-        const { createApp, ref, onMounted } = Vue;
+        const { createApp, ref, onMounted, watch } = Vue;
         createApp({
             setup() {
-                const tab = ref('projects');
+                const tab = ref(sessionStorage.getItem('admin_active_tab') || 'projects');
                 const products = ref([]);
                 const categories = ref([]);
+                
+                // Следим за изменением вкладки и сохраняем её
+                watch(tab, (newTab) => {
+                    sessionStorage.setItem('admin_active_tab', newTab);
+                });
+
                 const config = ref({ myContacts: {}, socialLinks: { main: [], others: [] }, donateMethods: [], publicStats: {} });
                 
                 const newP = ref({ name: '', category: '', price: 0, subcategories: [], description: '', images: ['image/logo.png'], is_active: true });
@@ -202,10 +250,11 @@
                         window.location.href = 'login.html';
                         return;
                     }
+                    const v = Date.now();
                     try {
-                        products.value = await fetch('projects.json').then(r => r.json());
-                        categories.value = await fetch('categories.json').then(r => r.json());
-                        config.value = await fetch('config.json').then(r => r.json());
+                        products.value = await fetch(`projects.json?v=${v}`).then(r => r.json());
+                        categories.value = await fetch(`categories.json?v=${v}`).then(r => r.json());
+                        config.value = await fetch(`config.json?v=${v}`).then(r => r.json());
                     } catch (e) { console.warn("Load error"); }
                 };
 
