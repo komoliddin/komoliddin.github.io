@@ -1,0 +1,36 @@
+{
+    "myContacts": {
+        "name": "Komoliddin",
+        "phone": "+998000000000",
+        "email": "your_email@example.com",
+        "telegram": "https://t.me/your_username",
+        "website": "http://RePack.Moy.su"
+    },
+    "socialLinks": {
+        "main": [
+            { "name": "Facebook", "url": "#", "icon": "fab fa-facebook", "color": "#1877F2" },
+            { "name": "Instagram", "url": "#", "icon": "fab fa-instagram", "color": "#E1306C" },
+            { "name": "Odnoklassniki", "url": "#", "icon": "fab fa-odnoklassniki", "color": "#EE8208" },
+            { "name": "Skype", "url": "#", "icon": "fab fa-skype", "color": "#00AFF0" },
+            { "name": "Twitter", "url": "#", "icon": "fab fa-twitter", "color": "#1DA1F2" },
+            { "name": "Viber", "url": "#", "icon": "fab fa-viber", "color": "#665CAC" },
+            { "name": "VKontakte", "url": "#", "icon": "fab fa-vk", "color": "#4C75A3" },
+            { "name": "WhatsApp", "url": "#", "icon": "fab fa-whatsapp", "color": "#25D366" }
+        ],
+        "others": [
+            { "name": "Discord", "url": "#", "icon": "fab fa-discord", "color": "#5865F2" },
+            { "name": "GitHub", "url": "https://github.com/komoliddin", "icon": "fab fa-github", "color": "#fff" },
+            { "name": "Steam", "url": "#", "icon": "fab fa-steam", "color": "#000000" },
+            { "name": "Twitch", "url": "#", "icon": "fab fa-twitch", "color": "#9146FF" }
+        ]
+    },
+    "donateMethods": [
+        { "url": "https://tirikchilik.uz/komoliddin", "name": "Uzcard, Humo, Click, Payme, Uzum", "icon": "uzcard.png", "desc": "Перейти к оплате" },
+        { "id": "4100116824448677", "name": "ЮMoney (Яндекс.Деньги)", "icon": "yoomoney_yandex.png", "desc": "4100 1168 2444 8677" },
+        { "id": "1HuJa7E3TcQKrF7BYXgeGp3AwpzY2ZArgU", "name": "Bitcoin", "icon": "btc.png", "desc": "Bitcoin Network" },
+        { "id": "0xdc61c5123db3110456d6ae61efdfa67521fb274b", "name": "Ethereum", "icon": "eth.png", "desc": "ERC-20" },
+        { "id": "UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy", "name": "Toncoin", "icon": "ton.png", "desc": "Network: TON" },
+        { "id": "UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy", "name": "Notcoin", "icon": "not.png", "desc": "Network: TON" },
+        { "id": "TQuGzNYXriigmbbkWmCJFaYvFRTshM6hbd", "name": "USDT (Tether)", "icon": "usdt-tether.png", "desc": "TRC-20" }
+    ]
+}

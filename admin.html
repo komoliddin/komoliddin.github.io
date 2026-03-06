@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель — Полный редактор</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body { background: #1a222d; color: white; padding-bottom: 100px; }
+        .admin-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; margin-bottom: 30px; }
+        .nav-pills .nav-link { color: white; border-radius: 20px; margin-right: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .nav-pills .nav-link.active { background: var(--primary-color); }
+        .form-label { color: var(--primary-color); font-weight: bold; }
+        .form-control, .form-select { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; }
+        .table { color: white; }
+        .badge-cat { background: var(--primary-color); padding: 5px 15px; border-radius: 10px; margin-right: 5px; margin-bottom: 5px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div id="app" class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h2 class="fw-bold"><i class="fas fa-tools me-3"></i>Панель управления</h2>
+            <div class="d-flex gap-3">
+                <button class="btn btn-success rounded-pill px-4 fw-bold" @click="exportAll"><i class="fas fa-save me-2"></i>Экспорт всех данных</button>
+                <a href="index.html" class="btn btn-outline-light rounded-pill px-4">На сайт</a>
+            </div>
+        </div>
+
+        <ul class="nav nav-pills mb-4">
+            <li class="nav-item"><button class="nav-link" :class="{active: tab === 'projects'}" @click="tab = 'projects'">Проекты</button></li>
+            <li class="nav-item"><button class="nav-link" :class="{active: tab === 'categories'}" @click="tab = 'categories'">Категории</button></li>
+            <li class="nav-item"><button class="nav-link" :class="{active: tab === 'contacts'}" @click="tab = 'contacts'">Контакты & Соцсети</button></li>
+            <li class="nav-item"><button class="nav-link" :class="{active: tab === 'donate'}" @click="tab = 'donate'">Донаты</button></li>
+        </ul>
+
+        <!-- ТАБ: ПРОЕКТЫ -->
+        <div v-if="tab === 'projects'">
+            <div class="admin-card">
+                <h5 class="fw-bold mb-4">Добавить новый проект</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small">Название</label>
+                        <input type="text" v-model="newP.name" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small">Категория</label>
+                        <select v-model="newP.category" class="form-select">
+                            <option v-for="c in categories" :value="c.name">{{ c.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small">Цена (0 = бесплатно)</label>
+                        <input type="number" v-model="newP.price" class="form-control">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary w-100 rounded-pill" @click="addProject">Добавить</button>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-card">
+                <table class="table table-hover align-middle">
+                    <thead><tr><th>Название</th><th>Категория</th><th>Цена</th><th>Удалить</th></tr></thead>
+                    <tbody>
+                        <tr v-for="(p, i) in products" :key="i">
+                            <td>{{ p.name }}</td>
+                            <td><span class="badge bg-secondary">{{ p.category }}</span></td>
+                            <td>{{ p.price }} сум</td>
+                            <td><button class="btn btn-sm btn-danger rounded-circle" @click="products.splice(i, 1)">×</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ТАБ: КАТЕГОРИИ -->
+        <div v-if="tab === 'categories'">
+            <div class="admin-card">
+                <h5 class="fw-bold mb-4">Управление категориями</h5>
+                <div class="input-group mb-4">
+                    <input type="text" v-model="newCatName" class="form-control" placeholder="Название новой категории">
+                    <button class="btn btn-primary px-4" @click="addCategory">Добавить</button>
+                </div>
+                <div class="mt-2">
+                    <div v-for="(c, i) in categories" :key="i" class="badge-cat">
+                        {{ c.name }} <i class="fas fa-times ms-2" style="cursor:pointer" @click="categories.splice(i, 1)"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ТАБ: КОНТАКТЫ & СОЦСЕТИ -->
+        <div v-if="tab === 'contacts'">
+            <div class="admin-card">
+                <h5 class="fw-bold mb-4">Контакты</h5>
+                <div class="row g-3">
+                    <div class="col-md-6"><label class="small">Имя</label><input type="text" v-model="config.myContacts.name" class="form-control"></div>
+                    <div class="col-md-6"><label class="small">Телефон</label><input type="text" v-model="config.myContacts.phone" class="form-control"></div>
+                    <div class="col-md-6"><label class="small">Email</label><input type="text" v-model="config.myContacts.email" class="form-control"></div>
+                    <div class="col-md-6"><label class="small">Telegram</label><input type="text" v-model="config.myContacts.telegram" class="form-control"></div>
+                </div>
+            </div>
+            <div class="admin-card" v-for="group in ['main', 'others']" :key="group">
+                <h5 class="fw-bold mb-4">{{ group === 'main' ? 'Социальные сети' : 'Другие ссылки' }}</h5>
+                <div v-for="(s, i) in config.socialLinks[group]" :key="i" class="row g-2 mb-2 border-bottom border-white border-opacity-5 pb-2">
+                    <div class="col-md-3"><input type="text" v-model="s.name" class="form-control form-control-sm" placeholder="Имя"></div>
+                    <div class="col-md-5"><input type="text" v-model="s.url" class="form-control form-control-sm" placeholder="URL"></div>
+                    <div class="col-md-3"><input type="text" v-model="s.icon" class="form-control form-control-sm" placeholder="Иконка"></div>
+                    <div class="col-md-1"><button class="btn btn-sm btn-danger w-100" @click="config.socialLinks[group].splice(i, 1)">×</button></div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-2" @click="config.socialLinks[group].push({name:'', url:'#', icon:'fas fa-link'})">+ Добавить</button>
+            </div>
+        </div>
+
+        <!-- ТАБ: ДОНАТЫ -->
+        <div v-if="tab === 'donate'">
+            <div class="admin-card">
+                <h5 class="fw-bold mb-4">Реквизиты</h5>
+                <div v-for="(m, i) in config.donateMethods" :key="i" class="row g-2 mb-2 border-bottom border-white border-opacity-5 pb-2">
+                    <div class="col-md-3"><input type="text" v-model="m.name" class="form-control form-control-sm"></div>
+                    <div class="col-md-4">
+                        <input type="text" v-model="m.id" v-if="!m.url" class="form-control form-control-sm">
+                        <input type="text" v-model="m.url" v-else class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select form-select-sm" @change="m.url ? (m.id=m.url, delete m.url) : (m.url=m.id, delete m.id)">
+                            <option :selected="!m.url">Текст</option><option :selected="m.url">Ссылка</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2"><input type="text" v-model="m.icon" class="form-control form-control-sm"></div>
+                    <div class="col-md-1"><button class="btn btn-sm btn-danger w-100" @click="config.donateMethods.splice(i, 1)">×</button></div>
+                </div>
+                <button class="btn btn-sm btn-outline-warning mt-2" @click="config.donateMethods.push({name:'Новый', id:'', icon:'uzcard.png'})">+ Добавить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+        createApp({
+            setup() {
+                const tab = ref('projects');
+                const products = ref([]);
+                const categories = ref([]);
+                const config = ref({ myContacts: {}, socialLinks: {main:[], others:[]}, donateMethods: [] });
+                
+                const newP = ref({ name: '', category: '', price: 0, images: ['image/logo.png'] });
+                const newCatName = ref('');
+
+                const loadData = async () => {
+                    try {
+                        products.value = await fetch('products.json').then(r => r.json());
+                        categories.value = await fetch('categories.json').then(r => r.json());
+                        config.value = await fetch('config.json').then(r => r.json());
+                    } catch (e) { console.warn("Load error. Use Import if empty."); }
+                };
+
+                const addProject = () => { if(newP.value.name) { products.value.unshift({...newP.value, id: Date.now()}); newP.value.name=''; } };
+                const addCategory = () => { if(newCatName.value) { categories.value.push({name: newCatName.value}); newCatName.value=''; } };
+
+                const exportFile = (data, name) => {
+                    const blob = new Blob([JSON.stringify(data, null, 4)], { type: 'application/json' });
+                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+                };
+
+                const exportAll = () => {
+                    exportFile(products.value, 'products.json');
+                    exportFile(categories.value, 'categories.json');
+                    exportFile(config.value, 'config.json');
+                    alert("Все 3 файла скачаны! Замените ими старые файлы в папке проекта.");
+                };
+
+                onMounted(loadData);
+                return { tab, products, categories, config, newP, newCatName, addProject, addCategory, exportAll };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
