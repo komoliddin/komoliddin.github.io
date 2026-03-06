@@ -1,4 +1,4 @@
-/* --- ПОЛНЫЙ ОБНОВЛЕННЫЙ СТИЛЬ (Glassmorphism + Scrollbar + Theme Fix) --- */
+/* --- ПОЛНЫЙ ОБНОВЛЕННЫЙ СТИЛЬ (Final Stable Version) --- */
 :root {
     --primary-color: #0088cc;
     --accent-color: #28a745;
@@ -27,20 +27,20 @@
     --glass-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
 }
 
-/* --- СКРОЛЛБАР (ПАПКА 2) --- */
+/* --- СКРОЛЛБАР (BAC/2 STYLE) --- */
 body::-webkit-scrollbar { width: 10px; background: black; }
 body::-webkit-scrollbar-track { border-radius: 10px; -webkit-box-shadow: inset 0 0 6px #046da3; }
 body::-webkit-scrollbar-thumb { border-radius: 10px; -webkit-box-shadow: inset 0 0 6px #00baff; }
 
 body.shop-page { 
-    background-color: black;
+    background-color: #0f141b;
+    /* bg2.svg ПОВЕРХ bg1.jpg. bg2.svg должен быть полупрозрачным паттерном */
     background-image: url('image/bg2.svg'), url('image/bg1.jpg');
     background-attachment: fixed;
     background-size: cover;
     background-position: center top;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+    font-family: 'Inter', sans-serif; 
     color: var(--text-color);
-    overflow-x: hidden;
 }
 
 [data-theme="dark"] body.shop-page {
@@ -49,7 +49,7 @@ body.shop-page {
 
 #app { width: 100%; display: flex; flex-direction: column; min-height: 100vh; }
 
-/* --- ШАПКА (ДИЗАЙН КАК У ФУТЕРА) --- */
+/* --- ШАПКА --- */
 .header {
     background: var(--glass-surface) !important;
     backdrop-filter: blur(16px) saturate(135%);
@@ -62,7 +62,6 @@ body.shop-page {
     box-shadow: var(--glass-shadow);
     display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
 }
-
 [data-theme="dark"] .header { background: rgba(18, 28, 42, 0.6) !important; }
 
 .logo-link { text-decoration: none; color: var(--text-color); cursor: pointer; display: flex; align-items: center; gap: 15px; }
@@ -117,14 +116,20 @@ body.shop-page {
 }
 .sub-filter-btn:hover, .sub-filter-btn.active { opacity: 1; background: rgba(255,255,255,0.1); color: var(--primary-color); }
 
-/* КАРТОЧКИ */
+/* --- КАРТОЧКИ + CSS АНИМАЦИЯ --- */
 .product-card { 
     border: 1px solid var(--glass-border) !important; border-radius: 22px !important; 
     overflow: hidden; transition: all 0.3s ease; background: var(--glass-surface) !important; 
     backdrop-filter: blur(16px) saturate(135%); box-shadow: var(--glass-shadow);
     height: 100%; display: flex; flex-direction: column; cursor: pointer;
     position: relative; opacity: 1 !important; visibility: visible !important;
+    animation: cardAppear 0.5s ease-out backwards; /* Замена AOS */
 }
+@keyframes cardAppear {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .product-card:hover { transform: translateY(-8px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }  
 .product-img-wrapper { height: 200px; padding: 15px; display: flex; align-items: center; justify-content: center; position: relative; background: rgba(255,255,255,0.1); }
 .product-img { max-height: 100%; max-width: 100%; object-fit: contain; }
@@ -134,7 +139,7 @@ body.shop-page {
 .btn-buy { background: var(--primary-color) !important; color: white; border-radius: 12px; border: none; padding: 10px; font-weight: 600; width: 100%; }
 
 /* ДЕТАЛЬНЫЙ ВИД */
-.detail-view-card { background: var(--glass-surface) !important; backdrop-filter: blur(20px); border: 1px solid var(--glass-border) !important; }
+.detail-view-card { background: var(--glass-surface) !important; backdrop-filter: blur(20px); border: 1px solid var(--glass-border) !important; animation: cardAppear 0.4s ease-out; }
 .readme-container { color: inherit; line-height: 1.6; padding: 20px; background: rgba(0,0,0,0.1); border-radius: 15px; }
 [data-theme="dark"] .readme-container { background: rgba(0,0,0,0.3); }
 
@@ -176,10 +181,7 @@ a, button, .product-card, .logo-link, .filter-btn, .theme-dot-btn, .sub-filter-b
 .admin-card h5 { color: var(--text-color) !important; }
 [data-theme="dark"] .text-muted { color: #888 !important; }
 [data-theme="dark"] .text-dark { color: #fff !important; }
-
-[data-theme="dark"] .admin-card, [data-theme="dark"] .nav-pills, [data-theme="dark"] .bg-white { 
-    background: var(--card-bg) !important; color: var(--text-color) !important; border-color: var(--border-soft) !important; 
-}
+[data-theme="dark"] .admin-card, [data-theme="dark"] .nav-pills, [data-theme="dark"] .bg-white { background: var(--card-bg) !important; color: var(--text-color) !important; border-color: var(--border-soft) !important; }
 [data-theme="dark"] .nav-pills .nav-link { background: transparent !important; color: #888; }
 [data-theme="dark"] .nav-pills .nav-link.active { background: var(--primary-color) !important; color: white !important; }
 [data-theme="dark"] .form-control, [data-theme="dark"] .form-select, [data-theme="dark"] .subcategory-box { background: var(--muted-bg) !important; color: white !important; border-color: var(--border-soft) !important; }

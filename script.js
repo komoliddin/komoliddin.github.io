@@ -209,9 +209,27 @@ createApp({
             },
             scrollToTop: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
             saveVCard: () => {
-                const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${myContacts.value.name}\nTEL:${myContacts.value.phone}\nEND:VCARD`;
-                const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([vcard], { type: "text/vcard" }));
-                a.download = "contact.vcf"; a.click();
+                const name = myContacts.value.name || 'Komoliddin';
+                const phone = myContacts.value.phone || '';
+                const email = myContacts.value.email || '';
+                const site = myContacts.value.website || '';
+                const tg = myContacts.value.telegram || '';
+
+                const vcard = [
+                    'BEGIN:VCARD',
+                    'VERSION:3.0',
+                    `FN:${name}`,
+                    `TEL;TYPE=CELL:${phone}`,
+                    `EMAIL;TYPE=INTERNET:${email}`,
+                    `URL:${site}`,
+                    `NOTE:Telegram: ${tg}`,
+                    'END:VCARD'
+                ].join('\n');
+
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(new Blob([vcard], { type: "text/vcard" }));
+                a.download = `${name}.vcf`;
+                a.click();
             }
         };
     }
