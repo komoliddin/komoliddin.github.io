@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>PRO Panel — Glass Edition</title>
+    <title>PRO Panel — Full Edition</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
@@ -16,18 +16,18 @@
         .form-control, .form-select { border-radius: 12px; padding: 10px 15px; border: 1px solid #e0e0e0; }
         .btn-save { background: #28a745; color: white; border: none; border-radius: 12px; padding: 12px 25px; font-weight: bold; }
         .gh-item { border-left: 5px solid #24292e !important; }
-        .subcategory-box { height: 100px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 12px; padding: 8px; background: #fafafa; }
+        .subcategory-box { height: 120px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 12px; padding: 8px; background: #fafafa; }
+        .tiny { font-size: 0.7rem; color: #888; text-transform: uppercase; }
     </style>
 </head>
 <body>
     <div id="app" v-cloak class="container">
         <div class="top-header d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold m-0 text-primary">PRO Panel v2.5</h2>
-                <p class="text-muted">Управление проектами</p>
+                <h2 class="fw-bold m-0 text-primary">PRO Panel <span class="badge bg-primary fs-6">Full Edition</span></h2>
+                <p class="text-muted">Управление всеми данными проекта</p>
             </div>
             <div class="d-flex gap-3 align-items-center">
-                <!-- ТЕМЫ В АДМИНКЕ -->
                 <div class="theme-toggle shadow-sm">
                     <button class="theme-dot-btn" :class="{active: themeMode === 'dark'}" @click="applyTheme('dark')">ТЁМ</button>
                     <button class="theme-dot-btn" :class="{active: themeMode === 'auto'}" @click="applyTheme('auto')">АВТ</button>
@@ -41,15 +41,17 @@
         <ul class="nav nav-pills mb-4 bg-white p-2 rounded-4 shadow-sm" style="width: fit-content;">
             <li class="nav-item"><button class="nav-link" :class="{active: tab === 'projects'}" @click="tab = 'projects'">📦 Проекты</button></li>
             <li class="nav-item"><button class="nav-link" :class="{active: tab === 'categories'}" @click="tab = 'categories'">📂 Категории</button></li>
-            <li class="nav-item"><button class="nav-link" :class="{active: tab === 'contacts'}" @click="tab = 'contacts'">📇 Контакты</button></li>
+            <li class="nav-item"><button class="nav-link" :class="{active: tab === 'contacts'}" @click="tab = 'contacts'">📇 Контакты & Соцсети</button></li>
             <li class="nav-item"><button class="nav-link" :class="{active: tab === 'donate'}" @click="tab = 'donate'">❤️ Донаты</button></li>
         </ul>
 
+        <!-- ТАБ: ПРОЕКТЫ -->
         <div v-if="tab === 'projects'">
+            <!-- GitHub Repos Helper -->
             <div class="admin-card bg-light border-0 shadow-none">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold m-0 text-dark"><i class="fab fa-github me-2"></i>Доступные репозитории GitHub</h5>
-                    <button @click="loadGitHub" class="btn btn-sm btn-outline-dark rounded-pill"><i class="fas fa-sync me-1"></i> Обновить список</button>
+                    <h5 class="fw-bold m-0 text-dark"><i class="fab fa-github me-2"></i>Ваши репозитории GitHub</h5>
+                    <button @click="loadGitHub" class="btn btn-sm btn-outline-dark rounded-pill"><i class="fas fa-sync me-1"></i> Обновить</button>
                 </div>
                 <div v-if="ghError" class="alert alert-warning py-2 small">{{ ghError }}</div>
                 <div class="row g-2">
@@ -65,13 +67,14 @@
 
             <hr class="my-4">
 
+            <!-- Добавить проект -->
             <div class="admin-card">
-                <h5 class="fw-bold mb-4">Создать новый проект</h5>
+                <h5 class="fw-bold mb-4">Создать новый локальный проект</h5>
                 <div class="row g-3">
-                    <div class="col-md-4"><input type="text" v-model="newP.name" placeholder="Название проекта" class="form-control"></div>
+                    <div class="col-md-4"><input type="text" v-model="newP.name" placeholder="Название" class="form-control"></div>
                     <div class="col-md-4">
                         <select v-model="newP.category" class="form-control">
-                            <option value="">Выберите категорию</option>
+                            <option value="">Категория</option>
                             <option v-for="c in categories" :value="c.name">{{ c.name }}</option>
                         </select>
                     </div>
@@ -79,12 +82,13 @@
                 </div>
             </div>
 
+            <!-- Список проектов -->
             <div v-for="(p, idx) in products" :key="p.id" class="admin-card" :class="{'gh-item shadow-sm': p.is_github}">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="m-0 fw-bold">
                         <i v-if="p.is_github" class="fab fa-github me-2 text-primary"></i>
                         {{ p.name }}
-                        <small class="text-muted ms-2">ID: {{ p.id }}</small>
+                        <small class="text-muted ms-2">#{{ p.id }}</small>
                     </h5>
                     <button @click="products.splice(idx, 1)" class="btn btn-danger btn-sm rounded-pill px-3">Удалить</button>
                 </div>
@@ -98,40 +102,45 @@
                         </select>
                     </div>
                     <div class="col-md-2"><label class="small fw-bold">Цена</label><input type="number" v-model="p.price" class="form-control"></div>
+                    <div class="col-md-2"><label class="small fw-bold text-danger">SALE Цена</label><input type="number" v-model="p.old_price" class="form-control"></div>
+                    <div class="col-md-2"><label class="small fw-bold">Сток</label><input type="number" v-model="p.stock" class="form-control"></div>
+                    
+                    <div class="col-md-2"><label class="small fw-bold">Артикул (UPC)</label><input v-model="p.upc" class="form-control"></div>
                     <div class="col-md-4">
-                        <label class="small fw-bold">Опции</label>
-                        <div class="d-flex gap-3 mt-2">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" v-model="p.is_github" :id="'gh-'+p.id">
-                                <label class="form-check-label fw-bold" :for="'gh-'+p.id">🔗 GitHub</label>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" v-model="p.is_recommended" :id="'hot-'+p.id">
-                                <label class="form-check-label text-warning fw-bold" :for="'hot-'+p.id">🔥 HOT</label>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" v-model="p.is_active" :id="'act-'+p.id">
-                                <label class="form-check-label small" :for="'act-'+p.id">Активен</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="small fw-bold text-primary">Изображения (скриншоты)</label>
+                        <label class="small fw-bold text-primary">Изображения</label>
                         <div class="input-group">
-                            <input :value="p.images?.join(', ')" @input="p.images = $event.target.value.split(',').map(i => i.trim())" class="form-control">
-                            <button class="btn btn-outline-primary" @click="triggerUpload(p)">Загрузить</button>
+                            <input :value="p.images?.join(', ')" @input="p.images = $event.target.value.split(',').map(i => i.trim())" class="form-control" placeholder="image/logo.png">
+                            <button class="btn btn-outline-primary" @click="triggerUpload(p)" :disabled="uploadStatus[p.id]">
+                                <i v-if="uploadStatus[p.id]" class="spinner-border spinner-border-sm me-1"></i>
+                                <i v-else class="fas fa-upload me-1"></i>
+                            </button>
                         </div>
                         <input type="file" :id="'file-'+p.id" class="d-none" accept="image/*" @change="handleFileUpload($event, p)">
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <label class="small fw-bold">Подкатегории</label>
                         <div class="subcategory-box">
-                            <div v-for="sub in getSubcategories(p.category)" :key="sub" class="form-check form-check-inline me-3">
+                            <div v-for="sub in getSubcategories(p.category)" :key="sub" class="form-check">
                                 <input class="form-check-input" type="checkbox" :value="sub" v-model="p.subcategories" :id="'sub-'+p.id+'-'+sub">
                                 <label class="form-check-label small" :for="'sub-'+p.id+'-'+sub">{{ sub }}</label>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label class="small fw-bold">Опции</label>
+                        <div class="form-check form-switch mt-1">
+                            <input class="form-check-input" type="checkbox" v-model="p.is_github" :id="'gh-cb-'+p.id">
+                            <label class="form-check-label fw-bold" :for="'gh-cb-'+p.id">🔗 GitHub</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" v-model="p.is_recommended" :id="'hot-'+p.id">
+                            <label class="form-check-label text-warning fw-bold" :for="'hot-'+p.id">🔥 HOT</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" v-model="p.is_active" :id="'act-'+p.id">
+                            <label class="form-check-label small" :for="'act-'+p.id">Активен</label>
                         </div>
                     </div>
 
@@ -143,41 +152,86 @@
             </div>
         </div>
 
-        <!-- ДРУГИЕ ТАБЫ (БЕЗ ИЗМЕНЕНИЙ) -->
+        <!-- ТАБ: КАТЕГОРИИ -->
         <div v-if="tab === 'categories'">
+            <div class="admin-card">
+                <h5 class="fw-bold mb-4">Создать категорию</h5>
+                <div class="input-group">
+                    <input type="text" v-model="newCatName" class="form-control" placeholder="Имя категории...">
+                    <button @click="addCategory" class="btn btn-primary px-4">Добавить</button>
+                </div>
+            </div>
             <div v-for="(c, idx) in categories" :key="idx" class="admin-card">
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
                     <h5 class="m-0 fw-bold">{{ c.name }}</h5>
                     <button @click="categories.splice(idx, 1)" class="btn btn-outline-danger btn-sm">Удалить</button>
                 </div>
-                <input :value="c.subcategories?.join(', ')" @input="c.subcategories = $event.target.value.split(',').map(s => s.trim()).filter(s => s)" class="form-control">
+                <label class="small fw-bold mb-2">Подкатегории (через запятую)</label>
+                <input :value="c.subcategories?.join(', ')" @input="c.subcategories = $event.target.value.split(',').map(s => s.trim()).filter(s => s)" class="form-control" placeholder="Sub1, Sub2, Sub3">
             </div>
-            <button @click="categories.push({name:'New', subcategories:[]})" class="btn btn-primary rounded-pill">+ Категория</button>
         </div>
 
+        <!-- ТАБ: КОНТАКТЫ & СОЦСЕТИ -->
         <div v-if="tab === 'contacts'">
             <div class="admin-card">
                 <h5 class="fw-bold mb-4">Мои контакты</h5>
                 <div class="row g-3">
-                    <div class="col-md-6"><label class="small">Имя</label><input v-model="config.myContacts.name" class="form-control"></div>
-                    <div class="col-md-6"><label class="small">Telegram</label><input v-model="config.myContacts.telegram" class="form-control"></div>
-                    <div class="col-md-12"><label class="small">Сайт</label><input v-model="config.myContacts.website" class="form-control"></div>
+                    <div class="col-md-6"><label class="small fw-bold">Имя</label><input v-model="config.myContacts.name" class="form-control"></div>
+                    <div class="col-md-6"><label class="small fw-bold">Телефон</label><input v-model="config.myContacts.phone" class="form-control"></div>
+                    <div class="col-md-6"><label class="small fw-bold">Email</label><input v-model="config.myContacts.email" class="form-control"></div>
+                    <div class="col-md-6"><label class="small fw-bold">Telegram URL</label><input v-model="config.myContacts.telegram" class="form-control"></div>
+                    <div class="col-md-12"><label class="small fw-bold">Сайт</label><input v-model="config.myContacts.website" class="form-control"></div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold m-0 text-primary">Основные соцсети</h5>
+                    <button @click="config.socialLinks.main.push({name: 'New', url: '#', icon: 'fab fa-link', color: '#000'})" class="btn btn-outline-primary btn-sm rounded-pill">+ Добавить</button>
+                </div>
+                <div v-for="(s, idx) in config.socialLinks.main" :key="idx" class="row g-2 mb-3 border-bottom pb-3">
+                    <div class="col-md-2"><label class="tiny fw-bold">Название</label><input v-model="s.name" class="form-control form-control-sm"></div>
+                    <div class="col-md-4"><label class="tiny fw-bold">Ссылка</label><input v-model="s.url" class="form-control form-control-sm"></div>
+                    <div class="col-md-3"><label class="tiny fw-bold">Иконка FA</label><input v-model="s.icon" class="form-control form-control-sm"></div>
+                    <div class="col-md-2"><label class="tiny fw-bold">Цвет HEX</label><input v-model="s.color" class="form-control form-control-sm"></div>
+                    <div class="col-md-1 d-flex align-items-end"><button @click="config.socialLinks.main.splice(idx, 1)" class="btn btn-link text-danger p-0"><i class="fas fa-trash"></i></button></div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold m-0 text-secondary">Группа «Другие»</h5>
+                    <button @click="config.socialLinks.others.push({name: 'Other', url: '#', icon: 'fab fa-link', color: '#000'})" class="btn btn-outline-secondary btn-sm rounded-pill">+ Добавить</button>
+                </div>
+                <div v-for="(s, idx) in config.socialLinks.others" :key="idx" class="row g-2 mb-3 border-bottom pb-3">
+                    <div class="col-md-2"><label class="tiny fw-bold">Название</label><input v-model="s.name" class="form-control form-control-sm"></div>
+                    <div class="col-md-4"><label class="tiny fw-bold">Ссылка</label><input v-model="s.url" class="form-control form-control-sm"></div>
+                    <div class="col-md-3"><label class="tiny fw-bold">Иконка FA</label><input v-model="s.icon" class="form-control form-control-sm"></div>
+                    <div class="col-md-2"><label class="tiny fw-bold">Цвет HEX</label><input v-model="s.color" class="form-control form-control-sm"></div>
+                    <div class="col-md-1 d-flex align-items-end"><button @click="config.socialLinks.others.splice(idx, 1)" class="btn btn-link text-danger p-0"><i class="fas fa-trash"></i></button></div>
                 </div>
             </div>
         </div>
 
+        <!-- ТАБ: ДОНАТЫ -->
         <div v-if="tab === 'donate'">
             <div class="admin-card">
-                <div v-for="(m, idx) in config.donateMethods" :key="idx" class="mb-4 border-bottom pb-3">
-                    <div class="row g-2">
-                        <div class="col-md-3"><input v-model="m.name" class="form-control"></div>
-                        <div class="col-md-4"><input v-if="'url' in m" v-model="m.url" class="form-control"><input v-else v-model="m.id" class="form-control"></div>
-                        <div class="col-md-3"><input v-model="m.desc" class="form-control"></div>
-                        <div class="col-md-1"><input v-model="m.icon" class="form-control"></div>
-                        <div class="col-md-1"><button @click="config.donateMethods.splice(idx, 1)" class="btn btn-outline-danger"><i class="fas fa-trash"></i></button></div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold m-0 text-primary">Методы доната</h5>
+                    <button @click="config.donateMethods.push({name:'New', id:'', desc:'', icon:'donat.png'})" class="btn btn-primary btn-sm rounded-pill">+ Добавить</button>
+                </div>
+                <div v-for="(m, idx) in config.donateMethods" :key="idx" class="mb-4 border-bottom pb-4">
+                    <div class="row g-3">
+                        <div class="col-md-3"><label class="small fw-bold">Метод</label><input v-model="m.name" class="form-control"></div>
+                        <div class="col-md-3"><label class="small fw-bold">Реквизиты (ID/URL)</label>
+                            <input v-if="'url' in m" v-model="m.url" class="form-control">
+                            <input v-else v-model="m.id" class="form-control">
+                        </div>
+                        <div class="col-md-3"><label class="small fw-bold">Подпись (desc)</label><input v-model="m.desc" class="form-control"></div>
+                        <div class="col-md-2"><label class="small fw-bold">Иконка</label><input v-model="m.icon" class="form-control"></div>
+                        <div class="col-md-1 d-flex align-items-end"><button @click="config.donateMethods.splice(idx, 1)" class="btn btn-outline-danger w-100"><i class="fas fa-trash"></i></button></div>
                     </div>
                 </div>
-                <button @click="config.donateMethods.push({name:'New', id:'', desc:'', icon:'donat.png'})" class="btn btn-primary rounded-pill">+ Метод</button>
             </div>
         </div>
     </div>
@@ -192,9 +246,11 @@
                 const categories = ref([]);
                 const ghRepos = ref([]);
                 const ghError = ref('');
+                const uploadStatus = ref({});
+                const themeMode = ref(localStorage.getItem('theme_mode') || 'auto');
                 const config = ref({ myContacts: {}, socialLinks: { main: [], others: [] }, donateMethods: [], publicStats: {} });
                 const newP = ref({ name: '', category: '', price: 0, subcategories: [], images: ['image/logo.png'], is_active: true, is_github: false });
-                const themeMode = ref(localStorage.getItem('theme_mode') || 'auto');
+                const newCatName = ref('');
 
                 watch(tab, (nt) => sessionStorage.setItem('admin_active_tab', nt));
 
@@ -212,7 +268,7 @@
                         const res = await fetch(`https://api.github.com/users/${repoOwner}/repos?sort=updated&per_page=100`);
                         if (res.ok) ghRepos.value = await res.json();
                         else if (res.status === 403) ghError.value = 'Лимит GitHub API исчерпан.';
-                    } catch (e) { ghError.value = 'Ошибка загрузки с GitHub'; }
+                    } catch (e) { console.warn(e); }
                 };
 
                 const loadData = async () => {
@@ -229,7 +285,7 @@
                 const isLinked = (name) => products.value.some(p => p.name === name);
                 const linkRepo = (repo) => {
                     if(!isLinked(repo.name)) {
-                        products.value.unshift({ id: repo.id, name: repo.name, category: 'GitHub Проекты', price: 0, images: ['image/logo.png'], description: '', subcategories: [], is_active: true, is_github: true, stars: repo.stargazers_count, language: repo.language });
+                        products.value.unshift({ id: repo.id, name: repo.name, category: 'GitHub Проекты', price: 0, old_price: 0, stock: 0, upc: '', images: ['image/logo.png'], description: '', subcategories: [], is_active: true, is_github: true, is_recommended: false, stars: repo.stargazers_count, language: repo.language });
                     }
                 };
 
@@ -239,27 +295,25 @@
                 };
 
                 const addProject = () => { if(newP.value.name) { products.value.unshift({...newP.value, id: Date.now()}); newP.value.name=''; } };
-                const triggerUpload = (p) => document.getElementById(`file-${p.id}`).click();
+                const addCategory = () => { if(newCatName.value) { categories.value.push({name: newCatName.value, subcategories: []}); newCatName.value=''; } };
+
+                const triggerUpload = (p) => { if(!p.name) return alert("Введите название!"); document.getElementById(`file-${p.id}`).click(); };
                 const handleFileUpload = async (event, p) => {
                     const file = event.target.files[0]; if (!file) return;
+                    uploadStatus.value[p.id] = true;
                     const reader = new FileReader();
                     reader.onload = async (e) => {
-                        const filename = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-                        const res = await fetch('http://localhost:3000/upload-image', { 
-                            method: 'POST', 
-                            headers: { 'Content-Type': 'application/json' }, 
-                            body: JSON.stringify({ 
-                                name: filename, 
-                                data: e.target.result,
-                                project: p.name // Передаем имя проекта
-                            }) 
-                        });
-                        if (res.ok) { 
-                            const savedPath = await res.text(); // Получаем путь от сервера
-                            if(!p.images) p.images=[]; 
-                            p.images.push(savedPath); 
-                            alert("✅ Фото загружено в папку проекта!"); 
-                        }
+                        const filename = `${Date.now()}_${file.name.replace(/[^a-z0-9.]/gi, '_')}`;
+                        try {
+                            const res = await fetch('http://localhost:3000/upload-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: filename, data: e.target.result, project: p.name }) });
+                            if (res.ok) { 
+                                const savedPath = await res.text();
+                                if(!p.images) p.images=[]; 
+                                p.images.push(savedPath); 
+                                alert("✅ Загружено!"); 
+                            }
+                        } catch (err) { alert("❌ Ошибка соединения"); }
+                        finally { uploadStatus.value[p.id] = false; }
                     };
                     reader.readAsDataURL(file);
                 };
@@ -270,12 +324,12 @@
                         for (let i of payload) {
                             await fetch('http://localhost:3000/save-data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({filename:i.f, data:i.d}) });
                         }
-                        alert("✅ СОХРАНЕНО!");
+                        alert("✅ ДАННЫЕ УСПЕШНО СОХРАНЕНЫ!");
                     } catch (e) { alert("❌ Ошибка сервера"); }
                 };
 
                 onMounted(() => { applyTheme(themeMode.value); loadData(); });
-                return { tab, products, categories, config, ghRepos, ghError, newP, isLinked, linkRepo, addProject, exportAll, triggerUpload, handleFileUpload, getSubcategories, themeMode, applyTheme, loadGitHub };
+                return { tab, products, categories, config, ghRepos, ghError, uploadStatus, newP, isLinked, linkRepo, addProject, addCategory, exportAll, triggerUpload, handleFileUpload, getSubcategories, themeMode, applyTheme, loadGitHub };
             }
         }).mount('#app');
     </script>

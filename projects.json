@@ -5,7 +5,8 @@
         "category": "GitHub Проекты",
         "price": 0,
         "images": [
-            "image/logo.png"
+            "image\\reloader\\png.png",
+            "image\\reloader\\png.png"
         ],
         "description": "",
         "subcategories": [],
@@ -20,7 +21,9 @@
         "category": "Утилиты",
         "price": 0,
         "images": [
-            "image\\UniTweaker\\ico.ico"
+            "image\\UniTweaker\\ico.ico",
+            "image\\UniTweaker\\1.png",
+            "image\\UniTweaker\\2.png"
         ],
         "description": "",
         "subcategories": [
