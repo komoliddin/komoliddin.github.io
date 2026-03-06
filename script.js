@@ -19,8 +19,22 @@ createApp({
         const view = ref('shop');
         const themeMode = ref(localStorage.getItem('theme_mode') || 'auto');
         const showTopButton = ref(false);
+        const toasts = ref([]);
 
         const publicStats = ref({ orders_total: 0, users_total: 0, orders_delivered: 0, reviews_total: 0 });
+
+        const projectImages = computed(() => {
+            if (!repoName.value) return ['image/logo.png'];
+            const p = products.value.find(x => x.name === repoName.value);
+            if (p && p.images && p.images.length > 0) return p.images;
+            return ['image/logo.png'];
+        });
+
+        const showToast = (msg) => {
+            const id = Date.now();
+            toasts.value.push({ id, msg });
+            setTimeout(() => { toasts.value = toasts.value.filter(t => t.id !== id); }, 2500);
+        };
 
         const myContacts = ref({ name: 'Komoliddin', phone: '+998000000000', email: 'your_email@example.com', telegram: 'https://t.me/your_username', website: 'http://RePack.Moy.su' });
 
@@ -137,7 +151,13 @@ createApp({
 
         const displayGroups = computed(() => {
             const groups = {};
-            filteredProducts.value.slice(0, 100).forEach(p => {
+            const all = filteredProducts.value.slice(0, 100);
+            
+            const ghItems = all.filter(p => p.category === 'GitHub Проекты');
+            if (ghItems.length > 0) groups['GitHub Проекты'] = ghItems;
+
+            all.forEach(p => {
+                if (p.category === 'GitHub Проекты') return;
                 const c = p.category || 'Прочее';
                 if (!groups[c]) groups[c] = [];
                 groups[c].push(p);
@@ -158,6 +178,11 @@ createApp({
             loadData();
             if (repoName.value) fetchRepoInfo(repoName.value);
             window.addEventListener('scroll', () => showTopButton.value = window.scrollY > 300);
+            window.addEventListener('popstate', () => {
+                repoName.value = new URLSearchParams(window.location.search).get('repo');
+                if (repoName.value) fetchRepoInfo(repoName.value);
+                else goHome();
+            });
         });
 
         return {
@@ -170,15 +195,29 @@ createApp({
             },
             goHome: () => {
                 const u = new URL(window.location); u.searchParams.delete('repo');
-                window.history.pushState({}, '', u); repoName.value = null; view.value = 'shop';
+                window.history.pushState({}, '', u); 
+                repoName.value = null; 
+                searchQuery.value = ''; 
+                selectedCategory.value = 'all';
+                setTimeout(() => { if(typeof AOS !== 'undefined') AOS.refreshHard(); }, 100);
             },
-            applyTheme, handleDonate: (m) => m.url ? window.open(m.url, '_blank') : navigator.clipboard.writeText(m.id).then(() => alert(m.name + ' скопирован')),
+            applyTheme, 
+            handleDonate: (m) => {
+                if (m.url) {
+                    window.open(m.url, '_blank');
+                } else {
+                    navigator.clipboard.writeText(m.id).then(() => {
+                        showToast(`Реквизиты ${m.name} скопированы!`);
+                    });
+                }
+            },
             scrollToTop: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
             saveVCard: () => {
                 const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${myContacts.value.name}\nTEL:${myContacts.value.phone}\nEND:VCARD`;
                 const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([vcard], { type: "text/vcard" }));
                 a.download = "contact.vcf"; a.click();
-            }
+            },
+            toasts, projectImages
         };
     }
 }).mount('#app');

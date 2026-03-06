@@ -33,6 +33,10 @@
 </head>
 <body class="shop-page">
     <div id="app" v-cloak>
+        <div class="toast-container">
+            <div v-for="t in toasts" :key="t.id" class="custom-toast">{{ t.msg }}</div>
+        </div>
+
         <!-- ШАПКА -->
         <div class="header position-relative">
             <a @click="goHome" class="logo-link">
@@ -97,7 +101,7 @@
                                 <h4 class="fw-bold m-0">{{ catName }}</h4>
                             </div>
                             <div class="row g-3">
-                                <div v-for="item in group" :key="item.id" class="col-6 col-md-4 col-xl-3" data-aos="fade-up">
+                                <div v-for="item in group" :key="item.id" class="col-12 col-sm-6 col-md-4 col-xl-3" data-aos="fade-up">
                                     <div class="card product-card shadow-sm border-0 h-100" @click="item.is_github ? goToProject(item.name) : null">
                                         <div class="product-img-wrapper">
                                             <img :src="item.images[0] || 'image/logo.png'" class="product-img" loading="lazy">
@@ -128,19 +132,38 @@
                 </div>
                 <div v-else class="card border-0 shadow-sm p-4 rounded-4 detail-view-card" style="background: var(--glass-surface); backdrop-filter: blur(20px);">
                     <div class="row g-4">
-                        <div class="col-md-4 text-center border-end border-white border-opacity-10">
-                            <i class="fas fa-file-code fa-10x text-primary mb-4"></i>
-                            <h2 class="fw-bold text-white">{{ repoData.name }}</h2>
-                            <div class="badge bg-primary rounded-pill px-3 mb-3">{{ repoData.language }}</div>
-                            <div v-if="latestRelease" class="p-3 bg-primary bg-opacity-10 rounded-4 mb-3 text-white text-start shadow-sm border border-primary border-opacity-20">
-                                <div class="fw-bold small mb-2">Версия: {{ latestRelease.tag_name }}</div>
-                                <a v-if="latestRelease.assets?.length" :href="latestRelease.assets[0].browser_download_url" class="btn btn-primary w-100 rounded-pill fw-bold">СКАЧАТЬ</a>
+                        <div class="col-md-5">
+                            <!-- Screenshot Slider -->
+                            <div v-if="projectImages.length > 1" id="projectCarousel" class="carousel slide mb-4 shadow-sm rounded-4 overflow-hidden" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div v-for="(img, idx) in projectImages" :key="idx" class="carousel-item" :class="{active: idx === 0}">
+                                        <img :src="img" class="d-block w-100" style="height: 300px; object-fit: cover;">
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#projectCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
                             </div>
-                            <a :href="repoData.html_url" target="_blank" class="btn btn-outline-light w-100 rounded-pill mt-2">GitHub</a>
+                            <div v-else class="text-center mb-4">
+                                <img :src="projectImages[0] || 'image/logo.png'" class="img-fluid rounded-4 shadow-sm" style="max-height: 300px;">
+                            </div>
+
+                            <div class="text-center border-end border-white border-opacity-10 pe-md-4">
+                                <h2 class="fw-bold text-white">{{ repoData.name }}</h2>
+                                <div class="badge bg-primary rounded-pill px-3 mb-3">{{ repoData.language || 'Software' }}</div>
+                                <div v-if="latestRelease" class="p-3 bg-primary bg-opacity-10 rounded-4 mb-3 text-white text-start shadow-sm border border-primary border-opacity-20">
+                                    <div class="fw-bold small mb-2">Версия: {{ latestRelease.tag_name }}</div>
+                                    <a v-if="latestRelease.assets?.length" :href="latestRelease.assets[0].browser_download_url" class="btn btn-primary w-100 rounded-pill fw-bold">СКАЧАТЬ</a>
+                                </div>
+                                <div v-if="repoData.price > 0" class="mb-3">
+                                    <div class="text-white-50 small">Стоимость:</div>
+                                    <div class="fs-3 fw-bold text-success">{{ repoData.price.toLocaleString() }} сум</div>
+                                </div>
+                                <a :href="repoData.html_url" target="_blank" class="btn btn-outline-light w-100 rounded-pill mt-2">GitHub / Источник</a>
+                            </div>
                         </div>
-                        <div class="col-md-8 text-white">
-                            <h5 class="fw-bold text-primary mb-3">README.md</h5>
-                            <div class="readme-container p-3 bg-white bg-opacity-5 rounded-4 mb-4" v-html="readmeHtml"></div>
+                        <div class="col-md-7 text-white">
+                            <h5 class="fw-bold text-primary mb-3">README / Описание</h5>
+                            <div class="readme-container p-3 rounded-4 mb-4" v-html="readmeHtml"></div>
                             
                             <details v-if="changelogText" class="mt-4">
                                 <summary class="btn btn-outline-warning w-100 rounded-pill fw-bold d-flex justify-content-between align-items-center px-4">

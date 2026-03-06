@@ -23,16 +23,22 @@
     --card-bg: #1a222d;
     --muted-bg: #141b24;
     --border-soft: #2a3644;
-    --glass-surface: rgba(18, 28, 42, 0.7) !important;
-    --glass-surface-strong: rgba(18, 28, 42, 0.8) !important;
+    --glass-surface: rgba(18, 28, 42, 0.75);
+    --glass-surface-strong: rgba(18, 28, 42, 0.9);
     --glass-border: rgba(118, 152, 189, 0.28);
     --glass-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
 }
 
 /* Фикс белого фона Bootstrap в темной теме */
-[data-theme="dark"] .card {
-    background-color: var(--card-bg) !important;
+[data-theme="dark"] .card, 
+[data-theme="dark"] .detail-view-card {
+    background-color: var(--glass-surface) !important;
     color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .readme-container {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* SKELETON LOADER */
@@ -56,7 +62,7 @@
 
 /* --- КУРСОР (ПАПКА 2) --- */
 html, body { cursor: url('cursor/Blue_arrow.cur'), auto !important; }
-a, button, .product-card, .logo-link, .filter-btn, .theme-dot-btn { cursor: url('cursor/aero_link.cur'), pointer !important; }
+a, button, .product-card, .logo-link, .filter-btn, .theme-dot-btn, .donate-item, .modal-content a, .tg-fab { cursor: url('cursor/aero_link.cur'), pointer !important; }
 
 /* --- ФОН --- */
 body.shop-page { 
@@ -80,6 +86,13 @@ body.shop-page {
     display: flex; align-items: center; justify-content: space-between; gap: 20px;
 }
 [data-theme="dark"] .header { background: linear-gradient(135deg, rgba(40, 68, 98, 0.9) 0%, rgba(16, 27, 42, 0.9) 100%); }
+
+@media (max-width: 991px) {
+    .header { flex-direction: column; text-align: center; gap: 10px; border-radius: 0 0 20px 20px; padding: 15px; }
+    .search-container { max-width: 100%; width: 100%; }
+    .shop-layout { grid-template-columns: 1fr; }
+    .category-sidebar { display: none !important; }
+}
 
 .logo-link { text-decoration: none; color: white; display: flex; align-items: center; gap: 15px; }
 .search-container { flex-grow: 1; max-width: 400px; }
@@ -110,6 +123,12 @@ body.shop-page {
 
 /* --- КНОПКА ВВЕРХ --- */
 .top-btn { position: fixed; bottom: 30px; left: 20px; width: 55px; height: 55px; border-radius: 50%; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1000; }
+
+/* TOAST NOTIFICATION */
+.toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; pointer-events: none; }
+.custom-toast { background: rgba(0, 136, 204, 0.9); color: white; padding: 12px 25px; border-radius: 50px; backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); margin-bottom: 10px; animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 2s forwards; font-weight: 600; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.2); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
 
 /* v-cloak removed for debugging */
 
