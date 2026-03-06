@@ -1,5 +1,22 @@
 [
     {
+        "id": 1147369213,
+        "name": "UniTweaker",
+        "category": "Утилиты",
+        "price": 0,
+        "images": [
+            "image\\UniTweaker\\ico.ico"
+        ],
+        "description": "",
+        "subcategories": [
+            "Windows"
+        ],
+        "is_active": true,
+        "is_github": true,
+        "stars": 0,
+        "language": null
+    },
+    {
         "id": 1,
         "upc": "RB-001",
         "name": "Repack Manager Pro",

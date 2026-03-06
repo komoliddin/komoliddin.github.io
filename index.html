@@ -26,10 +26,6 @@
     <link href="style.css" rel="stylesheet">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        .tg-fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; background: #0088cc; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(0,136,204,0.4); z-index: 1000; text-decoration: none; transition: 0.3s; }
-        .tg-fab:hover { transform: scale(1.1) rotate(10deg); color: white; }
-    </style>
 </head>
 <body class="shop-page">
     <div id="app" v-cloak>
@@ -48,16 +44,16 @@
             </a>
             <div class="search-container">
                 <div class="d-flex align-items-center gap-2">
-                    <a href="admin.html" class="btn btn-outline-light border-0" title="Админка">
+                    <a href="login.html" class="btn btn-outline-light border-0" title="Админка">
                         <i class="fas fa-user-shield fa-lg"></i>
                     </a>
-                    <input type="text" v-model="searchQuery" class="form-control flex-grow-1" placeholder="Поиск проектов..." @input="repoName = null;">
+                    <input type="text" v-model="searchQuery" class="form-control flex-grow-1" placeholder="Поиск..." @input="repoName = null;">
                 </div>
                 <div class="mt-2 d-flex justify-content-end">
-                    <div class="theme-toggle">
-                        <button class="theme-dot-btn" :class="{active: themeMode === 'dark'}" @click="applyTheme('dark')" style="background: #000;"></button>
-                        <button class="theme-dot-btn" :class="{active: themeMode === 'auto'}" @click="applyTheme('auto')" style="background: #0088cc;"></button>
-                        <button class="theme-dot-btn" :class="{active: themeMode === 'light'}" @click="applyTheme('light')" style="background: #fff;"></button>
+                    <div class="theme-toggle shadow-sm">
+                        <button class="theme-dot-btn" :class="{active: themeMode === 'dark'}" @click="applyTheme('dark')">ТЁМ</button>
+                        <button class="theme-dot-btn" :class="{active: themeMode === 'auto'}" @click="applyTheme('auto')">АВТ</button>
+                        <button class="theme-dot-btn" :class="{active: themeMode === 'light'}" @click="applyTheme('light')">СВЕ</button>
                     </div>
                 </div>
             </div>
@@ -67,21 +63,26 @@
             <!-- List View -->
             <div v-if="!repoName" class="shop-layout">
                 <aside class="category-sidebar d-none d-lg-block">
-                    <h6 class="fw-bold mb-3 text-primary">КАТЕГОРИИ</h6>
-                    <div class="filter-btn" :class="{ active: selectedCategory === 'all' }" @click="selectedCategory = 'all'">Все проекты</div>
-                    <div v-for="cat in categories" :key="cat.name" class="filter-btn" :class="{ active: selectedCategory === cat.name }" @click="selectedCategory = cat.name">
-                        {{ cat.name }}
-                    </div>
-                    <div class="filter-btn" :class="{ active: selectedCategory === 'GitHub Проекты' }" @click="selectedCategory = 'GitHub Проекты'">
-                        GitHub Проекты
-                    </div>
+                    <h6 class="fw-bold mb-3 text-primary small">КАТЕГОРИИ</h6>
                     
-                    <div v-if="currentSubcategories.length > 0" class="mt-4">
-                        <h6 class="fw-bold mb-3 text-primary small">ПОДКАТЕГОРИИ</h6>
-                        <div class="filter-btn mb-2" :class="{ active: selectedSubcategory === 'all' }" @click="selectedSubcategory = 'all'">Все</div>
-                        <div v-for="sub in currentSubcategories" :key="sub" class="filter-btn mb-2" :class="{ active: selectedSubcategory === sub }" @click="selectedSubcategory = sub">
-                            {{ sub }}
+                    <div class="category-item" :class="{ active: selectedCategory === 'all' }">
+                        <button class="filter-btn" @click="selectedCategory = 'all'">Все проекты</button>
+                    </div>
+
+                    <div v-for="cat in categories" :key="cat.name" class="category-item" :class="{ active: selectedCategory === cat.name }">
+                        <button class="filter-btn" @click="selectedCategory = cat.name">
+                            {{ cat.name }}
+                        </button>
+                        <div class="subcategory-list" v-if="selectedCategory === cat.name && cat.subcategories && cat.subcategories.length > 0">
+                            <button class="sub-filter-btn" :class="{ active: selectedSubcategory === 'all' }" @click="selectedSubcategory = 'all'">Все в {{ cat.name }}</button>
+                            <button v-for="sub in cat.subcategories" :key="sub" class="sub-filter-btn" :class="{ active: selectedSubcategory === sub }" @click="selectedSubcategory = sub">
+                                — {{ sub }}
+                            </button>
                         </div>
+                    </div>
+
+                    <div class="category-item" :class="{ active: selectedCategory === 'GitHub Проекты' }">
+                        <button class="filter-btn" @click="selectedCategory = 'GitHub Проекты'">GitHub Проекты</button>
                     </div>
                     
                     <hr class="opacity-25 my-4">
@@ -99,8 +100,8 @@
 
                 <div class="shop-main">
                     <div v-if="loading" class="row g-3">
-                        <div v-for="i in 8" :key="i" class="col-6 col-md-4 col-xl-3">
-                            <div class="skeleton skeleton-card"></div>
+                        <div v-for="i in 8" :key="i" class="col-12 col-sm-6 col-md-4 col-xl-3">
+                            <div class="skeleton" style="height: 300px; border-radius: 22px;"></div>
                         </div>
                     </div>
                     <template v-else>
@@ -110,7 +111,7 @@
                             </div>
                             <div class="row g-3">
                                 <div v-for="item in group" :key="item.id" class="col-12 col-sm-6 col-md-4 col-xl-3" data-aos="fade-up">
-                                    <div class="card product-card shadow-sm border-0 h-100" @click="item.is_github ? goToProject(item.name) : null">
+                                    <div class="card product-card shadow-sm border-0 h-100" @click="goToProject(item.name)">
                                         <div class="product-img-wrapper">
                                             <div v-if="item.is_recommended" class="sale-badge" style="background: #ffc107; color: #000;">HOT</div>
                                             <div v-if="item.old_price > item.price" class="sale-badge" style="top: 40px;">SALE</div>
@@ -146,7 +147,6 @@
                 <div v-else class="card border-0 shadow-sm p-4 rounded-4 detail-view-card" style="background: var(--glass-surface); backdrop-filter: blur(20px);">
                     <div class="row g-4">
                         <div class="col-md-5">
-                            <!-- Screenshot Slider -->
                             <div v-if="projectImages.length > 1" id="projectCarousel" class="carousel slide mb-4 shadow-sm rounded-4 overflow-hidden" data-bs-ride="carousel">
                                 <div class="carousel-inner">
                                     <div v-for="(img, idx) in projectImages" :key="idx" class="carousel-item" :class="{active: idx === 0}">
@@ -176,7 +176,7 @@
                         </div>
                         <div class="col-md-7 text-white">
                             <h5 class="fw-bold text-primary mb-3">README / Описание</h5>
-                            <div class="readme-container p-3 rounded-4 mb-4" v-html="readmeHtml"></div>
+                            <div class="readme-container p-3 rounded-4 mb-4" v-html="readmeHtml || repoData.description"></div>
                             
                             <details v-if="changelogText" class="mt-4">
                                 <summary class="btn btn-outline-warning w-100 rounded-pill fw-bold d-flex justify-content-between align-items-center px-4">
@@ -227,13 +227,15 @@
             </div>
         </footer>
 
+        <!-- ТЕЛЕГРАМ КНОПКА (СЛЕВА) -->
         <a :href="myContacts.telegram" target="_blank" class="tg-fab" title="Написать в Telegram">
             <i class="fab fa-telegram-plane"></i>
         </a>
 
-        <button v-if="showTopButton" class="top-btn" @click="scrollToTop" style="left: auto; right: 20px; bottom: 100px;"><i class="fas fa-arrow-up"></i></button>
+        <!-- КНОПКА ВВЕРХ (СПРАВА) -->
+        <button v-if="showTopButton" class="top-btn" @click="scrollToTop"><i class="fas fa-arrow-up"></i></button>
 
-        <!-- МОДАЛКИ (DONATE, SOCIALS, CONTACTS) -->
+        <!-- МОДАЛКИ -->
         <div class="modal fade" id="donateModal" tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content border-0 p-0 shadow-lg" style="background: rgba(15, 20, 27, 0.98); backdrop-filter: blur(40px); border-radius: 40px;">
@@ -272,19 +274,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="social-group text-start">
-                            <h2 class="fw-bold text-white mb-4 text-center">꧁Другие꧂</h2>
-                            <div class="row g-3">
-                                <div v-for="s in socialLinks.others" :key="s.name" class="col-md-3 col-6">
-                                    <a :href="s.url" target="_blank" class="text-decoration-none">
-                                        <div class="donate-item p-3">
-                                            <i :class="s.icon" class="fa-2x mb-2" :style="{color: s.color}"></i>
-                                            <div class="fw-bold text-white small">{{ s.name }}</div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -298,10 +287,7 @@
                         <h2 class="fw-bold text-white mb-5">꧁𝓚𝓸𝓶𝓸𝓵𝓲𝓭𝓭𝓲𝓷꧂</h2>
                         <div class="d-grid gap-3">
                             <a :href="'tel:' + myContacts.phone" class="btn btn-buy py-3 fs-5"><i class="fas fa-phone-alt me-3"></i>Позвонить</a>
-                            <a :href="'sms:' + myContacts.phone" class="btn btn-buy py-3 fs-5" style="background: #28a745 !important;"><i class="fas fa-sms me-3"></i>Отправить SMS</a>
-                            <a :href="'mailto:' + myContacts.email" class="btn btn-buy py-3 fs-5" style="background: #ffc107 !important; color: #000 !important;"><i class="fas fa-envelope me-3"></i>Отправить письмо</a>
                             <a :href="myContacts.telegram" target="_blank" class="btn btn-buy py-3 fs-5" style="background: #0088cc !important;"><i class="fab fa-telegram-plane me-3"></i>Telegram</a>
-                            <a :href="myContacts.website" target="_blank" class="btn btn-buy py-3 fs-5" style="background: #6f42c1 !important;"><i class="fas fa-globe me-3"></i>RePack.Moy.su</a>
                             <button @click="saveVCard" class="btn btn-outline-light rounded-pill py-3 fw-bold mt-2"><i class="fas fa-user-plus me-3"></i>Сохранить контакт</button>
                         </div>
                     </div>

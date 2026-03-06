@@ -1,4 +1,4 @@
-const { createApp, ref, onMounted, computed, watch } = Vue;
+const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
 
 createApp({
     setup() {
@@ -25,7 +25,7 @@ createApp({
 
         const projectImages = computed(() => {
             if (!repoName.value) return ['image/logo.png'];
-            const p = products.value.find(x => x.name === repoName.value) || githubProjects.value.find(x => x.name === repoName.value);
+            const p = products.value.find(x => x.name === repoName.value);
             if (p && p.images && p.images.length > 0) return p.images;
             return ['image/logo.png'];
         });
@@ -36,27 +36,20 @@ createApp({
             setTimeout(() => { toasts.value = toasts.value.filter(t => t.id !== id); }, 2500);
         };
 
-        const myContacts = ref({ name: 'Komoliddin', phone: '+998000000000', email: 'your_email@example.com', telegram: 'https://t.me/your_username', website: 'http://RePack.Moy.su' });
-
-        const socialLinks = ref({
-            main: [
-                { name: 'Facebook', url: '#', icon: 'fab fa-facebook', color: '#1877F2' },
-                { name: 'Instagram', url: '#', icon: 'fab fa-instagram', color: '#E1306C' }
-            ],
-            others: []
-        });
-
+        const myContacts = ref({ name: 'Komoliddin', phone: '', email: '', telegram: '', website: '' });
+        const socialLinks = ref({ main: [], others: [] });
         const donateMethods = ref([]);
 
         const githubStats = computed(() => {
-            const stars = githubProjects.value.reduce((acc, p) => acc + (p.stars || 0), 0);
-            const langs = githubProjects.value.map(p => p.language).filter(l => l);
+            const gh = products.value.filter(p => p.is_github);
+            const stars = gh.reduce((acc, p) => acc + (p.stars || 0), 0);
+            const langs = gh.map(p => p.language).filter(l => l);
             const topLang = langs.length > 0 ? langs.sort((a,b) => langs.filter(v => v===a).length - langs.filter(v => v===b).length).pop() : 'Python';
             return { stars, topLang };
         });
 
         const currentSubcategories = computed(() => {
-            if (selectedCategory.value === 'all') return [];
+            if (selectedCategory.value === 'all' || selectedCategory.value === 'GitHub Проекты') return [];
             const cat = categories.value.find(c => c.name === selectedCategory.value);
             return cat ? (cat.subcategories || []) : [];
         });
@@ -65,7 +58,6 @@ createApp({
             loading.value = true;
             const v = Date.now();
             try {
-                // 1. Загрузка конфига
                 const conf = await fetch(`config.json?v=${v}`).then(r => r.ok ? r.json() : null).catch(() => null);
                 if (conf) {
                     if (conf.myContacts) myContacts.value = conf.myContacts;
@@ -74,15 +66,13 @@ createApp({
                     if (conf.publicStats) publicStats.value = conf.publicStats;
                 }
 
-                // 2. Загрузка локальных проектов и категорий
                 const [pRes, cRes] = await Promise.all([
                     fetch(`projects.json?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => []),
                     fetch(`categories.json?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => [])
                 ]);
-                products.value = pRes.filter(p => p.is_active !== false);
+                const localProjects = pRes.filter(p => p.is_active !== false);
                 categories.value = cRes;
 
-                // 3. Загрузка GitHub (с кэшированием)
                 const ghCacheKey = `gh_repos_${repoOwner}`;
                 const cachedGh = localStorage.getItem(ghCacheKey);
                 const cacheTime = localStorage.getItem(ghCacheKey + '_time');
@@ -93,83 +83,59 @@ createApp({
                 } else {
                     const ghRes = await fetch(`https://api.github.com/users/${repoOwner}/repos?sort=updated&per_page=100`).catch(() => null);
                     if (ghRes && ghRes.ok) {
-                        const rawRepos = await ghRes.json();
-                        repos = rawRepos.map(r => ({
-                            id: 'gh-' + r.id,
-                            name: r.name,
-                            description: r.description,
-                            price: 0,
-                            images: ['image/logo.png'],
-                            category: 'GitHub Проекты',
-                            stars: r.stargazers_count,
-                            language: r.language,
-                            is_github: true
+                        const raw = await ghRes.json();
+                        repos = raw.map(r => ({
+                            id: 'gh-' + r.id, name: r.name, description: r.description,
+                            price: 0, images: ['image/logo.png'], category: 'GitHub Проекты',
+                            stars: r.stargazers_count, language: r.language, is_github: true, html_url: r.html_url
                         }));
                         localStorage.setItem(ghCacheKey, JSON.stringify(repos));
                         localStorage.setItem(ghCacheKey + '_time', Date.now());
-                    } else if (cachedGh) {
-                        repos = JSON.parse(cachedGh); // Если API упал, но есть старый кэш - берем его
-                    }
+                    } else if (cachedGh) { repos = JSON.parse(cachedGh); }
                 }
 
-                // 4. Объединение данных
-                githubProjects.value = repos.map(gh => {
-                    const local = products.value.find(p => p.name === gh.name);
-                    if (local) {
-                        return { 
-                            ...gh, 
-                            images: local.images && local.images.length > 0 ? local.images : gh.images,
-                            price: local.price || 0,
-                            old_price: local.old_price || 0,
-                            is_recommended: local.is_recommended || false,
-                            subcategories: local.subcategories || []
-                        };
-                    }
-                    return gh;
+                const merged = repos.map(gh => {
+                    const local = localProjects.find(p => p.name === gh.name);
+                    return local ? { ...gh, ...local, is_github: true } : gh;
                 });
-
-                // Убираем локальные копии, если есть GitHub оригинал
-                const ghNames = githubProjects.value.map(g => g.name);
-                products.value = products.value.filter(p => !ghNames.includes(p.name));
+                const ghNames = merged.map(g => g.name);
+                const onlyLocal = localProjects.filter(p => !ghNames.includes(p.name));
+                products.value = [...merged, ...onlyLocal];
 
             } catch (e) { console.error("Load error:", e); }
             finally { 
                 loading.value = false;
-                setTimeout(() => { if(typeof AOS !== 'undefined') AOS.init({duration: 800, once: true}); }, 100);
+                nextTick(() => { if(typeof AOS !== 'undefined') AOS.init({duration: 800, once: true}); });
             }
         };
 
         const fetchRepoInfo = async (name) => {
             loading.value = true;
-            readmeHtml.value = '';
-            changelogText.value = '';
-            try {
-                const [rRes, rdRes, relRes, chRes] = await Promise.all([
-                    fetch(`https://api.github.com/repos/${repoOwner}/${name}`),
-                    fetch(`https://api.github.com/repos/${repoOwner}/${name}/readme`, { headers: { 'Accept': 'application/vnd.github.v3.raw' } }),
-                    fetch(`https://api.github.com/repos/${repoOwner}/${name}/releases/latest`),
-                    fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/master/changelog.txt`).then(r => r.ok ? r.text() : fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/main/changelog.txt`).then(r2 => r2.ok ? r2.text() : ''))
-                ]);
-                if (rRes.ok) {
-                    const data = await rRes.json();
-                    const localP = githubProjects.value.find(p => p.name === name) || products.value.find(p => p.name === name);
-                    repoData.value = localP ? { ...data, ...localP } : data;
-                }
-                if (rdRes.ok) readmeHtml.value = marked.parse(await rdRes.text());
-                if (relRes.ok) latestRelease.value = await relRes.json();
-                if (chRes) changelogText.value = chRes;
-            } catch (e) { console.error(e); }
-            finally { loading.value = false; }
+            readmeHtml.value = ''; changelogText.value = ''; repoData.value = {}; latestRelease.value = null;
+            const p = products.value.find(x => x.name === name);
+            if (p) repoData.value = { ...p };
+            if (p && p.is_github) {
+                try {
+                    const [rRes, rdRes, relRes, chRes] = await Promise.all([
+                        fetch(`https://api.github.com/repos/${repoOwner}/${name}`),
+                        fetch(`https://api.github.com/repos/${repoOwner}/${name}/readme`, { headers: { 'Accept': 'application/vnd.github.v3.raw' } }),
+                        fetch(`https://api.github.com/repos/${repoOwner}/${name}/releases/latest`),
+                        fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/master/changelog.txt`).then(r => r.ok ? r.text() : fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/main/changelog.txt`).then(r2 => r2.ok ? r2.text() : ''))
+                    ]);
+                    if (rRes.ok) repoData.value = { ...repoData.value, ...(await rRes.json()) };
+                    if (rdRes.ok) readmeHtml.value = marked.parse(await rdRes.text());
+                    if (relRes.ok) latestRelease.value = await relRes.json();
+                    if (chRes) changelogText.value = chRes;
+                } catch (e) { console.error(e); }
+            }
+            loading.value = false;
         };
 
         const filteredProducts = computed(() => {
-            const all = [...githubProjects.value, ...products.value];
             const q = searchQuery.value.toLowerCase();
-            return all.filter(p => {
-                const name = (p.name || '').toLowerCase();
-                const desc = (p.description || '').toLowerCase();
-                const matchesSearch = name.includes(q) || desc.includes(q);
-                const matchesCat = selectedCategory.value === 'all' || p.category === selectedCategory.value;
+            return products.value.filter(p => {
+                const matchesSearch = (p.name || '').toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q);
+                let matchesCat = (selectedCategory.value === 'all') || (selectedCategory.value === 'GitHub Проекты' ? p.is_github : p.category === selectedCategory.value);
                 const matchesSub = selectedSubcategory.value === 'all' || (p.subcategories && p.subcategories.includes(selectedSubcategory.value));
                 return matchesSearch && matchesCat && matchesSub;
             });
@@ -178,10 +144,15 @@ createApp({
         const displayGroups = computed(() => {
             const groups = {};
             const all = filteredProducts.value;
-            const ghItems = all.filter(p => p.category === 'GitHub Проекты');
+            if (selectedCategory.value !== 'all' || searchQuery.value) {
+                const title = selectedCategory.value === 'all' ? 'Результаты поиска' : selectedCategory.value;
+                groups[title] = all;
+                return groups;
+            }
+            const ghItems = all.filter(p => p.is_github);
             if (ghItems.length > 0) groups['GitHub Проекты'] = ghItems;
             all.forEach(p => {
-                if (p.category === 'GitHub Проекты') return;
+                if (p.is_github) return;
                 const c = p.category || 'Прочее';
                 if (!groups[c]) groups[c] = [];
                 groups[c].push(p);
@@ -199,14 +170,20 @@ createApp({
 
         onMounted(() => {
             applyTheme(themeMode.value);
-            loadData();
-            if (repoName.value) fetchRepoInfo(repoName.value);
+            loadData().then(() => { if (repoName.value) fetchRepoInfo(repoName.value); });
             window.addEventListener('scroll', () => showTopButton.value = window.scrollY > 300);
             window.addEventListener('popstate', () => {
-                repoName.value = new URLSearchParams(window.location.search).get('repo');
-                if (repoName.value) fetchRepoInfo(repoName.value);
-                else goHome();
+                const urlRepo = new URLSearchParams(window.location.search).get('repo');
+                repoName.value = urlRepo;
+                if (urlRepo) fetchRepoInfo(urlRepo);
             });
+        });
+
+        watch([selectedCategory, selectedSubcategory, searchQuery], () => {
+            if (selectedCategory.value !== 'all' && arguments[0] !== selectedCategory.value) {
+                // Сбрасываем подкатегорию если сменили категорию
+            }
+            nextTick(() => { if(typeof AOS !== 'undefined') AOS.refresh(); });
         });
 
         watch(selectedCategory, () => { selectedSubcategory.value = 'all'; });
@@ -223,7 +200,7 @@ createApp({
                 const u = new URL(window.location); u.searchParams.delete('repo');
                 window.history.pushState({}, '', u); 
                 repoName.value = null; searchQuery.value = ''; selectedCategory.value = 'all'; selectedSubcategory.value = 'all';
-                setTimeout(() => { if(typeof AOS !== 'undefined') AOS.refreshHard(); }, 100);
+                nextTick(() => { if(typeof AOS !== 'undefined') AOS.refreshHard(); });
             },
             applyTheme, 
             handleDonate: (m) => {
