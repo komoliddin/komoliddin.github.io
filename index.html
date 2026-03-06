@@ -22,9 +22,14 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .tg-fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; background: #0088cc; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(0,136,204,0.4); z-index: 1000; text-decoration: none; transition: 0.3s; }
+        .tg-fab:hover { transform: scale(1.1) rotate(10deg); color: white; }
+    </style>
 </head>
 <body class="shop-page">
     <div id="app" v-cloak>
@@ -81,8 +86,10 @@
                 </aside>
 
                 <div class="shop-main">
-                    <div v-if="loading" class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status"></div>
+                    <div v-if="loading" class="row g-3">
+                        <div v-for="i in 8" :key="i" class="col-6 col-md-4 col-xl-3">
+                            <div class="skeleton skeleton-card"></div>
+                        </div>
                     </div>
                     <template v-else>
                         <div v-for="(group, catName) in displayGroups" :key="catName">
@@ -116,8 +123,10 @@
             <!-- Detail View -->
             <div v-else>
                 <button class="btn btn-light rounded-pill mb-4" @click="goHome"><i class="fas fa-arrow-left me-2"></i> Назад</button>
-                <div v-if="loading" class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-                <div v-else class="card border-0 shadow-sm p-4 rounded-4" style="background: var(--glass-surface); backdrop-filter: blur(20px);">
+                <div v-if="loading" class="row g-3">
+                    <div class="col-12"><div class="skeleton" style="height: 400px; border-radius: 20px;"></div></div>
+                </div>
+                <div v-else class="card border-0 shadow-sm p-4 rounded-4 detail-view-card" style="background: var(--glass-surface); backdrop-filter: blur(20px);">
                     <div class="row g-4">
                         <div class="col-md-4 text-center border-end border-white border-opacity-10">
                             <i class="fas fa-file-code fa-10x text-primary mb-4"></i>
@@ -148,7 +157,7 @@
             </div>
         </div>
 
-        <!-- ФУТЕР (ОБНОВЛЕННЫЙ) -->
+        <!-- ФУТЕР -->
         <footer class="contact-footer">
             <div class="container">
                 <div class="row g-4 text-center text-md-start">
@@ -182,7 +191,11 @@
             </div>
         </footer>
 
-        <button v-if="showTopButton" class="top-btn" @click="scrollToTop"><i class="fas fa-arrow-up"></i></button>
+        <a :href="myContacts.telegram" target="_blank" class="tg-fab" title="Написать в Telegram">
+            <i class="fab fa-telegram-plane"></i>
+        </a>
+
+        <button v-if="showTopButton" class="top-btn" @click="scrollToTop" style="left: auto; right: 20px; bottom: 100px;"><i class="fas fa-arrow-up"></i></button>
 
         <!-- МОДАЛКИ (DONATE, SOCIALS, CONTACTS) -->
         <div class="modal fade" id="donateModal" tabindex="-1">
@@ -262,6 +275,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

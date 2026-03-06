@@ -20,7 +20,7 @@ createApp({
         const themeMode = ref(localStorage.getItem('theme_mode') || 'auto');
         const showTopButton = ref(false);
 
-        const publicStats = ref({ orders_total: 1250, users_total: 850, orders_delivered: 1100, reviews_total: 420 });
+        const publicStats = ref({ orders_total: 0, users_total: 0, orders_delivered: 0, reviews_total: 0 });
 
         const myContacts = ref({ name: 'Komoliddin', phone: '+998000000000', email: 'your_email@example.com', telegram: 'https://t.me/your_username', website: 'http://RePack.Moy.su' });
 
@@ -68,6 +68,7 @@ createApp({
                     if (conf.myContacts) myContacts.value = conf.myContacts;
                     if (conf.socialLinks) socialLinks.value = conf.socialLinks;
                     if (conf.donateMethods) donateMethods.value = conf.donateMethods;
+                    if (conf.publicStats) publicStats.value = conf.publicStats;
                 }
                 const [pRes, cRes] = await Promise.all([
                     fetch('projects.json').then(r => r.ok ? r.json() : []).catch(() => []),
@@ -103,9 +104,11 @@ createApp({
                 }
             } catch (e) { 
                 console.error("Data load error:", e);
-                alert("Ошибка при загрузке данных. Пожалуйста, обновите страницу позже.");
             }
-            finally { loading.value = false; }
+            finally { 
+                loading.value = false;
+                setTimeout(() => { if(typeof AOS !== 'undefined') AOS.init({duration: 800, once: true}); }, 100);
+            }
         };
 
         const fetchRepoInfo = async (name) => {
