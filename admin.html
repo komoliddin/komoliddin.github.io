@@ -245,8 +245,21 @@
                     const reader = new FileReader();
                     reader.onload = async (e) => {
                         const filename = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-                        const res = await fetch('http://localhost:3000/upload-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: filename, data: e.target.result }) });
-                        if (res.ok) { if(!p.images) p.images=[]; p.images.push(`image/${filename}`); alert("✅ Загружено!"); }
+                        const res = await fetch('http://localhost:3000/upload-image', { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ 
+                                name: filename, 
+                                data: e.target.result,
+                                project: p.name // Передаем имя проекта
+                            }) 
+                        });
+                        if (res.ok) { 
+                            const savedPath = await res.text(); // Получаем путь от сервера
+                            if(!p.images) p.images=[]; 
+                            p.images.push(savedPath); 
+                            alert("✅ Фото загружено в папку проекта!"); 
+                        }
                     };
                     reader.readAsDataURL(file);
                 };

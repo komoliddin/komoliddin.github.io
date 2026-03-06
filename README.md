@@ -1,32 +1,40 @@
-# page
-<br>
-https://komoliddin.github.io/page/
-<br>
-GitHub HTML CSS JavaScript
-<br>
-Animated Background
-<br>
-Black Blue Design
-<br>
-Current Year Script
-<br>
-Favicon
-<br>
-Fontawesome
-<br>
-Google Font
-<br>
-Jquery
-<br>
-Pop-Up
-<br>
-Styled Buttons
-<br>
-Styled Font
-<br>
-Styled HR
-<br>
-Styled Overflow
-<br>
-Top Button
-<br>
+# PRO PROJECTS — Portfolio Showcase
+
+Современное портфолио-витрина с глубокой интеграцией GitHub, мощной админ-панелью и дизайном в стиле Glassmorphism.
+
+## 🚀 Технологический стек
+- **Frontend**: Vue 3 (Composition API), Bootstrap 5, FontAwesome 6.
+- **Design**: Glassmorphism (эффект стекла), полная поддержка Dark/Light тем.
+- **Backend (Local)**: Node.js + Express.js (для прямого сохранения данных в JSON и загрузки фото).
+- **Integration**: GitHub API v3 (README, репозитории, релизы) с умным кэшированием.
+
+## ✨ Основные возможности
+- **GitHub Integration**: Автоматическое подтягивание ваших репозиториев. Если проект настроен в админке, данные (цена, скриншоты) объединяются с данными из GitHub.
+- **Admin Panel**: Полноценная CMS для управления проектами, категориями, контактами и методами доната.
+- **Direct Save**: Прямая запись изменений в `projects.json`, `categories.json` и `config.json` без необходимости ручного скачивания файлов.
+- **Image Upload**: Загрузка скриншотов прямо через админку в папку `image/`.
+- **UI/UX**: 
+  - Skeleton Loaders (умная загрузка).
+  - Toast Notifications (всплывающие уведомления).
+  - Слайдер скриншотов в детальном виде проекта.
+  - Адаптивная мобильная версия.
+  - Кастомные курсоры и стилизованный скроллбар.
+
+## 🛠 Инструкция по использованию
+
+### Локальная разработка
+Для корректной работы `fetch` запросов используйте расширение **Live Server** в VS Code или любой другой локальный сервер.
+
+### Работа с админ-панелью
+1. Запустите файл `start_admin_server.bat` в корне проекта.
+2. Откройте в браузере `http://localhost:3000/login.html`.
+3. Введите пароль: `Admin_123`.
+4. После внесения изменений нажмите **«СОХРАНИТЬ ВСЕ»** — данные автоматически обновятся в файлах проекта.
+
+## 📂 Структура данных
+- `projects.json`: Список всех локальных и связанных с GitHub проектов.
+- `categories.json`: Дерево категорий и подкатегорий.
+- `config.json`: Основные настройки сайта (контакты, соцсети, донаты).
+
+---
+Создано с ❤️ для портфолио разработчика.

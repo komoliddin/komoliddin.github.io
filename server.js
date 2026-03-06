@@ -20,12 +20,21 @@ app.post('/save-data', (req, res) => {
     });
 });
 
-// Сохранение изображений (Base64)
+// Сохранение изображений в подпапки проектов
 app.post('/upload-image', (req, res) => {
-    const { name, data } = req.body;
-    const filePath = path.join(__dirname, 'image', name);
+    const { name, data, project } = req.body;
     
-    // Убираем заголовок base64 если он есть
+    // Очищаем название проекта для создания папки (убираем спецсимволы)
+    const folderName = project.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const projectPath = path.join(__dirname, 'image', folderName);
+    
+    // Создаем папку проекта, если её нет
+    if (!fs.existsSync(projectPath)){
+        fs.mkdirSync(projectPath, { recursive: true });
+    }
+
+    const filePath = path.join(projectPath, name);
+    
     const base64Data = data.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Data, 'base64');
 
@@ -34,8 +43,8 @@ app.post('/upload-image', (req, res) => {
             console.error(err);
             return res.status(500).send('Error saving image');
         }
-        console.log(`[${new Date().toLocaleTimeString()}] Картинка ${name} загружена в папку image/`);
-        res.send('OK');
+        console.log(`[${new Date().toLocaleTimeString()}] Картинка загружена в: image/${folderName}/${name}`);
+        res.send(`image/${folderName}/${name}`); // Возвращаем путь для админки
     });
 });
 
