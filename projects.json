@@ -37,7 +37,7 @@
         "name": "OEMInfo",
         "category": "GitHub Проекты",
         "images": [
-            "image/logo.png"
+            "image/oeminfo/logo.bmp"
         ],
         "description": "OEMInfo Editor",
         "subcategories": [],

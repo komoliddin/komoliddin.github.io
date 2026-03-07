@@ -16,27 +16,23 @@
     <script src="https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js"></script>
     <style>
         body.shop-page {
-            padding-top: 120px;
+            padding-top: 0; /* Убираем лишний отступ */
             min-height: 100vh;
         }
 
-        /* ШАПКА В СТИЛЕ INDEX */
-        .sticky-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1100;
+        /* ШАПКА В СТИЛЕ INDEX.HTML */
+        .admin-header {
             background: var(--glass-surface) !important;
             backdrop-filter: blur(16px) saturate(135%);
             -webkit-backdrop-filter: blur(16px) saturate(135%);
             border-bottom: 1px solid var(--glass-border) !important;
-            padding: 15px 0;
+            padding: 20px 25px;
             border-radius: 0 0 34px 34px;
+            margin-bottom: 25px;
             box-shadow: var(--glass-shadow);
         }
 
-        [data-theme="dark"] .sticky-header {
+        [data-theme="dark"] .admin-header {
             background: rgba(18, 28, 42, 0.6) !important;
         }
 
@@ -46,9 +42,30 @@
             -webkit-backdrop-filter: blur(12px);
             border-radius: 24px;
             box-shadow: var(--glass-shadow);
-            padding: 30px;
-            margin-bottom: 25px;
+            padding: 25px;
+            margin-bottom: 20px;
             border: 1px solid var(--glass-border) !important;
+        }
+
+        /* АДАПТИВНОСТЬ */
+        @media (max-width: 991px) {
+            .admin-header .container { flex-direction: column; gap: 15px; text-align: center; }
+            .nav-pills { width: 100% !important; justify-content: center; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 10px; }
+            .admin-card { padding: 20px; }
+        }
+
+        @media (max-width: 768px) {
+            .admin-card .row > div { margin-bottom: 10px; }
+            .btn-save span, .btn-outline-light span { display: none; }
+            .admin-header { padding: 15px; border-radius: 0 0 24px 24px; }
+        }
+
+        @media (max-width: 576px) {
+            .admin-card { padding: 15px; border-radius: 18px; }
+            .form-control, .form-select { font-size: 14px; padding: 8px 12px; }
+        }
+
+        .gh-item { border-left: 5px solid #24292e !important; }
             color: var(--text-color);
         }
 
@@ -196,7 +213,7 @@
 
 <body class="shop-page">
     <div id="app" v-cloak>
-        <header class="sticky-header">
+        <header class="admin-header">
             <div class="container d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-3">
                     <h4 class="fw-bold m-0 text-primary">PRO Panel <span class="badge bg-primary fs-6">Full
@@ -215,11 +232,45 @@
                     </div>
                 </div>
                 <div class="d-flex gap-2">
-                    <button @click="exportAll" class="btn btn-save">💾 СОХРАНИТЬ ВСЕ</button>
-                    <a href="index.html" class="btn btn-outline-secondary rounded-pill">На сайт</a>
+                    <button class="btn btn-outline-light btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#ghSettingsModal">
+                        <i class="fab fa-github me-1"></i> <span>Настройки GitHub</span>
+                    </button>
+                    <button @click="saveAll" class="btn btn-save" :disabled="saving">
+                        <i class="fas fa-save me-2"></i> <span>{{ saving ? 'СОХРАНЕНИЕ...' : '💾 СОХРАНИТЬ ВСЕ' }}</span>
+                    </button>
+                    <a href="index.html" class="btn btn-outline-secondary rounded-pill px-3"><span>На сайт</span></a>
                 </div>
             </div>
         </header>
+
+        <!-- MODAL: GITHUB SETTINGS -->
+        <div class="modal fade" id="ghSettingsModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg bg-dark text-white">
+                    <div class="modal-header border-white border-opacity-10">
+                        <h5 class="modal-title">Облачное сохранение (GitHub API)</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <p class="small opacity-75">Введите ваш <b>Personal Access Token</b> для сохранения правок напрямую в репозиторий. Токен хранится только в вашем браузере.</p>
+                        <div class="mb-3">
+                            <label class="small fw-bold">GitHub Token</label>
+                            <input type="password" v-model="ghSettings.token" class="form-control form-control-sm" placeholder="ghp_xxxxxxxxxxxx">
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold">Репозиторий (username/repo)</label>
+                            <input type="text" v-model="ghSettings.repo" class="form-control form-control-sm" placeholder="komoliddin/komoliddin.github.io">
+                        </div>
+                        <div class="alert alert-info py-2 px-3 small mb-0">
+                            <i class="fas fa-info-circle me-2"></i> Если поля пустые, админка будет пытаться сохранить данные через локальный <b>server.js</b>.
+                        </div>
+                    </div>
+                    <div class="modal-footer border-white border-opacity-10">
+                        <button @click="saveGhSettings" class="btn btn-primary btn-sm w-100 rounded-pill">Сохранить настройки в браузере</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="container">
             <ul class="nav nav-pills mb-4 bg-white bg-opacity-10 p-2 rounded-4 shadow-sm"
@@ -610,15 +661,72 @@
                     reader.readAsDataURL(file);
                 };
 
-                const exportAll = async () => {
+                const saving = ref(false);
+                const ghSettings = ref(JSON.parse(localStorage.getItem('gh_settings') || '{"token":"","repo":""}'));
+
+                const saveGhSettings = () => {
+                    localStorage.setItem('gh_settings', JSON.stringify(ghSettings.value));
+                    alert("Настройки сохранены в браузере!");
+                    const el = document.getElementById('ghSettingsModal');
+                    if (el) bootstrap.Modal.getOrCreateInstance(el).hide();
+                };
+
+                const saveAll = async () => {
+                    saving.value = true;
                     const cleanConfig = JSON.parse(JSON.stringify(config.value));
                     cleanConfig.socialLinks = removeKeys(cleanConfig.socialLinks);
                     cleanConfig.donateMethods = removeKeys(cleanConfig.donateMethods);
-                    const payload = [{ f: 'projects.json', d: products.value }, { f: 'categories.json', d: categories.value }, { f: 'config.json', d: cleanConfig }];
+                    
+                    const files = [
+                        { f: 'projects.json', d: products.value },
+                        { f: 'categories.json', d: categories.value },
+                        { f: 'config.json', d: cleanConfig }
+                    ];
+
                     try {
-                        for (let i of payload) { await fetch('http://localhost:3000/save-data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: i.f, data: i.d }) }); }
-                        alert("✅ СОХРАНЕНО!");
-                    } catch (e) { alert("❌ Ошибка сервера"); }
+                        if (ghSettings.value.token && ghSettings.value.repo) {
+                            // ОБЛАЧНОЕ СОХРАНЕНИЕ (GITHUB API)
+                            for (const file of files) {
+                                // 1. Получаем SHA файла (нужен для обновления)
+                                const getRes = await fetch(`https://api.github.com/repos/${ghSettings.value.repo}/contents/${file.f}`, {
+                                    headers: { 'Authorization': `token ${ghSettings.value.token}` }
+                                });
+                                let sha = "";
+                                if (getRes.ok) { const data = await getRes.json(); sha = data.sha; }
+
+                                // 2. Сохраняем (Commit)
+                                const putRes = await fetch(`https://api.github.com/repos/${ghSettings.value.repo}/contents/${file.f}`, {
+                                    method: 'PUT',
+                                    headers: {
+                                        'Authorization': `token ${ghSettings.value.token}`,
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        message: `Update ${file.f} via Admin Panel`,
+                                        content: btoa(unescape(encodeURIComponent(JSON.stringify(file.d, null, 4)))),
+                                        sha: sha
+                                    })
+                                });
+                                if (!putRes.ok) throw new Error(`Ошибка при сохранении ${file.f}`);
+                            }
+                            alert("✅ Данные успешно закоммичены в GitHub!");
+                        } else {
+                            // ЛОКАЛЬНОЕ СОХРАНЕНИЕ
+                            for (let i of files) { 
+                                await fetch('http://localhost:3000/save-data', { 
+                                    method: 'POST', 
+                                    headers: { 'Content-Type': 'application/json' }, 
+                                    body: JSON.stringify({ filename: i.f, data: i.d }) 
+                                }); 
+                            }
+                            alert("✅ Сохранено локально!");
+                        }
+                    } catch (e) {
+                        alert("❌ Ошибка: " + e.message);
+                        console.error(e);
+                    } finally {
+                        saving.value = false;
+                    }
                 };
 
                 const toggleAutoSync = () => {
@@ -629,10 +737,11 @@
                 const applyThemeDots = (mode) => { applyTheme(mode); };
 
                 onMounted(() => { applyTheme(themeMode.value); loadData(); if (isAutoSync.value === true) toggleAutoSync(); });
-                return { tab, products, categories, config, ghRepos, ghError, uploadStatus, newP, triggerUpload, handleFileUpload, getSubcategories, updateSubcategories, themeMode, applyTheme, loadGitHub, openSubDropdown, isAutoSync, toggleAutoSync, exportAll };
+                return { tab, products, categories, config, ghRepos, ghError, uploadStatus, newP, triggerUpload, handleFileUpload, getSubcategories, updateSubcategories, themeMode, applyTheme, loadGitHub, openSubDropdown, isAutoSync, toggleAutoSync, saveAll, saving, ghSettings, saveGhSettings };
             }
         }).mount('#app');
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
