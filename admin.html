@@ -23,7 +23,9 @@
         /* ШАПКА В СТИЛЕ INDEX */
         .sticky-header {
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             z-index: 1100;
             background: var(--glass-surface) !important;
             backdrop-filter: blur(16px) saturate(135%);
@@ -68,19 +70,22 @@
             opacity: 1;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
             color: var(--text-color);
         }
 
-        [data-theme="dark"] .form-control, [data-theme="dark"] .form-select {
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select {
             background: rgba(0, 0, 0, 0.2);
             color: white;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             background: rgba(255, 255, 255, 0.2);
             color: var(--text-color);
             border-color: var(--primary-color);
@@ -97,7 +102,9 @@
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
-        .gh-item { border-left: 5px solid #24292e !important; }
+        .gh-item {
+            border-left: 5px solid #24292e !important;
+        }
 
         .subcategory-dropdown {
             position: relative;
@@ -111,7 +118,8 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            padding-right: 2.5rem !important; /* Space for the arrow */
+            padding-right: 2.5rem !important;
+            /* Space for the arrow */
         }
 
         .subcategory-dropdown-menu {
@@ -128,22 +136,59 @@
             overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             padding: 10px;
-            display: none; /* Скрыто по умолчанию */
+            display: none;
+            /* Скрыто по умолчанию */
         }
 
         .subcategory-dropdown.open .subcategory-dropdown-menu {
-            display: block; /* Показываем только при наличии класса .open */
+            display: block;
+            /* Показываем только при наличии класса .open */
         }
 
-        .tiny { font-size: 0.7rem; color: var(--text-color); opacity: 0.6; text-transform: uppercase; }
+        .tiny {
+            font-size: 0.7rem;
+            color: var(--text-color);
+            opacity: 0.6;
+            text-transform: uppercase;
+        }
 
         /* КУРСОРЫ */
-        html, body { cursor: url('cursor/Blue_arrow.cur'), auto !important; }
-        a, button, .nav-link, .theme-dot-btn, .subcategory-dropdown-toggle, .subcategory-item-check, .drag-handle, .form-check-input, .btn-link { cursor: url('cursor/aero_link.cur'), pointer !important; }
-        input, textarea, select, .form-control { cursor: url('cursor/IBeam.cur'), text !important; }
-        input:disabled, textarea:disabled, select:disabled, .form-control:disabled { cursor: url('cursor/no.cur'), not-allowed !important; }
+        html,
+        body {
+            cursor: url('cursor/Blue_arrow.cur'), auto !important;
+        }
 
-        select.form-control, .form-select, .form-check-input, .subcategory-dropdown-toggle, .subcategory-item-check {
+        a,
+        button,
+        .nav-link,
+        .theme-dot-btn,
+        .subcategory-dropdown-toggle,
+        .subcategory-item-check,
+        .drag-handle,
+        .form-check-input,
+        .btn-link {
+            cursor: url('cursor/aero_link.cur'), pointer !important;
+        }
+
+        input,
+        textarea,
+        select,
+        .form-control {
+            cursor: url('cursor/IBeam.cur'), text !important;
+        }
+
+        input:disabled,
+        textarea:disabled,
+        select:disabled,
+        .form-control:disabled {
+            cursor: url('cursor/no.cur'), not-allowed !important;
+        }
+
+        select.form-control,
+        .form-select,
+        .form-check-input,
+        .subcategory-dropdown-toggle,
+        .subcategory-item-check {
             cursor: url('cursor/aero_link.cur'), pointer !important;
         }
     </style>
@@ -154,11 +199,19 @@
         <header class="sticky-header">
             <div class="container d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-3">
-                    <h4 class="fw-bold m-0 text-primary">PRO Panel <span class="badge bg-primary fs-6">Full Edition</span></h4>
-                    <div class="theme-toggle shadow-sm ms-3" style="background: rgba(0,0,0,0.1); padding: 5px; border-radius: 15px; display: flex; gap: 5px;">
-                        <button class="theme-dot-btn" :class="{active: themeMode === 'dark'}" @click="applyTheme('dark')" style="border:none; background:transparent; padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">ТЁМ</button>
-                        <button class="theme-dot-btn" :class="{active: themeMode === 'auto'}" @click="applyTheme('auto')" style="border:none; background:transparent; padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">АВТ</button>
-                        <button class="theme-dot-btn" :class="{active: themeMode === 'light'}" @click="applyTheme('light')" style="border:none; background:transparent; padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">СВЕ</button>
+                    <h4 class="fw-bold m-0 text-primary">PRO Panel <span class="badge bg-primary fs-6">Full
+                            Edition</span></h4>
+                    <div class="theme-toggle shadow-sm ms-3"
+                        style="background: rgba(0,0,0,0.1); padding: 5px; border-radius: 15px; display: flex; gap: 5px;">
+                        <button class="theme-dot-btn" :class="{active: themeMode === 'dark'}"
+                            @click="applyTheme('dark')"
+                            style="border:none; background:transparent; padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">ТЁМ</button>
+                        <button class="theme-dot-btn" :class="{active: themeMode === 'auto'}"
+                            @click="applyTheme('auto')"
+                            style="border:none; background:transparent; padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">АВТ</button>
+                        <button class="theme-dot-btn" :class="{active: themeMode === 'light'}"
+                            @click="applyTheme('light')"
+                            style="border:none; background:transparent; padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">СВЕ</button>
                     </div>
                 </div>
                 <div class="d-flex gap-2">
@@ -169,12 +222,18 @@
         </header>
 
         <div class="container">
-            <ul class="nav nav-pills mb-4 bg-white bg-opacity-10 p-2 rounded-4 shadow-sm" style="width: fit-content; backdrop-filter: blur(10px);">
-                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'projects'}" @click="tab = 'projects'">📦 Проекты</button></li>
-                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'categories'}" @click="tab = 'categories'">📂 Категории</button></li>
-                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'donate'}" @click="tab = 'donate'">❤️ Донаты</button></li>
-                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'socials'}" @click="tab = 'socials'">🌐 Соцсети</button></li>
-                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'contacts'}" @click="tab = 'contacts'">📇 Контакты</button></li>
+            <ul class="nav nav-pills mb-4 bg-white bg-opacity-10 p-2 rounded-4 shadow-sm"
+                style="width: fit-content; backdrop-filter: blur(10px);">
+                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'projects'}"
+                        @click="tab = 'projects'">📦 Проекты</button></li>
+                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'categories'}"
+                        @click="tab = 'categories'">📂 Категории</button></li>
+                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'donate'}"
+                        @click="tab = 'donate'">❤️ Донаты</button></li>
+                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'socials'}"
+                        @click="tab = 'socials'">🌐 Соцсети</button></li>
+                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'contacts'}"
+                        @click="tab = 'contacts'">📇 Контакты</button></li>
             </ul>
 
             <!-- ТАБ: ПРОЕКТЫ -->
@@ -184,11 +243,16 @@
                         <h5 class="fw-bold m-0 text-white"><i class="fab fa-github me-2"></i>Синхронизация GitHub</h5>
                         <div class="d-flex gap-3 align-items-center">
                             <div class="form-check form-switch m-0">
-                                <input class="form-check-input" type="checkbox" v-model="isAutoSync" @change="toggleAutoSync" id="autoSyncSwitch">
-                                <label class="form-check-label small fw-bold text-white" for="autoSyncSwitch">Авто-обновление</label>
+                                <input class="form-check-input" type="checkbox" v-model="isAutoSync"
+                                    @change="toggleAutoSync" id="autoSyncSwitch">
+                                <label class="form-check-label small fw-bold text-white"
+                                    for="autoSyncSwitch">Авто-обновление</label>
                             </div>
-                            <button @click="products.unshift({id:Date.now(), name:'Новый проект', category:'Прочее', images:['image/logo.png'], description:'', subcategories:[], is_active:true, is_github:false})" class="btn btn-success btn-sm rounded-pill px-3">+ Новый проект</button>
-                            <button @click="loadGitHub(false)" class="btn btn-sm btn-outline-light rounded-pill">Обновить GitHub</button>
+                            <button
+                                @click="products.unshift({id:Date.now(), name:'Новый проект', category:'Прочее', images:['image/logo.png'], description:'', subcategories:[], is_active:true, is_github:false})"
+                                class="btn btn-success btn-sm rounded-pill px-3">+ Новый проект</button>
+                            <button @click="loadGitHub(false)"
+                                class="btn btn-sm btn-outline-light rounded-pill">Обновить GitHub</button>
                         </div>
                     </div>
                     <div v-if="ghError" class="alert alert-warning py-2 mt-3 small">{{ ghError }}</div>
@@ -196,26 +260,45 @@
                 <hr class="my-4 border-white opacity-25">
                 <div v-for="(p, idx) in products" :key="p.id" class="admin-card" :class="{'gh-item': p.is_github}">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="m-0 fw-bold"><i v-if="p.is_github" class="fab fa-github me-2 text-primary"></i>{{ p.name }}</h5>
-                        <button @click="products.splice(idx, 1)" class="btn btn-link text-danger p-0"><i class="fas fa-trash-alt fa-lg"></i></button>
+                        <h5 class="m-0 fw-bold"><i v-if="p.is_github" class="fab fa-github me-2 text-primary"></i>{{
+                            p.name }}</h5>
+                        <button @click="products.splice(idx, 1)" class="btn btn-link text-danger p-0"><i
+                                class="fas fa-trash-alt fa-lg"></i></button>
                     </div>
                     <div class="row g-3">
-                        <div class="col-md-3"><label class="small fw-bold">Название</label><input v-model="p.name" class="form-control"></div>
-                        <div class="col-md-2"><label class="small fw-bold">Версия</label><input v-model="p.version" class="form-control" placeholder="v1.0.0"></div>
+                        <div class="col-md-3"><label class="small fw-bold">Название</label><input v-model="p.name"
+                                class="form-control"></div>
+                        <div class="col-md-2"><label class="small fw-bold">Версия</label><input v-model="p.version"
+                                class="form-control" placeholder="v1.0.0"></div>
                         <div class="col-md-4">
                             <label class="small fw-bold text-primary">Изображения</label>
                             <div class="input-group">
-                                <input :value="p.images?.join(', ')" @input="p.images = $event.target.value.split(',').map(i => i.trim())" class="form-control" placeholder="image/logo.png">
-                                <button class="btn btn-outline-primary" @click="triggerUpload(p)" :disabled="uploadStatus[p.id]"><i v-if="uploadStatus[p.id]" class="spinner-border spinner-border-sm"></i><i v-else class="fas fa-upload"></i></button>
+                                <input :value="p.images?.join(', ')"
+                                    @input="p.images = $event.target.value.split(',').map(i => i.trim())"
+                                    class="form-control" placeholder="image/logo.png">
+                                <button class="btn btn-outline-primary" @click="triggerUpload(p)"
+                                    :disabled="uploadStatus[p.id]"><i v-if="uploadStatus[p.id]"
+                                        class="spinner-border spinner-border-sm"></i><i v-else
+                                        class="fas fa-upload"></i></button>
                             </div>
-                            <input type="file" :id="'file-'+p.id" class="d-none" accept="image/*" @change="handleFileUpload($event, p)">
+                            <input type="file" :id="'file-'+p.id" class="d-none" accept="image/*"
+                                @change="handleFileUpload($event, p)">
                         </div>
                         <div class="col-md-3">
                             <label class="small fw-bold">Опции</label>
                             <div class="d-flex gap-3 mt-2">
-                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" v-model="p.is_github" :id="'gh-cb-'+p.id"><label class="form-check-label fw-bold text-white" :for="'gh-cb-'+p.id">🔗 GH</label></div>
-                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" v-model="p.is_active" :id="'act-'+p.id"><label class="form-check-label small text-white" :for="'act-'+p.id">Активен</label></div>
-                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" v-model="p.is_top" :id="'top-'+p.id"><label class="form-check-label small text-warning fw-bold" :for="'top-'+p.id">🔥 ТОП</label></div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox"
+                                        v-model="p.is_github" :id="'gh-cb-'+p.id"><label
+                                        class="form-check-label fw-bold text-white" :for="'gh-cb-'+p.id">🔗 GH</label>
+                                </div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox"
+                                        v-model="p.is_active" :id="'act-'+p.id"><label
+                                        class="form-check-label small text-white" :for="'act-'+p.id">Активен</label>
+                                </div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox"
+                                        v-model="p.is_top" :id="'top-'+p.id"><label
+                                        class="form-check-label small text-warning fw-bold" :for="'top-'+p.id">🔥
+                                        ТОП</label></div>
                             </div>
                         </div>
                         <div class="col-md-6"><label class="small fw-bold">Категория</label>
@@ -225,32 +308,49 @@
                         </div>
                         <div class="col-md-6"><label class="small fw-bold">Подкатегории</label>
                             <div class="subcategory-dropdown" :class="{ open: openSubDropdown === p.id }">
-                                <div class="subcategory-dropdown-toggle form-select shadow-sm" @click.stop="openSubDropdown = (openSubDropdown === p.id ? null : p.id)">
-                                    <span class="small text-truncate">{{ p.subcategories && p.subcategories.length ? p.subcategories.join(', ') : 'Выберите подкатегории...' }}</span>
+                                <div class="subcategory-dropdown-toggle form-select shadow-sm"
+                                    @click.stop="openSubDropdown = (openSubDropdown === p.id ? null : p.id)">
+                                    <span class="small text-truncate">{{ p.subcategories && p.subcategories.length ?
+                                        p.subcategories.join(', ') : 'Выберите подкатегории...' }}</span>
                                 </div>
                                 <div class="subcategory-dropdown-menu shadow">
-                                    <div v-for="sub in getSubcategories(p.category)" :key="sub" class="subcategory-item-check" @click.stop>
+                                    <div v-for="sub in getSubcategories(p.category)" :key="sub"
+                                        class="subcategory-item-check" @click.stop>
                                         <div class="form-check m-0">
-                                            <input class="form-check-input" type="checkbox" :value="sub" v-model="p.subcategories" :id="'sub-'+p.id+'-'+sub">
-                                            <label class="form-check-label small w-100" :for="'sub-'+p.id+'-'+sub">{{ sub }}</label>
+                                            <input class="form-check-input" type="checkbox" :value="sub"
+                                                v-model="p.subcategories" :id="'sub-'+p.id+'-'+sub">
+                                            <label class="form-check-label small w-100" :for="'sub-'+p.id+'-'+sub">{{
+                                                sub }}</label>
                                         </div>
                                     </div>
-                                    <div v-if="getSubcategories(p.category).length === 0" class="p-2 text-center small opacity-50">Сначала выберите категорию</div>
+                                    <div v-if="getSubcategories(p.category).length === 0"
+                                        class="p-2 text-center small opacity-50">Сначала выберите категорию</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6"><label class="small fw-bold text-primary">Main URL</label><input v-model="p.download_url" class="form-control"></div>
-                        <div class="col-md-6"><label class="small fw-bold text-primary">Кнопка</label><input v-model="p.download_info" class="form-control"></div>
+                        <div class="col-md-6"><label class="small fw-bold text-primary">Main URL</label><input
+                                v-model="p.download_url" class="form-control"></div>
+                        <div class="col-md-6"><label class="small fw-bold text-primary">Кнопка</label><input
+                                v-model="p.download_info" class="form-control"></div>
                         <div class="col-md-12 mt-2">
                             <label class="small fw-bold text-success d-block mb-2">Дополнительные ссылки</label>
-                            <div v-for="(lnk, lIdx) in (p.links || (p.links = []))" :key="lIdx" class="row g-2 mb-2 align-items-center">
-                                <div class="col-md-6"><input v-model="lnk.url" class="form-control" placeholder="URL"></div>
-                                <div class="col-md-5"><input v-model="lnk.info" class="form-control" placeholder="Описание"></div>
-                                <div class="col-md-1"><button @click="p.links.splice(lIdx, 1)" class="btn btn-link text-danger p-0"><i class="fas fa-trash-alt"></i></button></div>
+                            <div v-for="(lnk, lIdx) in (p.links || (p.links = []))" :key="lIdx"
+                                class="row g-2 mb-2 align-items-center">
+                                <div class="col-md-6"><input v-model="lnk.url" class="form-control" placeholder="URL">
+                                </div>
+                                <div class="col-md-5"><input v-model="lnk.info" class="form-control"
+                                        placeholder="Описание"></div>
+                                <div class="col-md-1"><button @click="p.links.splice(lIdx, 1)"
+                                        class="btn btn-link text-danger p-0"><i class="fas fa-trash-alt"></i></button>
+                                </div>
                             </div>
-                            <button @click="p.links.push({url:'', info:''})" class="btn btn-link text-success p-0 small text-decoration-none">+ Добавить ссылку</button>
+                            <button @click="p.links.push({url:'', info:''})"
+                                class="btn btn-link text-success p-0 small text-decoration-none">+ Добавить
+                                ссылку</button>
                         </div>
-                        <div class="col-md-12"><label class="small fw-bold">Описание</label><textarea v-model="p.description" class="form-control" rows="2" :disabled="p.is_github"></textarea></div>
+                        <div class="col-md-12"><label class="small fw-bold">Описание</label><textarea
+                                v-model="p.description" class="form-control" rows="2"
+                                :disabled="p.is_github"></textarea></div>
                     </div>
                 </div>
             </div>
@@ -260,18 +360,23 @@
                 <div class="admin-card border-0 bg-transparent shadow-none px-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="fw-bold m-0 text-white"><i class="fas fa-folder-open me-2"></i>Категории</h5>
-                        <button @click="categories.push({name:'Новая категория', subcategories:[]})" class="btn btn-success btn-sm rounded-pill px-3">+ Добавить</button>
+                        <button @click="categories.push({name:'Новая категория', subcategories:[]})"
+                            class="btn btn-success btn-sm rounded-pill px-3">+ Добавить</button>
                     </div>
                 </div>
                 <hr class="my-4 border-white opacity-25">
                 <div v-for="(c, idx) in categories" :key="idx" class="admin-card">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="m-0 fw-bold">{{ c.name }}</h5>
-                        <button @click="categories.splice(idx, 1)" class="btn btn-link text-danger p-0"><i class="fas fa-trash-alt fa-lg"></i></button>
+                        <button @click="categories.splice(idx, 1)" class="btn btn-link text-danger p-0"><i
+                                class="fas fa-trash-alt fa-lg"></i></button>
                     </div>
                     <div class="row g-3">
-                        <div class="col-md-12"><label class="small fw-bold">Название категории</label><input v-model="c.name" class="form-control"></div>
-                        <div class="col-md-12"><label class="small fw-bold">Подкатегории (через запятую)</label><input :value="c.subcategories?.join(', ')" @input="updateSubcategories(c, $event.target.value)" class="form-control"></div>
+                        <div class="col-md-12"><label class="small fw-bold">Название категории</label><input
+                                v-model="c.name" class="form-control"></div>
+                        <div class="col-md-12"><label class="small fw-bold">Подкатегории (через запятую)</label><input
+                                :value="c.subcategories?.join(', ')"
+                                @input="updateSubcategories(c, $event.target.value)" class="form-control"></div>
                     </div>
                 </div>
             </div>
@@ -285,25 +390,36 @@
                 <div class="admin-card">
                     <h5 class="fw-bold mb-4 text-primary">Общие настройки</h5>
                     <div class="row g-3">
-                        <div class="col-md-6"><label class="small fw-bold">Заголовок модалки</label><input v-model="config.modalTitles.donate" class="form-control"></div>
-                        <div class="col-md-12"><label class="small fw-bold">Описание</label><textarea v-model="config.modalInfo.donate" class="form-control" rows="3"></textarea></div>
+                        <div class="col-md-6"><label class="small fw-bold">Заголовок модалки</label><input
+                                v-model="config.modalTitles.donate" class="form-control"></div>
+                        <div class="col-md-12"><label class="small fw-bold">Описание</label><textarea
+                                v-model="config.modalInfo.donate" class="form-control" rows="3"></textarea></div>
                     </div>
                 </div>
                 <div class="admin-card">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold m-0 text-primary">Методы оплаты</h5>
-                        <button @click="config.donateMethods.push({uid:Math.random().toString(36).substr(2,9), name:'New', id:'', desc:'', icon:'fas fa-wallet', color:'#000', size:2})" class="btn btn-success btn-sm rounded-pill px-3">+ Добавить</button>
+                        <button
+                            @click="config.donateMethods.push({uid:Math.random().toString(36).substr(2,9), name:'New', id:'', desc:'', icon:'fas fa-wallet', color:'#000', size:2})"
+                            class="btn btn-success btn-sm rounded-pill px-3">+ Добавить</button>
                     </div>
                     <draggable v-model="config.donateMethods" handle=".drag-handle" item-key="uid">
                         <template #item="{element, index}">
                             <div class="row g-3 mb-3 border-bottom pb-3 align-items-center">
                                 <div class="col-auto"><i class="fas fa-grip-vertical drag-handle"></i></div>
-                                <div class="col-md-2"><label class="tiny fw-bold">Метод</label><input v-model="element.name" class="form-control"></div>
-                                <div class="col-md-3"><label class="tiny fw-bold">Описание</label><input v-model="element.desc" class="form-control"></div>
-                                <div class="col-md-3"><label class="tiny fw-bold">Реквизиты</label><input v-model="element.url" class="form-control"></div>
-                                <div class="col-md-1"><label class="tiny fw-bold">Icon</label><input v-model="element.icon" class="form-control"></div>
-                                <div class="col-md-1"><label class="tiny fw-bold">Color</label><input v-model="element.color" class="form-control"></div>
-                                <div class="col-md-1"><button @click="config.donateMethods.splice(index, 1)" class="btn btn-link text-danger p-0"><i class="fas fa-trash-alt fa-lg"></i></button></div>
+                                <div class="col-md-2"><label class="tiny fw-bold">Метод</label><input
+                                        v-model="element.name" class="form-control"></div>
+                                <div class="col-md-3"><label class="tiny fw-bold">Описание</label><input
+                                        v-model="element.desc" class="form-control"></div>
+                                <div class="col-md-3"><label class="tiny fw-bold">Реквизиты</label><input
+                                        v-model="element.url" class="form-control"></div>
+                                <div class="col-md-1"><label class="tiny fw-bold">Icon</label><input
+                                        v-model="element.icon" class="form-control"></div>
+                                <div class="col-md-1"><label class="tiny fw-bold">Color</label><input
+                                        v-model="element.color" class="form-control"></div>
+                                <div class="col-md-1"><button @click="config.donateMethods.splice(index, 1)"
+                                        class="btn btn-link text-danger p-0"><i
+                                            class="fas fa-trash-alt fa-lg"></i></button></div>
                             </div>
                         </template>
                     </draggable>
@@ -319,25 +435,36 @@
                 <div class="admin-card">
                     <h5 class="fw-bold mb-4 text-primary">Общие настройки</h5>
                     <div class="row g-3">
-                        <div class="col-md-6"><label class="small fw-bold">Заголовок модалки</label><input v-model="config.modalTitles.socials" class="form-control"></div>
-                        <div class="col-md-12"><label class="small fw-bold">Описание</label><textarea v-model="config.modalInfo.socials" class="form-control" rows="3"></textarea></div>
+                        <div class="col-md-6"><label class="small fw-bold">Заголовок модалки</label><input
+                                v-model="config.modalTitles.socials" class="form-control"></div>
+                        <div class="col-md-12"><label class="small fw-bold">Описание</label><textarea
+                                v-model="config.modalInfo.socials" class="form-control" rows="3"></textarea></div>
                     </div>
                 </div>
                 <div class="admin-card">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold m-0 text-primary">Ссылки</h5>
-                        <button @click="config.socialLinks.push({uid:Math.random().toString(36).substr(2,9), name:'New', url:'#', icon:'fab fa-link', color:'#000', size:5})" class="btn btn-success btn-sm rounded-pill px-3">+ Добавить</button>
+                        <button
+                            @click="config.socialLinks.push({uid:Math.random().toString(36).substr(2,9), name:'New', url:'#', icon:'fab fa-link', color:'#000', size:5})"
+                            class="btn btn-success btn-sm rounded-pill px-3">+ Добавить</button>
                     </div>
                     <draggable v-model="config.socialLinks" handle=".drag-handle" item-key="uid">
                         <template #item="{element, index}">
                             <div class="row g-3 mb-3 border-bottom pb-3 align-items-center">
                                 <div class="col-auto"><i class="fas fa-grip-vertical drag-handle"></i></div>
-                                <div class="col-md-2"><label class="tiny fw-bold">Название</label><input v-model="element.name" class="form-control"></div>
-                                <div class="col-md-4"><label class="tiny fw-bold">Ссылка</label><input v-model="element.url" class="form-control"></div>
-                                <div class="col-md-2"><label class="tiny fw-bold">Icon</label><input v-model="element.icon" class="form-control"></div>
-                                <div class="col-md-1"><label class="tiny fw-bold">Color</label><input v-model="element.color" class="form-control"></div>
-                                <div class="col-md-1"><label class="tiny fw-bold">Size</label><input type="number" v-model="element.size" class="form-control" min="1" max="5"></div>
-                                <div class="col-auto ms-auto"><button @click="config.socialLinks.splice(index, 1)" class="btn btn-link text-danger p-0"><i class="fas fa-trash-alt fa-lg"></i></button></div>
+                                <div class="col-md-2"><label class="tiny fw-bold">Название</label><input
+                                        v-model="element.name" class="form-control"></div>
+                                <div class="col-md-4"><label class="tiny fw-bold">Ссылка</label><input
+                                        v-model="element.url" class="form-control"></div>
+                                <div class="col-md-2"><label class="tiny fw-bold">Icon</label><input
+                                        v-model="element.icon" class="form-control"></div>
+                                <div class="col-md-1"><label class="tiny fw-bold">Color</label><input
+                                        v-model="element.color" class="form-control"></div>
+                                <div class="col-md-1"><label class="tiny fw-bold">Size</label><input type="number"
+                                        v-model="element.size" class="form-control" min="1" max="5"></div>
+                                <div class="col-auto ms-auto"><button @click="config.socialLinks.splice(index, 1)"
+                                        class="btn btn-link text-danger p-0"><i
+                                            class="fas fa-trash-alt fa-lg"></i></button></div>
                             </div>
                         </template>
                     </draggable>
@@ -352,11 +479,16 @@
                 <hr class="my-4 border-white opacity-25">
                 <div class="admin-card">
                     <div class="row g-3">
-                        <div class="col-md-6"><label class="small fw-bold">Имя</label><input v-model="config.myContacts.name" class="form-control"></div>
-                        <div class="col-md-6"><label class="small fw-bold">Телефон</label><input v-model="config.myContacts.phone" class="form-control"></div>
-                        <div class="col-md-6"><label class="small fw-bold">Email</label><input v-model="config.myContacts.email" class="form-control"></div>
-                        <div class="col-md-6"><label class="small fw-bold">Telegram URL</label><input v-model="config.myContacts.telegram" class="form-control"></div>
-                        <div class="col-md-12"><label class="small fw-bold">Сайт</label><input v-model="config.myContacts.website" class="form-control"></div>
+                        <div class="col-md-6"><label class="small fw-bold">Имя</label><input
+                                v-model="config.myContacts.name" class="form-control"></div>
+                        <div class="col-md-6"><label class="small fw-bold">Телефон</label><input
+                                v-model="config.myContacts.phone" class="form-control"></div>
+                        <div class="col-md-6"><label class="small fw-bold">Email</label><input
+                                v-model="config.myContacts.email" class="form-control"></div>
+                        <div class="col-md-6"><label class="small fw-bold">Telegram URL</label><input
+                                v-model="config.myContacts.telegram" class="form-control"></div>
+                        <div class="col-md-12"><label class="small fw-bold">Сайт</label><input
+                                v-model="config.myContacts.website" class="form-control"></div>
                     </div>
                 </div>
             </div>
@@ -401,7 +533,7 @@
                         ]);
                         products.value = pRes.sort((a, b) => a.name.localeCompare(b.name));
                         categories.value = cRes.sort((a, b) => a.name.localeCompare(b.name));
-                        
+
                         const conf = await fetch(`config.json?v=${v}`).then(r => r.json());
                         if (!conf.modalTitles) conf.modalTitles = { donate: '꧁Donate꧂', socials: '꧁Социальные сети꧂' };
                         if (!conf.modalInfo) conf.modalInfo = { donate: '', socials: '' };
@@ -418,14 +550,14 @@
                             const repos = await res.json();
                             ghRepos.value = repos;
                             ghError.value = '';
-                            
+
                             // Параллельная загрузка версий
                             await Promise.all(repos.map(async (r) => {
                                 let version = 'v1.0.0';
                                 try {
                                     const vRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${r.name}/${r.default_branch}/version.txt?v=${Date.now()}`);
                                     if (vRes.ok) version = (await vRes.text()).trim();
-                                } catch(e) {}
+                                } catch (e) { }
 
                                 const existing = products.value.find(p => p.name === r.name);
                                 if (existing) {
@@ -433,12 +565,12 @@
                                     existing.language = r.language;
                                     existing.version = version; // Vue 3 автоматически отследит изменение
                                 } else {
-                                    products.value.unshift({ 
-                                        id: r.id, name: r.name, category: 'GitHub Проекты', 
-                                        images: ['image/logo.png'], description: r.description || '', 
-                                        subcategories: [], is_active: true, is_github: true, 
+                                    products.value.unshift({
+                                        id: r.id, name: r.name, category: 'GitHub Проекты',
+                                        images: ['image/logo.png'], description: r.description || '',
+                                        subcategories: [], is_active: true, is_github: true,
                                         stars: r.stargazers_count, language: r.language || 'Software',
-                                        version: version 
+                                        version: version
                                     });
                                 }
                             }));
@@ -450,7 +582,7 @@
 
                 const getSubcategories = (catName) => { const cat = categories.value.find(c => c.name === catName); return cat ? (cat.subcategories || []) : []; };
                 const updateSubcategories = (cat, val) => { cat.subcategories = val.split(',').map(s => s.trim()).filter(s => s).sort((a, b) => a.localeCompare(b)); };
-                
+
                 const triggerUpload = (p) => { if (!p.name) return alert("Введите название!"); document.getElementById(`file-${p.id}`).click(); };
                 const handleFileUpload = async (event, p) => {
                     const file = event.target.files[0]; if (!file) return;
@@ -491,4 +623,5 @@
         }).mount('#app');
     </script>
 </body>
+
 </html>

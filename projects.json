@@ -13,7 +13,8 @@
         "stars": 0,
         "language": "Software",
         "links": [],
-        "is_top": true
+        "is_top": true,
+        "version": "1.0.0"
     },
     {
         "id": 711861571,
@@ -45,7 +46,7 @@
         "stars": 0,
         "language": "Batchfile",
         "links": [],
-        "version": "v1.0.0"
+        "version": "1.0.0"
     },
     {
         "id": 1147342533,
@@ -91,7 +92,7 @@
         "use_before": "01.01.2030",
         "shipping_weight_kg": 0.1,
         "manufacturer": "PRO Projects",
-        "version": "v1.0.0",
+        "version": "1.0.0",
         "download_url": "https://github.com/komoliddin/ReLoader/releases/download/v2.6.0.0/ReLoader.exe",
         "links": [
             {
@@ -123,7 +124,7 @@
         "shipping_weight_kg": 0.05,
         "manufacturer": "PRO Projects",
         "is_github": false,
-        "version": "v1.0.0",
+        "version": "1.0.0",
         "links": []
     },
     {
