@@ -77,6 +77,7 @@ createApp({
         const donateMethods = ref([]);
 
         // ВЫЧИСЛЯЕМЫЕ СВОЙСТВА
+        const topProducts = computed(() => products.value.filter(p => p.is_top).sort((a, b) => a.name.localeCompare(b.name)));
         const githubProjects = computed(() => products.value.filter(p => p.is_github));
 
         const githubStats = computed(() => {
@@ -135,41 +136,25 @@ createApp({
                     fetch(`projects.json?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => []),
                     fetch(`categories.json?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => [])
                 ]);
-                const localProjects = pRes.filter(p => p.is_active !== false);
+                
+                products.value = pRes.filter(p => p.is_active !== false);
                 categories.value = cRes;
 
-                const ghCacheKey = `gh_repos_${repoOwner}`;
-                const cachedGh = localStorage.getItem(ghCacheKey);
-                const cacheTime = localStorage.getItem(ghCacheKey + '_time');
-
-                let repos = [];
-                if (cachedGh && cacheTime && (Date.now() - cacheTime < 3600000)) {
-                    repos = JSON.parse(cachedGh);
-                } else {
-                    const ghRes = await fetch(`https://api.github.com/users/${repoOwner}/repos?sort=updated&per_page=100`).catch(() => null);
-                    if (ghRes && ghRes.ok) {
-                        const raw = await ghRes.json();
-                        repos = raw.map(r => ({
-                            id: 'gh-' + r.id, name: r.name, description: r.description,
-                            price: 0, images: ['image/logo.png'], category: 'GitHub Проекты',
-                            stars: r.stargazers_count, language: r.language, is_github: true, html_url: r.html_url,
-                            version: ''
-                        }));
-                        localStorage.setItem(ghCacheKey, JSON.stringify(repos));
-                        localStorage.setItem(ghCacheKey + '_time', Date.now());
-                    } else if (cachedGh) { repos = JSON.parse(cachedGh); }
-                }
-
-                const merged = repos.map(gh => {
-                    const local = localProjects.find(p => p.name === gh.name);
-                    return local ? { ...gh, ...local, is_github: true } : gh;
-                });
-                const ghNames = merged.map(g => g.name);
-                const onlyLocal = localProjects.filter(p => !ghNames.includes(p.name));
-                products.value = [...merged, ...onlyLocal];
-
-                products.value.forEach(p => {
-                    if (p.is_github && !p.version) fetchVersionFromTxt(p);
+                // ФОНОВАЯ ЗАГРУЗКА ВЕРСИЙ ДЛЯ ГИТХАБА (ЧТОБЫ БЫЛО ВИДНО В КАРТОЧКАХ)
+                products.value.forEach(async (p) => {
+                    if (p.is_github) {
+                        try {
+                            const v = Date.now();
+                            const branches = ['main', 'master'];
+                            for (let b of branches) {
+                                const vRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${b}/version.txt?v=${v}`);
+                                if (vRes.ok) {
+                                    p.version = (await vRes.text()).trim();
+                                    break;
+                                }
+                            }
+                        } catch (e) {}
+                    }
                 });
 
             } catch (e) { console.error("Load error:", e); }
@@ -179,51 +164,47 @@ createApp({
             }
         };
 
-        const fetchVersionFromTxt = async (p) => {
-            const branches = ['main', 'master'];
-            for (let b of branches) {
-                try {
-                    const res = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${b}/version.txt`);
-                    if (res.ok) {
-                        const ver = (await res.text()).trim();
-                        if (ver) {
-                            p.version = ver;
-                            const ghCacheKey = `gh_repos_${repoOwner}`;
-                            const cached = JSON.parse(localStorage.getItem(ghCacheKey) || '[]');
-                            const target = cached.find(x => x.name === p.name);
-                            if (target) { target.version = ver; localStorage.setItem(ghCacheKey, JSON.stringify(cached)); }
-                            break;
-                        }
-                    }
-                } catch (e) { }
-            }
-        };
-
         const fetchRepoInfo = async (name) => {
             loading.value = true;
             readmeHtml.value = ''; changelogText.value = ''; repoData.value = {}; latestRelease.value = null;
             const p = products.value.find(x => x.name === name);
             if (p) repoData.value = { ...p };
+            
             if (p && p.is_github) {
                 try {
-                    const [relRes, infoRes] = await Promise.all([
-                        fetch(`https://api.github.com/repos/${repoOwner}/${name}/releases/latest`),
-                        fetch(`https://api.github.com/repos/${repoOwner}/${name}`)
-                    ]);
-                    if (infoRes.ok) repoData.value = { ...repoData.value, ...(await infoRes.json()) };
-                    if (relRes.ok) {
-                        const relData = await relRes.json();
-                        latestRelease.value = relData;
-                        if (!repoData.value.version) repoData.value.version = relData.tag_name;
-                    }
+                    const v = Date.now();
                     const branches = ['main', 'master'];
+                    let activeBranch = 'main';
+
+                    // 1. Пытаемся найти активную ветку и README
                     for (let b of branches) {
-                        const rdRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/${b}/README.md`);
-                        if (rdRes.ok) { readmeHtml.value = marked.parse(await rdRes.text()); break; }
+                        const rdRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/${b}/README.md?v=${v}`);
+                        if (rdRes.ok) { 
+                            readmeHtml.value = marked.parse(await rdRes.text()); 
+                            activeBranch = b;
+                            break; 
+                        }
                     }
-                    const chRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/master/changelog.txt`).then(r => r.ok ? r.text() : fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/main/changelog.txt`).then(r2 => r2.ok ? r2.text() : ''));
+                    
+                    // 2. Параллельно загружаем версию и ченджлог из найденной ветки
+                    const [vRes, chRes] = await Promise.all([
+                        fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/${activeBranch}/version.txt?v=${v}`).then(r => r.ok ? r.text() : null),
+                        fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/${activeBranch}/changelog.txt?v=${v}`).then(r => r.ok ? r.text() : null)
+                    ]);
+
+                    if (vRes) repoData.value.version = vRes.trim();
                     if (chRes) changelogText.value = chRes;
-                } catch (e) { console.error(e); }
+                    
+                    // 3. Fallback на API только для релизов, если нет прямой ссылки
+                    if (!p.download_url) {
+                         const relRes = await fetch(`https://api.github.com/repos/${repoOwner}/${name}/releases/latest`);
+                         if (relRes.ok) {
+                             const relData = await relRes.json();
+                             latestRelease.value = relData;
+                             if (!repoData.value.version) repoData.value.version = relData.tag_name;
+                         }
+                    }
+                } catch (e) { console.error("Repo fetch error:", e); }
             }
             loading.value = false;
         };
@@ -305,7 +286,7 @@ createApp({
         watch(selectedCategory, () => { selectedSubcategory.value = 'all'; });
 
         return {
-            repoOwner, repoName, products, categories, githubProjects, repoData, readmeHtml, changelogText, latestRelease,
+            repoOwner, repoName, products, categories, githubProjects, topProducts, repoData, readmeHtml, changelogText, latestRelease,
             loading, searchQuery, selectedCategory, selectedSubcategory, currentSubcategories, themeMode, donateMethods, socialLinks, myContacts, modalTitles, modalInfo,
             filteredProducts, displayGroups, showTopButton, publicStats, githubStats, toasts, projectImages, previewIndex, openPreview, closePreview, nextImage, prevImage,
             goToProject: (n) => {
