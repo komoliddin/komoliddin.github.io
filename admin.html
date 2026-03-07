@@ -411,8 +411,7 @@
                                         v-model="element.name" class="form-control"></div>
                                 <div class="col-md-3"><label class="tiny fw-bold">Описание</label><input
                                         v-model="element.desc" class="form-control"></div>
-                                <div class="col-md-3"><label class="tiny fw-bold">Реквизиты</label><input
-                                        v-model="element.url" class="form-control"></div>
+                                <div class="col-md-3"><label class="tiny fw-bold">Реквизиты</label><input v-model="element._val" class="form-control"></div>
                                 <div class="col-md-1"><label class="tiny fw-bold">Icon</label><input
                                         v-model="element.icon" class="form-control"></div>
                                 <div class="col-md-1"><label class="tiny fw-bold">Color</label><input
@@ -520,8 +519,20 @@
                     document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme_mode', mode); themeMode.value = mode;
                 };
 
-                const addKeys = (arr) => { if (!arr) return; arr.forEach(i => { if (!i.uid) i.uid = Math.random().toString(36).substr(2, 9); }); };
-                const removeKeys = (arr) => { if (!arr) return []; return arr.map(i => { const { uid, ...rest } = i; return rest; }); };
+                const addKeys = (arr) => { if (!arr) return; arr.forEach(i => { if (!i.uid) i.uid = Math.random().toString(36).substr(2, 9); i._val = i.url || i.id || ''; }); };
+                const removeKeys = (arr) => { 
+                    if (!arr) return []; 
+                    return arr.map(i => { 
+                        const { uid, _val, ...rest } = i; 
+                        const item = { ...rest };
+                        delete item.url; delete item.id; // Очищаем старые
+                        if (_val) {
+                            if (_val.startsWith('http')) item.url = _val;
+                            else item.id = _val;
+                        }
+                        return item;
+                    }); 
+                };
 
                 const loadData = async () => {
                     if (sessionStorage.getItem('admin_access') !== 'granted') { window.location.href = 'login.html'; return; }
