@@ -230,9 +230,31 @@ createApp({
             themeMode.value = mode;
         };
 
+        const openModalById = (type) => {
+            const id = type === 'donate' ? 'donateModal' : 
+                       type === 'socials' ? 'socialsModal' : 
+                       type === 'contacts' ? 'contactsModal' : null;
+            if (id) {
+                const el = document.getElementById(id);
+                if (el && typeof bootstrap !== 'undefined') {
+                    const m = bootstrap.Modal.getOrCreateInstance(el);
+                    m.show();
+                } else {
+                    setTimeout(() => openModalById(type), 300); // Пробуем еще раз через 300мс
+                }
+            }
+        };
+
         onMounted(() => {
             applyTheme(themeMode.value);
-            loadData().then(() => { if (repoName.value) fetchRepoInfo(repoName.value); });
+            loadData().then(() => { 
+                if (repoName.value) fetchRepoInfo(repoName.value);
+                
+                // Проверка модалки при первой загрузке ПОСЛЕ загрузки данных
+                const startModal = new URLSearchParams(window.location.search).get('modal');
+                if (startModal) openModalById(startModal);
+            });
+            
             window.addEventListener('scroll', () => showTopButton.value = window.scrollY > 300);
             window.addEventListener('popstate', () => {
                 const params = new URLSearchParams(window.location.search);
@@ -240,28 +262,10 @@ createApp({
                 repoName.value = urlRepo;
                 if (urlRepo) fetchRepoInfo(urlRepo);
                 
-                // Проверка модалок при навигации назад/вперед
                 const mType = params.get('modal');
                 if (mType) openModalById(mType);
             });
-
-            // Открытие модалки при первой загрузке
-            const startModal = new URLSearchParams(window.location.search).get('modal');
-            if (startModal) nextTick(() => openModalById(startModal));
         });
-
-        const openModalById = (type) => {
-            const id = type === 'donate' ? 'donateModal' : 
-                       type === 'socials' ? 'socialsModal' : 
-                       type === 'contacts' ? 'contactsModal' : null;
-            if (id) {
-                const el = document.getElementById(id);
-                if (el) {
-                    const m = bootstrap.Modal.getOrCreateInstance(el);
-                    m.show();
-                }
-            }
-        };
 
         watch(selectedCategory, () => { selectedSubcategory.value = 'all'; });
 
