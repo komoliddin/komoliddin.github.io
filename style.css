@@ -367,6 +367,22 @@ body.shop-page {
     padding: 20px;
     background: rgba(0, 0, 0, 0.1);
     border-radius: 15px;
+    overflow-x: auto; /* Позволяет прокручивать очень широкие графики на мобильных */
+}
+
+.readme-container img {
+    max-width: 100%; /* Графики будут сжиматься под ширину экрана */
+    height: auto;
+    border-radius: 12px;
+}
+
+/* Настройка скроллбара для README, если контент все же не влезает */
+.readme-container::-webkit-scrollbar {
+    height: 4px;
+}
+.readme-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
 }
 
 [data-theme="dark"] .readme-container {
@@ -568,6 +584,12 @@ button,
 .donate-item,
 .tg-fab {
     cursor: url('cursor/aero_link.cur'), pointer !important;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+    cursor: url('cursor/IBeam.cur'), text !important;
 }
 
 /* АДМИНКА (ТЕМЫ) */

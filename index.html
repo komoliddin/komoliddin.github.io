@@ -129,10 +129,6 @@
                                 class="col-12 col-sm-6 col-md-4 col-xl-3">
                                 <div class="card product-card shadow-sm border-0 h-100" @click="goToProject(item.name)">
                                     <div class="product-img-wrapper">
-                                        <div v-if="item.is_recommended" class="sale-badge"
-                                            style="background: #ffc107; color: #000;">HOT</div>
-                                        <div v-if="item.old_price > item.price" class="sale-badge" style="top: 40px;">
-                                            SALE</div>
                                         <img :src="item.images[0] || 'image/logo.png'" class="product-img"
                                             loading="lazy">
                                         <div v-if="item.is_github" class="sale-badge"
@@ -143,15 +139,9 @@
                                         <div v-if="item.version" class="product-version">
                                             <span>Версия: <b>{{ item.version }}</b></span>
                                         </div>
-                                        <div class="mt-auto">
-                                            <div v-if="item.old_price > item.price"
-                                                class="small text-muted text-decoration-line-through"
-                                                style="font-size: 0.75rem;">
-                                                {{ item.old_price.toLocaleString() }} сум
-                                            </div>
+                                        <div v-if="item.is_github" class="mt-auto">
                                             <div class="price text-primary fw-bold" style="font-size: 0.9rem;">
-                                                {{ item.price > 0 ? (item.price.toLocaleString() + ' сум') : (item.stars
-                                                + ' ⭐') }}
+                                                {{ item.stars }} ⭐
                                             </div>
                                         </div>
                                     </div>
@@ -200,17 +190,29 @@
                                 </div>
                                 <div class="badge bg-primary rounded-pill px-3 mb-3">{{ repoData.language || 'Software'
                                     }}</div>
-                                <div v-if="latestRelease"
+                                <div v-if="latestRelease || (repoData.links && repoData.links.length > 0) || repoData.download_url"
                                     class="p-3 bg-primary bg-opacity-10 rounded-4 mb-3 text-white text-start shadow-sm border border-primary border-opacity-20">
-                                    <div class="fw-bold small mb-2">Версия: {{ latestRelease.tag_name }}</div>
-                                    <a v-if="latestRelease.assets?.length"
+                                    <div v-if="latestRelease" class="fw-bold small mb-2 text-primary">Версия с GitHub: {{ latestRelease.tag_name }}</div>
+                                    
+                                    <a v-if="latestRelease?.assets?.length"
                                         :href="latestRelease.assets[0].browser_download_url"
-                                        class="btn btn-primary w-100 rounded-pill fw-bold">СКАЧАТЬ</a>
-                                </div>
-                                <div v-if="repoData.price > 0" class="mb-3">
-                                    <div class="text-white-50 small">Стоимость:</div>
-                                    <div class="fs-3 fw-bold text-success">{{ repoData.price.toLocaleString() }} сум
-                                    </div>
+                                        class="btn btn-primary w-100 rounded-pill fw-bold mb-2">СКАЧАТЬ (GitHub)</a>
+                                    
+                                    <a v-else-if="repoData.download_url && !repoData.is_github"
+                                        :href="repoData.download_url" target="_blank"
+                                        class="btn btn-primary w-100 rounded-pill fw-bold mb-2">
+                                        {{ repoData.download_info || 'СКАЧАТЬ' }}
+                                    </a>
+                                    
+                                    <template v-if="repoData.links && repoData.links.length > 0">
+                                        <div class="small fw-bold mb-2 mt-2 opacity-75">Ссылки проекта:</div>
+                                        <div v-for="(lnk, lIdx) in repoData.links" :key="lIdx" class="mb-2">
+                                            <a :href="lnk.url" target="_blank" class="btn btn-outline-primary btn-sm w-100 rounded-pill d-flex justify-content-between align-items-center px-3">
+                                                <span>{{ lnk.info || 'Ссылка' }}</span>
+                                                <i class="fas fa-external-link-alt small opacity-50"></i>
+                                            </a>
+                                        </div>
+                                    </template>
                                 </div>
                                 <a :href="repoData.html_url" target="_blank"
                                     class="btn btn-outline-light w-100 rounded-pill mt-2">GitHub / Источник</a>
@@ -218,8 +220,7 @@
                         </div>
                         <div class="col-md-7 text-white">
                             <h5 class="fw-bold text-primary mb-3">README / Описание</h5>
-                            <div class="readme-container p-3 rounded-4 mb-4"
-                                v-html="readmeHtml || repoData.description"></div>
+                            <div class="readme-container p-3 rounded-4 mb-4 overflow-hidden" v-html="readmeHtml || repoData.description"></div>
 
                             <details v-if="changelogText" class="mt-4">
                                 <summary

@@ -17,7 +17,8 @@
         "stars": 0,
         "language": null,
         "upc": "2",
-        "version": ""
+        "version": "",
+        "links": []
     },
     {
         "id": 1147369213,
@@ -37,7 +38,8 @@
         "is_github": true,
         "stars": 0,
         "language": null,
-        "upc": "1"
+        "upc": "1",
+        "links": []
     },
     {
         "id": 1,
@@ -61,7 +63,15 @@
         "use_before": "01.01.2030",
         "shipping_weight_kg": 0.1,
         "manufacturer": "PRO Projects",
-        "version": "v1.0.0"
+        "version": "v1.0.0",
+        "download_url": "https://github.com/komoliddin/ReLoader/releases/download/v2.6.0.0/ReLoader.exe",
+        "links": [
+            {
+                "url": "https://github.com/komoliddin/ReLoader/releases/download/v2.6.0.0/ReLoader.exe",
+                "info": "test22"
+            }
+        ],
+        "download_info": "test11"
     },
     {
         "id": 2,
@@ -85,6 +95,7 @@
         "shipping_weight_kg": 0.05,
         "manufacturer": "PRO Projects",
         "is_github": false,
-        "version": "v1.0.0"
+        "version": "v1.0.0",
+        "links": []
     }
 ]

@@ -85,13 +85,61 @@
             border-left: 5px solid #24292e !important;
         }
 
-        .subcategory-box {
-            height: 120px;
-            overflow-y: auto;
+        .subcategory-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .subcategory-dropdown-toggle {
+            width: 100%;
+            text-align: left;
+            background: white;
             border: 1px solid #e0e0e0;
             border-radius: 12px;
-            padding: 8px;
-            background: #fafafa;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subcategory-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            margin-top: 5px;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            display: none;
+        }
+
+        .subcategory-dropdown.open .subcategory-dropdown-menu {
+            display: block;
+        }
+
+        [data-theme="dark"] .subcategory-dropdown-toggle,
+        [data-theme="dark"] .subcategory-dropdown-menu {
+            background: #1a222d;
+            border-color: #2a3644;
+            color: white;
+        }
+
+        .subcategory-item-check {
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .subcategory-item-check:hover {
+            background: rgba(0, 136, 204, 0.1);
         }
 
         .drag-handle {
@@ -109,6 +157,44 @@
             font-size: 0.7rem;
             color: #888;
             text-transform: uppercase;
+        }
+
+        /* КУРСОРЫ */
+        html,
+        body {
+            cursor: url('cursor/Blue_arrow.cur'), auto !important;
+        }
+
+        a,
+        button,
+        .nav-link,
+        .theme-dot-btn,
+        .subcategory-dropdown-toggle,
+        .subcategory-item-check,
+        .drag-handle,
+        .form-check-input,
+        .btn-link {
+            cursor: url('cursor/aero_link.cur'), pointer !important;
+        }
+
+        input,
+        textarea,
+        select,
+        .form-control {
+            cursor: url('cursor/IBeam.cur'), text !important;
+        }
+
+        input:disabled,
+        textarea:disabled,
+        select:disabled,
+        .form-control:disabled {
+            cursor: url('cursor/no.cur'), not-allowed !important;
+        }
+
+        select.form-control,
+        .form-select,
+        .form-check-input {
+            cursor: url('cursor/aero_link.cur'), pointer !important;
         }
     </style>
 </head>
@@ -155,8 +241,10 @@
                 <div class="admin-card bg-light border-0 shadow-none">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold m-0 text-dark"><i class="fab fa-github me-2"></i>Ваши репозитории GitHub</h5>
-                        <button @click="loadGitHub" class="btn btn-sm btn-outline-dark rounded-pill"><i
-                                class="fas fa-sync me-1"></i> Обновить</button>
+                        <div class="d-flex gap-2">
+                            <button @click="products.unshift({id:Date.now(), name:'Новый проект', category:'Прочее', price:0, images:['image/logo.png'], description:'', subcategories:[], is_active:true, is_github:false})" class="btn btn-success btn-sm rounded-pill"><i class="fas fa-plus me-1"></i> Новый проект</button>
+                            <button @click="loadGitHub" class="btn btn-sm btn-outline-dark rounded-pill"><i class="fas fa-sync me-1"></i> Обновить</button>
+                        </div>
                     </div>
                     <div v-if="ghError" class="alert alert-warning py-2 small">{{ ghError }}</div>
                     <div class="row g-2">
@@ -181,55 +269,75 @@
                             class="btn btn-danger btn-sm rounded-pill px-3">Удалить</button>
                     </div>
                     <div class="row g-3">
-                        <div class="col-md-3"><label class="small fw-bold">Название</label><input v-model="p.name"
-                                class="form-control"></div>
-                        <div class="col-md-2"><label class="small fw-bold">Версия</label><input v-model="p.version"
-                                class="form-control" placeholder="v1.0.0"></div>
-                        <div class="col-md-3"><label class="small fw-bold">Категория</label><select v-model="p.category"
-                                class="form-control">
-                                <option v-for="c in categories" :value="c.name">{{ c.name }}</option>
-                            </select></div>
-                        <div class="col-md-2"><label class="small fw-bold">Цена</label><input type="number"
-                                v-model="p.price" class="form-control"></div>
-                        <div class="col-md-2"><label class="small fw-bold text-danger">SALE Цена</label><input
-                                type="number" v-model="p.old_price" class="form-control"></div>
+                        <!-- Ряд 1: Название, Версия, Изображения, Опции -->
+                        <div class="col-md-3"><label class="small fw-bold">Название</label><input v-model="p.name" class="form-control"></div>
+                        <div class="col-md-2"><label class="small fw-bold">Версия</label><input v-model="p.version" class="form-control" placeholder="v1.0.0"></div>
                         <div class="col-md-4">
                             <label class="small fw-bold text-primary">Изображения</label>
                             <div class="input-group">
-                                <input :value="p.images?.join(', ')"
-                                    @input="p.images = $event.target.value.split(',').map(i => i.trim())"
-                                    class="form-control" placeholder="image/logo.png">
-                                <button class="btn btn-outline-primary" @click="triggerUpload(p)"
-                                    :disabled="uploadStatus[p.id]"><i v-if="uploadStatus[p.id]"
-                                        class="spinner-border spinner-border-sm me-1"></i><i v-else
-                                        class="fas fa-upload me-1"></i></button>
+                                <input :value="p.images?.join(', ')" @input="p.images = $event.target.value.split(',').map(i => i.trim())" class="form-control" placeholder="image/logo.png">
+                                <button class="btn btn-outline-primary" @click="triggerUpload(p)" :disabled="uploadStatus[p.id]"><i v-if="uploadStatus[p.id]" class="spinner-border spinner-border-sm me-1"></i><i v-else class="fas fa-upload me-1"></i></button>
                             </div>
-                            <input type="file" :id="'file-'+p.id" class="d-none" accept="image/*"
-                                @change="handleFileUpload($event, p)">
+                            <input type="file" :id="'file-'+p.id" class="d-none" accept="image/*" @change="handleFileUpload($event, p)">
                         </div>
-                        <div class="col-md-4"><label class="small fw-bold">Подкатегории</label>
-                            <div class="subcategory-box">
-                                <div v-for="sub in getSubcategories(p.category)" :key="sub" class="form-check"><input
-                                        class="form-check-input" type="checkbox" :value="sub" v-model="p.subcategories"
-                                        :id="'sub-'+p.id+'-'+sub"><label class="form-check-label small"
-                                        :for="'sub-'+p.id+'-'+sub">{{ sub }}</label></div>
+                        <div class="col-md-3">
+                            <label class="small fw-bold">Опции</label>
+                            <div class="d-flex gap-3 mt-2">
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" v-model="p.is_github" :id="'gh-cb-'+p.id"><label class="form-check-label fw-bold" :for="'gh-cb-'+p.id">🔗 GH</label></div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" v-model="p.is_active" :id="'act-'+p.id"><label class="form-check-label small" :for="'act-'+p.id">Активен</label></div>
                             </div>
                         </div>
-                        <div class="col-md-4"><label class="small fw-bold">Опции</label>
-                            <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox"
-                                    v-model="p.is_github" :id="'gh-cb-'+p.id"><label class="form-check-label fw-bold"
-                                    :for="'gh-cb-'+p.id">🔗 GitHub</label></div>
-                            <div class="form-check form-switch"><input class="form-check-input" type="checkbox"
-                                    v-model="p.is_recommended" :id="'hot-'+p.id"><label
-                                    class="form-check-label text-warning fw-bold" :for="'hot-'+p.id">🔥 HOT</label>
+
+                        <!-- Ряд 2: Категория, Подкатегории -->
+                        <div class="col-md-4"><label class="small fw-bold">Категория</label><select v-model="p.category" class="form-control"><option v-for="c in categories" :value="c.name">{{ c.name }}</option></select></div>
+                        <div class="col-md-8"><label class="small fw-bold">Подкатегории</label>
+                            <div class="subcategory-dropdown" :class="{ open: openSubDropdown === p.id }">
+                                <div class="subcategory-dropdown-toggle" @click="openSubDropdown = (openSubDropdown === p.id ? null : p.id)">
+                                    <span class="small text-truncate">
+                                        {{ p.subcategories && p.subcategories.length ? p.subcategories.join(', ') : 'Выберите подкатегории...' }}
+                                    </span>
+                                    <i class="fas fa-chevron-down small opacity-50"></i>
+                                </div>
+                                <div class="subcategory-dropdown-menu shadow">
+                                    <div v-for="sub in getSubcategories(p.category)" :key="sub" class="subcategory-item-check">
+                                        <div class="form-check m-0">
+                                            <input class="form-check-input" type="checkbox" :value="sub" v-model="p.subcategories" :id="'sub-'+p.id+'-'+sub">
+                                            <label class="form-check-label small w-100" :for="'sub-'+p.id+'-'+sub">{{ sub }}</label>
+                                        </div>
+                                    </div>
+                                    <div v-if="getSubcategories(p.category).length === 0" class="p-2 text-center small opacity-50">Нет подкатегорий</div>
+                                </div>
                             </div>
-                            <div class="form-check form-switch"><input class="form-check-input" type="checkbox"
-                                    v-model="p.is_active" :id="'act-'+p.id"><label class="form-check-label small"
-                                    :for="'act-'+p.id">Активен</label></div>
                         </div>
-                        <div class="col-md-12"><label class="small fw-bold">Описание (только для
-                                локальных)</label><textarea v-model="p.description" class="form-control" rows="2"
-                                :disabled="p.is_github"></textarea></div>
+
+                        <!-- Ряд 3: Ссылки -->
+                        <div class="col-md-6"><label class="small fw-bold text-primary">GitHub Repo / Main URL</label><input v-model="p.download_url" class="form-control" placeholder="my-repo или https://..."></div>
+                        <div class="col-md-6"><label class="small fw-bold text-primary">Текст основной кнопки</label><input v-model="p.download_info" class="form-control" placeholder="Напр: Скачать с сайта"></div>
+                        
+                        <!-- Ряд 4: Доп. ссылки (Выровненная сетка) -->
+                        <div class="col-md-12 mt-2">
+                            <label class="small fw-bold text-success d-block mb-2">Дополнительные ссылки (Скачивание, Инструкции и т.д.)</label>
+                            <div v-for="(lnk, lIdx) in (p.links || (p.links = []))" :key="lIdx" class="row g-3 mb-2 align-items-center">
+                                <div class="col-md-6">
+                                    <input v-model="lnk.url" class="form-control" placeholder="URL: https://...">
+                                </div>
+                                <div class="col-md-5">
+                                    <input v-model="lnk.info" class="form-control" placeholder="Описание: Напр. Зеркало или Инструкция">
+                                </div>
+                                <div class="col-md-1 text-end">
+                                    <button @click="p.links.splice(lIdx, 1)" class="btn btn-link text-danger p-0">
+                                        <i class="fas fa-trash-alt fa-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button @click="p.links.push({url:'', info:''})" class="btn btn-link text-success p-0 fw-bold small text-decoration-none">
+                                <i class="fas fa-plus-circle me-1"></i> Добавить еще одну ссылку
+                            </button>
+                        </div>
+
+                        <!-- Ряд 5: Описание -->
+                        <div class="col-md-12"><label class="small fw-bold">Описание (только для локальных)</label><textarea v-model="p.description" class="form-control" rows="2" :disabled="p.is_github"></textarea></div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -374,6 +482,7 @@
                 const tab = ref(sessionStorage.getItem('admin_active_tab') || 'projects');
                 const products = ref([]); const categories = ref([]); const ghRepos = ref([]);
                 const ghError = ref(''); const uploadStatus = ref({});
+                const openSubDropdown = ref(null);
                 const themeMode = ref(localStorage.getItem('theme_mode') || 'auto');
                 const config = ref({ modalTitles: { donate: '', socials: '' }, modalInfo: { donate: '', socials: '' }, myContacts: {}, socialLinks: [], donateMethods: [], publicStats: {} });
                 const newP = ref({ name: '', category: '', price: 0, subcategories: [], images: ['image/logo.png'], is_active: true, is_github: false });
@@ -451,7 +560,7 @@
                 };
 
                 onMounted(() => { applyTheme(themeMode.value); loadData(); });
-                return { tab, products, categories, config, ghRepos, ghError, uploadStatus, newP, isLinked, linkRepo, addProject, exportAll, triggerUpload, handleFileUpload, getSubcategories, updateSubcategories, themeMode, applyTheme, loadGitHub };
+                return { tab, products, categories, config, ghRepos, ghError, uploadStatus, newP, isLinked, linkRepo, addProject, exportAll, triggerUpload, handleFileUpload, getSubcategories, updateSubcategories, themeMode, applyTheme, loadGitHub, openSubDropdown };
             }
         }).mount('#app');
     </script>
