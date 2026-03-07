@@ -21,6 +21,52 @@ createApp({
         
         const toasts = ref([]);
         const previewIndex = ref(0);
+        const topCarouselIndex = ref(0);
+        const isMobile = ref(window.innerWidth <= 768);
+        const isTransitioning = ref(true);
+
+        window.addEventListener('resize', () => { isMobile.value = window.innerWidth <= 768; });
+
+        const topProductsLoop = computed(() => {
+            if (topProducts.value.length === 0) return [];
+            // Клонируем элементы для бесконечного цикла (нужно минимум 2 допа для десктопа)
+            return [...topProducts.value, ...topProducts.value.slice(0, 2)];
+        });
+
+        const sliderTransform = computed(() => {
+            const step = isMobile.value ? 100 : 50;
+            return `translateX(-${topCarouselIndex.value * step}%)`;
+        });
+
+        const nextTop = () => {
+            if (topProducts.value.length <= 1) return;
+            isTransitioning.value = true;
+            topCarouselIndex.value++;
+
+            // Если дошли до конца основного списка (начинаем показывать клонов)
+            if (topCarouselIndex.value >= topProducts.value.length) {
+                setTimeout(() => {
+                    isTransitioning.value = false; // Выключаем анимацию
+                    topCarouselIndex.value = 0;    // Прыгаем в начало
+                }, 600); // Время должно совпадать с CSS transition
+            }
+        };
+
+        const prevTop = () => {
+            if (topProducts.value.length <= 1) return;
+            if (topCarouselIndex.value === 0) {
+                isTransitioning.value = false;
+                topCarouselIndex.value = topProducts.value.length;
+                setTimeout(() => {
+                    isTransitioning.value = true;
+                    topCarouselIndex.value--;
+                }, 10);
+            } else {
+                isTransitioning.value = true;
+                topCarouselIndex.value--;
+            }
+        };
+
         const publicStats = ref({ orders_total: 0, users_total: 0, orders_delivered: 0, reviews_total: 0 });
 
         const projectImages = computed(() => {
@@ -78,6 +124,15 @@ createApp({
 
         // ВЫЧИСЛЯЕМЫЕ СВОЙСТВА
         const topProducts = computed(() => products.value.filter(p => p.is_top).sort((a, b) => a.name.localeCompare(b.name)));
+        
+        const topProductGroups = computed(() => {
+            const groups = [];
+            for (let i = 0; i < topProducts.value.length; i += 2) {
+                groups.push(topProducts.value.slice(i, i + 2));
+            }
+            return groups;
+        });
+
         const githubProjects = computed(() => products.value.filter(p => p.is_github));
 
         const githubStats = computed(() => {
@@ -140,17 +195,46 @@ createApp({
                 products.value = pRes.filter(p => p.is_active !== false);
                 categories.value = cRes;
 
-                // ФОНОВАЯ ЗАГРУЗКА ВЕРСИЙ ДЛЯ ГИТХАБА (ЧТОБЫ БЫЛО ВИДНО В КАРТОЧКАХ)
+                // ФОНОВАЯ ЗАГРУЗКА ВЕРСИЙ И README ДЛЯ ГИТХАБА (ЧТОБЫ БЫЛО ВИДНО В КАРТОЧКАХ И КАРУСЕЛИ)
                 products.value.forEach(async (p) => {
                     if (p.is_github) {
                         try {
                             const v = Date.now();
                             const branches = ['main', 'master'];
+                            let activeBranch = null;
+
                             for (let b of branches) {
                                 const vRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${b}/version.txt?v=${v}`);
                                 if (vRes.ok) {
                                     p.version = (await vRes.text()).trim();
+                                    activeBranch = b;
                                     break;
+                                }
+                            }
+
+                            // Если это ТОП проект, подгружаем кусок README для карусели
+                            if (p.is_top) {
+                                if (!activeBranch) {
+                                    for (let b of branches) {
+                                        const check = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${b}/README.md?v=${v}`, { method: 'HEAD' });
+                                        if (check.ok) { activeBranch = b; break; }
+                                    }
+                                }
+                                if (activeBranch) {
+                                    const rRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${activeBranch}/README.md?v=${v}`);
+                                    if (rRes.ok) {
+                                        const text = await rRes.text();
+                                        // Очистка Markdown: убираем заголовки, картинки, ссылки, жирный текст и коды
+                                        p.description = text
+                                            .replace(/#+\s+.*/g, '') // Заголовки
+                                            .replace(/!\[.*?\]\(.*?\)/g, '') // Картинки
+                                            .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Ссылки (оставляем только текст)
+                                            .replace(/[`*_~]/g, '') // Спецсимволы разметки
+                                            .replace(/<[^>]*>/g, '') // HTML теги
+                                            .replace(/\s+/g, ' ') // Лишние пробелы
+                                            .trim()
+                                            .substring(0, 180) + '...';
+                                    }
                                 }
                             }
                         } catch (e) {}
@@ -271,6 +355,9 @@ createApp({
                 if (startModal) openModalById(startModal);
             });
 
+            // Автопрокрутка ТОП-проектов
+            setInterval(nextTop, 5000);
+
             window.addEventListener('scroll', () => showTopButton.value = window.scrollY > 300);
             window.addEventListener('popstate', () => {
                 const params = new URLSearchParams(window.location.search);
@@ -286,7 +373,7 @@ createApp({
         watch(selectedCategory, () => { selectedSubcategory.value = 'all'; });
 
         return {
-            repoOwner, repoName, products, categories, githubProjects, topProducts, repoData, readmeHtml, changelogText, latestRelease,
+            repoOwner, repoName, products, categories, githubProjects, topProducts, topProductsLoop, topCarouselIndex, sliderTransform, isTransitioning, nextTop, prevTop, repoData, readmeHtml, changelogText, latestRelease,
             loading, searchQuery, selectedCategory, selectedSubcategory, currentSubcategories, themeMode, donateMethods, socialLinks, myContacts, modalTitles, modalInfo,
             filteredProducts, displayGroups, showTopButton, publicStats, githubStats, toasts, projectImages, previewIndex, openPreview, closePreview, nextImage, prevImage,
             goToProject: (n) => {

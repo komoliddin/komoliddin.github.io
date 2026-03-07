@@ -112,30 +112,34 @@
                 </aside>
 
                 <div class="shop-main">
-                    <!-- TOP PROJECTS CAROUSEL -->
-                    <div v-if="!repoName && topProducts.length > 0 && selectedCategory === 'all' && !searchQuery" class="mb-5">
-                        <div id="topProjectsCarousel" class="carousel slide carousel-fade shadow-lg" data-bs-ride="carousel" style="border-radius: 30px; overflow: hidden;">
-                            <div class="carousel-indicators">
-                                <button v-for="(p, i) in topProducts" :key="'ind-'+p.id" type="button" data-bs-target="#topProjectsCarousel" :data-bs-slide-to="i" :class="{active: i === 0}"></button>
-                            </div>
-                            <div class="carousel-inner">
-                                <div v-for="(p, i) in topProducts" :key="'slide-'+p.id" class="carousel-item" :class="{active: i === 0}" data-bs-interval="5000" @click="goToProject(p.name)" style="cursor: pointer;">
+                    <!-- TOP PROJECTS SLIDER (CUSTOM ONE-BY-ONE) -->
+                    <div v-if="!repoName && topProducts.length > 0 && selectedCategory === 'all' && !searchQuery" class="mb-5 position-relative">
+                        <div class="custom-slider-container shadow-lg" style="border-radius: 30px; overflow: hidden; height: 450px; background: #000;">
+                            <div class="custom-slider-track" :class="{ 'no-transition': !isTransitioning }" :style="{ transform: sliderTransform }">
+                                <div v-for="(p, i) in topProductsLoop" :key="'slide-'+i" class="custom-slider-item" @click="goToProject(p.name)">
                                     <div class="carousel-img-bg" :style="{ backgroundImage: 'url(' + (p.images[1] || p.images[0]) + ')' }"></div>
                                     <div class="carousel-caption">
                                         <div class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold"><i class="fas fa-fire me-1"></i> ТОР ПРОЕКТ</div>
-                                        <img :src="p.images[0]" class="img-fluid mb-3 d-block" style="max-height: 80px; width: auto; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));">
-                                        <h2 class="display-6 fw-bold text-white mb-2">{{ p.name }}</h2>
-                                        <p class="lead opacity-75 mb-4 d-none d-md-block">{{ p.description }}</p>
-                                        <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold">Подробнее</button>
+                                        <img :src="p.images[0]" class="img-fluid mb-3 d-block" style="max-height: 50px; width: auto; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));">
+                                        <h5 class="fw-bold text-white mb-2">{{ p.name }}</h5>
+                                        <p class="small opacity-75 mb-4 d-none d-md-block text-truncate-2">{{ p.description }}</p>
+                                        <button class="btn btn-primary btn-sm rounded-pill px-4 py-2 fw-bold">Подробнее</button>
                                     </div>
                                 </div>
                             </div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#topProjectsCarousel" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon"></span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#topProjectsCarousel" data-bs-slide="next">
-                                <span class="carousel-control-next-icon"></span>
-                            </button>
+                        </div>
+                        
+                        <!-- CONTROLS -->
+                        <button class="carousel-control-prev" type="button" @click="prevTop" style="z-index: 20;">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" @click="nextTop" style="z-index: 20;">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+
+                        <!-- INDICATORS -->
+                        <div class="carousel-indicators" style="z-index: 20;">
+                            <button v-for="(p, i) in topProducts" :key="'ind-'+p.id" type="button" @click="topCarouselIndex = i" :class="{active: topCarouselIndex === i}"></button>
                         </div>
                     </div>
 
