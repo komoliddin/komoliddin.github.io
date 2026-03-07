@@ -326,6 +326,51 @@ body.shop-page {
     line-height: 1.4;
 }
 
+/* --- КАСТОМНЫЙ СКРОЛЛБАР --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0077b3;
+}
+
+/* --- КНОПКА КОПИРОВАНИЯ КОДА --- */
+.code-copy-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 2px 8px;
+    font-size: 10px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.3s;
+    z-index: 10;
+}
+
+pre:hover .code-copy-btn {
+    opacity: 1;
+}
+
+.code-copy-btn:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
 /* --- КАРТОЧКИ + CSS АНИМАЦИЯ --- */
 .product-card {
     border: 1px solid var(--glass-border) !important;

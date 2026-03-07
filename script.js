@@ -394,6 +394,45 @@ createApp({
 
         watch(selectedCategory, () => { selectedSubcategory.value = 'all'; });
 
+        // УЛУЧШЕНИЕ: Кнопки копирования для блоков кода
+        watch(readmeHtml, () => {
+            nextTick(() => {
+                const container = document.querySelector('.readme-container');
+                if (!container) return;
+                
+                container.querySelectorAll('pre').forEach(pre => {
+                    if (pre.querySelector('.code-copy-btn')) return; // Уже есть
+                    
+                    pre.style.position = 'relative';
+                    const btn = document.createElement('button');
+                    btn.className = 'code-copy-btn';
+                    btn.innerText = 'Copy';
+                    
+                    btn.onclick = () => {
+                        const code = pre.querySelector('code') ? pre.querySelector('code').innerText : pre.innerText;
+                        navigator.clipboard.writeText(code).then(() => {
+                            btn.innerText = 'Copied!';
+                            setTimeout(() => btn.innerText = 'Copy', 2000);
+                        });
+                    };
+                    
+                    pre.appendChild(btn);
+                });
+            });
+        });
+
+        const updateMetaTags = (title, desc, img) => {
+            document.title = title || 'PRO Projects — Portfolio';
+            const setMeta = (query, val) => {
+                const el = document.querySelector(query);
+                if (el) el.setAttribute('content', val);
+            };
+            setMeta('meta[name="description"]', desc || 'Витрина моих лучших программных продуктов.');
+            setMeta('meta[property="og:title"]', title || 'PRO Projects');
+            setMeta('meta[property="og:description"]', desc || 'Витрина программных продуктов.');
+            setMeta('meta[property="og:image"]', img || 'image/logo.png');
+        };
+
         return {
             repoOwner, repoName, products, categories, githubProjects, topProducts, topProductsLoop, topCarouselIndex, sliderTransform, isTransitioning, nextTop, prevTop, repoData, readmeHtml, changelogText, latestRelease,
             loading, searchQuery, selectedCategory, selectedSubcategory, currentSubcategories, themeMode, donateMethods, socialLinks, myContacts, modalTitles, modalInfo,
@@ -401,14 +440,15 @@ createApp({
             goToProject: (n) => {
                 const u = new URL(window.location); u.searchParams.set('repo', n);
                 window.history.pushState({}, '', u); repoName.value = n; fetchRepoInfo(n); window.scrollTo(0, 0);
-                document.title = `${n} — PRO Projects`;
+                const p = products.value.find(x => x.name === n);
+                if (p) updateMetaTags(`${n} — PRO Projects`, p.description, p.images[0]);
             },
             goHome: () => {
                 const u = new URL(window.location); u.searchParams.delete('repo');
                 window.history.pushState({}, '', u);
                 repoName.value = null; searchQuery.value = ''; selectedCategory.value = 'all'; selectedSubcategory.value = 'all';
                 nextTick(() => { if (typeof AOS !== 'undefined') AOS.refreshHard(); });
-                document.title = 'PRO Projects — Portfolio';
+                updateMetaTags();
             },
             applyTheme,
             startCarousel,
