@@ -1,4 +1,4 @@
-# PRO PROJECTS — Professional Portfolio & CMS (Stable v3.0)
+# PRO PROJECTS — Professional Portfolio & CMS (Stable v3.1)
 
 Современная витрина IT-проектов с глубокой интеграцией GitHub, продвинутой админ-панелью и дизайном в стиле **Glassmorphism**.
 

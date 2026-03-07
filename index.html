@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRO Projects — Portfolio</title>
-    
+
     <!-- SEO & Social Meta Tags -->
     <meta name="description" content="PRO PROJECTS — Витрина моих лучших программных продуктов и инструментов.">
     <meta property="og:title" content="PRO PROJECTS — Portfolio">
@@ -27,6 +28,7 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
+
 <body class="shop-page">
     <div id="app" v-cloak>
         <div class="toast-container">
@@ -47,13 +49,17 @@
                     <a href="login.html" class="btn btn-outline-light border-0" title="Админка">
                         <i class="fas fa-user-shield fa-lg"></i>
                     </a>
-                    <input type="text" v-model="searchQuery" class="form-control flex-grow-1" placeholder="Поиск..." @input="repoName = null;">
+                    <input type="text" v-model="searchQuery" class="form-control flex-grow-1" placeholder="Поиск..."
+                        @input="repoName = null;">
                 </div>
                 <div class="mt-2 d-flex justify-content-end">
                     <div class="theme-toggle shadow-sm">
-                        <button class="theme-dot-btn" :class="{active: themeMode === 'dark'}" @click="applyTheme('dark')">ТЁМ</button>
-                        <button class="theme-dot-btn" :class="{active: themeMode === 'auto'}" @click="applyTheme('auto')">АВТ</button>
-                        <button class="theme-dot-btn" :class="{active: themeMode === 'light'}" @click="applyTheme('light')">СВЕ</button>
+                        <button class="theme-dot-btn" :class="{active: themeMode === 'dark'}"
+                            @click="applyTheme('dark')">ТЁМ</button>
+                        <button class="theme-dot-btn" :class="{active: themeMode === 'auto'}"
+                            @click="applyTheme('auto')">АВТ</button>
+                        <button class="theme-dot-btn" :class="{active: themeMode === 'light'}"
+                            @click="applyTheme('light')">СВЕ</button>
                     </div>
                 </div>
             </div>
@@ -64,18 +70,22 @@
             <div v-if="!repoName" class="shop-layout">
                 <aside class="category-sidebar d-none d-lg-block">
                     <h6 class="fw-bold mb-3 text-primary small">КАТЕГОРИИ</h6>
-                    
+
                     <div class="category-item" :class="{ active: selectedCategory === 'all' }">
                         <button class="filter-btn" @click="selectedCategory = 'all'">Все проекты</button>
                     </div>
 
-                    <div v-for="cat in categories" :key="cat.name" class="category-item" :class="{ active: selectedCategory === cat.name }">
+                    <div v-for="cat in categories" :key="cat.name" class="category-item"
+                        :class="{ active: selectedCategory === cat.name }">
                         <button class="filter-btn" @click="selectedCategory = cat.name">
                             {{ cat.name }}
                         </button>
-                        <div class="subcategory-list" v-if="selectedCategory === cat.name && cat.subcategories && cat.subcategories.length > 0">
-                            <button class="sub-filter-btn" :class="{ active: selectedSubcategory === 'all' }" @click="selectedSubcategory = 'all'">Все в {{ cat.name }}</button>
-                            <button v-for="sub in cat.subcategories" :key="sub" class="sub-filter-btn" :class="{ active: selectedSubcategory === sub }" @click="selectedSubcategory = sub">
+                        <div class="subcategory-list"
+                            v-if="selectedCategory === cat.name && cat.subcategories && cat.subcategories.length > 0">
+                            <button class="sub-filter-btn" :class="{ active: selectedSubcategory === 'all' }"
+                                @click="selectedSubcategory = 'all'">Все в {{ cat.name }}</button>
+                            <button v-for="sub in cat.subcategories" :key="sub" class="sub-filter-btn"
+                                :class="{ active: selectedSubcategory === sub }" @click="selectedSubcategory = sub">
                                 — {{ sub }}
                             </button>
                         </div>
@@ -84,16 +94,19 @@
                     <div class="category-item" :class="{ active: selectedCategory === 'GitHub Проекты' }">
                         <button class="filter-btn" @click="selectedCategory = 'GitHub Проекты'">GitHub Проекты</button>
                     </div>
-                    
+
                     <hr class="opacity-25 my-4">
 
-                    <button class="btn btn-warning w-100 rounded-pill mb-2 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#donateModal">
+                    <button class="btn btn-warning w-100 rounded-pill mb-2 fw-bold shadow-sm" data-bs-toggle="modal"
+                        data-bs-target="#donateModal">
                         <i class="fas fa-heart me-1"></i> Донат
                     </button>
-                    <button class="btn btn-primary w-100 rounded-pill mb-2 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#socialsModal">
+                    <button class="btn btn-primary w-100 rounded-pill mb-2 fw-bold shadow-sm" data-bs-toggle="modal"
+                        data-bs-target="#socialsModal">
                         <i class="fas fa-share-alt me-1"></i> Соцсети
                     </button>
-                    <button class="btn btn-success w-100 rounded-pill fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#contactsModal">
+                    <button class="btn btn-success w-100 rounded-pill fw-bold shadow-sm" data-bs-toggle="modal"
+                        data-bs-target="#contactsModal">
                         <i class="fas fa-address-book me-1"></i> Контакты
                     </button>
                 </aside>
@@ -112,13 +125,18 @@
                             <div v-if="filteredProducts.length === 0" class="col-12 text-center py-5 opacity-50">
                                 <h5>Ничего не найдено</h5>
                             </div>
-                            <div v-for="item in filteredProducts" :key="item.id" class="col-12 col-sm-6 col-md-4 col-xl-3">
+                            <div v-for="item in filteredProducts" :key="item.id"
+                                class="col-12 col-sm-6 col-md-4 col-xl-3">
                                 <div class="card product-card shadow-sm border-0 h-100" @click="goToProject(item.name)">
                                     <div class="product-img-wrapper">
-                                        <div v-if="item.is_recommended" class="sale-badge" style="background: #ffc107; color: #000;">HOT</div>
-                                        <div v-if="item.old_price > item.price" class="sale-badge" style="top: 40px;">SALE</div>
-                                        <img :src="item.images[0] || 'image/logo.png'" class="product-img" loading="lazy">
-                                        <div v-if="item.is_github" class="sale-badge" style="background: #24292e; left: auto; right: 10px;">Repo</div>
+                                        <div v-if="item.is_recommended" class="sale-badge"
+                                            style="background: #ffc107; color: #000;">HOT</div>
+                                        <div v-if="item.old_price > item.price" class="sale-badge" style="top: 40px;">
+                                            SALE</div>
+                                        <img :src="item.images[0] || 'image/logo.png'" class="product-img"
+                                            loading="lazy">
+                                        <div v-if="item.is_github" class="sale-badge"
+                                            style="background: #24292e; left: auto; right: 10px;">Repo</div>
                                     </div>
                                     <div class="product-body">
                                         <div class="product-title">{{ item.name }}</div>
@@ -126,11 +144,14 @@
                                             <span>Версия: <b>{{ item.version }}</b></span>
                                         </div>
                                         <div class="mt-auto">
-                                            <div v-if="item.old_price > item.price" class="small text-muted text-decoration-line-through" style="font-size: 0.75rem;">
+                                            <div v-if="item.old_price > item.price"
+                                                class="small text-muted text-decoration-line-through"
+                                                style="font-size: 0.75rem;">
                                                 {{ item.old_price.toLocaleString() }} сум
                                             </div>
                                             <div class="price text-primary fw-bold" style="font-size: 0.9rem;">
-                                                {{ item.price > 0 ? (item.price.toLocaleString() + ' сум') : (item.stars + ' ⭐') }}
+                                                {{ item.price > 0 ? (item.price.toLocaleString() + ' сум') : (item.stars
+                                                + ' ⭐') }}
                                             </div>
                                         </div>
                                     </div>
@@ -143,24 +164,33 @@
 
             <!-- Detail View -->
             <div v-else>
-                <button class="btn btn-light rounded-pill mb-4" @click="goHome"><i class="fas fa-arrow-left me-2"></i> Назад</button>
+                <button class="btn btn-light rounded-pill mb-4" @click="goHome"><i class="fas fa-arrow-left me-2"></i>
+                    Назад</button>
                 <div v-if="loading" class="row g-3">
-                    <div class="col-12"><div class="skeleton" style="height: 400px; border-radius: 20px;"></div></div>
+                    <div class="col-12">
+                        <div class="skeleton" style="height: 400px; border-radius: 20px;"></div>
+                    </div>
                 </div>
-                <div v-else class="card border-0 shadow-sm p-4 rounded-4 detail-view-card" style="background: var(--glass-surface); backdrop-filter: blur(20px);">
+                <div v-else class="card border-0 shadow-sm p-4 rounded-4 detail-view-card"
+                    style="background: var(--glass-surface); backdrop-filter: blur(20px);">
                     <div class="row g-4">
                         <div class="col-md-5">
-                            <div v-if="projectImages.length > 1" id="projectCarousel" class="carousel slide mb-4 shadow-sm rounded-4 overflow-hidden" data-bs-ride="carousel">
+                            <div v-if="projectImages.length > 1" id="projectCarousel"
+                                class="carousel slide mb-4 shadow-sm rounded-4 overflow-hidden" data-bs-ride="carousel">
                                 <div class="carousel-inner">
-                                    <div v-for="(img, idx) in projectImages" :key="idx" class="carousel-item" :class="{active: idx === 0}">
+                                    <div v-for="(img, idx) in projectImages" :key="idx" class="carousel-item"
+                                        :class="{active: idx === 0}">
                                         <img :src="img" class="d-block w-100" style="height: 300px; object-fit: cover;">
                                     </div>
                                 </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#projectCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel"
+                                    data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#projectCarousel"
+                                    data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
                             </div>
                             <div v-else class="text-center mb-4">
-                                <img :src="projectImages[0] || 'image/logo.png'" class="img-fluid rounded-4 shadow-sm" style="max-height: 300px;">
+                                <img :src="projectImages[0] || 'image/logo.png'" class="img-fluid rounded-4 shadow-sm"
+                                    style="max-height: 300px;">
                             </div>
 
                             <div class="text-center border-end border-white border-opacity-10 pe-md-4">
@@ -168,28 +198,37 @@
                                 <div v-if="repoData.version" class="product-version mb-3">
                                     <span>Версия: <b>{{ repoData.version }}</b></span>
                                 </div>
-                                <div class="badge bg-primary rounded-pill px-3 mb-3">{{ repoData.language || 'Software' }}</div>
-                                <div v-if="latestRelease" class="p-3 bg-primary bg-opacity-10 rounded-4 mb-3 text-white text-start shadow-sm border border-primary border-opacity-20">
+                                <div class="badge bg-primary rounded-pill px-3 mb-3">{{ repoData.language || 'Software'
+                                    }}</div>
+                                <div v-if="latestRelease"
+                                    class="p-3 bg-primary bg-opacity-10 rounded-4 mb-3 text-white text-start shadow-sm border border-primary border-opacity-20">
                                     <div class="fw-bold small mb-2">Версия: {{ latestRelease.tag_name }}</div>
-                                    <a v-if="latestRelease.assets?.length" :href="latestRelease.assets[0].browser_download_url" class="btn btn-primary w-100 rounded-pill fw-bold">СКАЧАТЬ</a>
+                                    <a v-if="latestRelease.assets?.length"
+                                        :href="latestRelease.assets[0].browser_download_url"
+                                        class="btn btn-primary w-100 rounded-pill fw-bold">СКАЧАТЬ</a>
                                 </div>
                                 <div v-if="repoData.price > 0" class="mb-3">
                                     <div class="text-white-50 small">Стоимость:</div>
-                                    <div class="fs-3 fw-bold text-success">{{ repoData.price.toLocaleString() }} сум</div>
+                                    <div class="fs-3 fw-bold text-success">{{ repoData.price.toLocaleString() }} сум
+                                    </div>
                                 </div>
-                                <a :href="repoData.html_url" target="_blank" class="btn btn-outline-light w-100 rounded-pill mt-2">GitHub / Источник</a>
+                                <a :href="repoData.html_url" target="_blank"
+                                    class="btn btn-outline-light w-100 rounded-pill mt-2">GitHub / Источник</a>
                             </div>
                         </div>
                         <div class="col-md-7 text-white">
                             <h5 class="fw-bold text-primary mb-3">README / Описание</h5>
-                            <div class="readme-container p-3 rounded-4 mb-4" v-html="readmeHtml || repoData.description"></div>
-                            
+                            <div class="readme-container p-3 rounded-4 mb-4"
+                                v-html="readmeHtml || repoData.description"></div>
+
                             <details v-if="changelogText" class="mt-4">
-                                <summary class="btn btn-outline-warning w-100 rounded-pill fw-bold d-flex justify-content-between align-items-center px-4">
+                                <summary
+                                    class="btn btn-outline-warning w-100 rounded-pill fw-bold d-flex justify-content-between align-items-center px-4">
                                     <span><i class="fas fa-history me-2"></i>История изменений (changelog.txt)</span>
                                     <i class="fas fa-chevron-down"></i>
                                 </summary>
-                                <div class="mt-3 p-4 bg-dark bg-opacity-50 text-white rounded-4 border border-warning border-opacity-20" style="white-space: pre-wrap; font-family: monospace; font-size: 0.9rem;">
+                                <div class="mt-3 p-4 bg-dark bg-opacity-50 text-white rounded-4 border border-warning border-opacity-20"
+                                    style="white-space: pre-wrap; font-family: monospace; font-size: 0.9rem;">
                                     {{ changelogText }}
                                 </div>
                             </details>
@@ -205,36 +244,50 @@
                 <div class="row g-4 text-center text-md-start">
                     <div class="col-md-4 text-center text-md-start">
                         <h4 class="fw-bold text-white mb-3">PRO PROJECTS</h4>
-                        <p class="small mb-3 text-white-50">Витрина моих лучших проектов и инструментов. Весь код открыт и доступен для изучения на GitHub.</p>
+                        <p class="small mb-3 text-white-50">Витрина моих лучших проектов и инструментов. Весь код открыт
+                            и доступен для изучения на GitHub.</p>
                         <div class="d-flex gap-3 justify-content-center justify-content-md-start">
-                            <span class="small text-white-50"><i class="fas fa-code me-2 text-primary"></i>Clean Code</span>
-                            <span class="small text-white-50"><i class="fas fa-bolt me-2 text-warning"></i>Performance</span>
+                            <span class="small text-white-50"><i class="fas fa-code me-2 text-primary"></i>Clean
+                                Code</span>
+                            <span class="small text-white-50"><i
+                                    class="fas fa-bolt me-2 text-warning"></i>Performance</span>
                         </div>
                     </div>
                     <div class="col-md-4 text-md-center">
                         <h5 class="fw-bold text-white mb-3 text-uppercase small letter-spacing-1">Мои приоритеты</h5>
-                        <ul class="list-unstyled small d-flex flex-column gap-2 align-items-center align-items-md-center">
-                            <li><i class="fas fa-shield-alt me-2 text-success"></i> <strong>Безопасность:</strong> 100% защита данных</li>
-                            <li><i class="fas fa-bolt me-2 text-warning"></i> <strong>Скорость:</strong> Оптимизация кода</li>
-                            <li><i class="fas fa-headset me-2 text-info"></i> <strong>Поддержка:</strong> {{ publicStats.reviews_total }}+ часов</li>
+                        <ul
+                            class="list-unstyled small d-flex flex-column gap-2 align-items-center align-items-md-center">
+                            <li><i class="fas fa-shield-alt me-2 text-success"></i> <strong>Безопасность:</strong> 100%
+                                защита данных</li>
+                            <li><i class="fas fa-bolt me-2 text-warning"></i> <strong>Скорость:</strong> Оптимизация
+                                кода</li>
+                            <li><i class="fas fa-headset me-2 text-info"></i> <strong>Поддержка:</strong> {{
+                                publicStats.reviews_total }}+ часов</li>
                         </ul>
                     </div>
                     <div class="col-md-4 text-md-end">
                         <h5 class="fw-bold text-white mb-3 text-uppercase small letter-spacing-1">GitHub Статистика</h5>
                         <ul class="list-unstyled small d-flex flex-column gap-2 align-items-center align-items-md-end">
-                            <li><i class="fas fa-book me-2 text-primary"></i> Всего репозиториев: <strong>{{ githubProjects.length }}</strong></li>
-                            <li><i class="fas fa-star me-2 text-warning"></i> Суммарный рейтинг: <strong>{{ githubStats.stars }} ⭐</strong></li>
-                            <li><i class="fas fa-code-branch me-2 text-info"></i> Популярный стек: <strong>{{ githubStats.topLang }}</strong></li>
+                            <li><i class="fas fa-book me-2 text-primary"></i> Всего репозиториев: <strong>{{
+                                    githubProjects.length }}</strong></li>
+                            <li><i class="fas fa-star me-2 text-warning"></i> Суммарный рейтинг: <strong>{{
+                                    githubStats.stars }} ⭐</strong></li>
+                            <li><i class="fas fa-code-branch me-2 text-info"></i> Популярный стек: <strong>{{
+                                    githubStats.topLang }}</strong></li>
                         </ul>
                     </div>
                 </div>
                 <hr class="my-4 border-secondary opacity-25">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-                    <div class="small opacity-50">© 2026 PRO Projects. Все права защищены.</div>
+                    <div class="small opacity-50">© 2026 PRO Projects. Все права защищены. Designed by Komoliddin &
+                        Gemini</div>
                     <div class="d-flex gap-4">
-                        <a href="#" @click.prevent="goHome" class="text-white-50 small text-decoration-none hover-white">Проекты</a>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#socialsModal" class="text-white-50 small text-decoration-none hover-white">Соцсети</a>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#donateModal" class="text-white-50 small text-decoration-none hover-white">Донат</a>
+                        <a href="#" @click.prevent="goHome"
+                            class="text-white-50 small text-decoration-none hover-white">Проекты</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#socialsModal"
+                            class="text-white-50 small text-decoration-none hover-white">Соцсети</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#donateModal"
+                            class="text-white-50 small text-decoration-none hover-white">Донат</a>
                     </div>
                 </div>
             </div>
@@ -251,13 +304,19 @@
         <!-- МОДАЛКИ -->
         <div class="modal fade" id="donateModal" tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content border-0 p-0 shadow-lg" style="background: rgba(15, 20, 27, 0.98); backdrop-filter: blur(40px); border-radius: 40px;">
-                    <div class="modal-header border-0 p-4 pb-0"><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-content border-0 p-0 shadow-lg"
+                    style="background: rgba(15, 20, 27, 0.98); backdrop-filter: blur(40px); border-radius: 40px;">
+                    <div class="modal-header border-0 p-4 pb-0"><button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"></button></div>
                     <div class="modal-body p-5 pt-0 text-center">
                         <h2 class="fw-bold text-white mb-5">꧁Donate꧂</h2>
-                        <div class="row g-3">
-                            <div v-for="m in donateMethods" :key="m.name" class="col-md-4 col-6">
-                                <div class="donate-item p-3 h-100 d-flex flex-column justify-content-center" @click="handleDonate(m)">
+
+                        <!-- ВЫВОД ГРУПП (СТРОК) -->
+                        <div v-for="(group, index) in donateGroups" :key="index"
+                            class="row g-3 mb-4 justify-content-center flex-wrap">
+                            <div v-for="m in group" :key="m.name" :class="group.length === 1 ? 'col-12' : 'col-size-5'">
+                                <div class="donate-item p-3 h-100 d-flex flex-column justify-content-center"
+                                    @click="handleDonate(m)">
                                     <i :class="m.icon" class="fa-2x mb-3 mx-auto" :style="{color: m.color}"></i>
                                     <div class="fw-bold text-white small" style="font-size: 0.8rem;">{{ m.name }}</div>
                                     <div class="text-white-50 tiny mt-2" style="font-size: 0.65rem;">{{ m.desc }}</div>
@@ -271,35 +330,23 @@
 
         <div class="modal fade" id="socialsModal" tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content border-0 p-0 shadow-lg" style="background: rgba(15, 20, 27, 0.98); backdrop-filter: blur(40px); border-radius: 40px;">
-                    <div class="modal-header border-0 p-4 pb-0"><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-content border-0 p-0 shadow-lg"
+                    style="background: rgba(15, 20, 27, 0.98); backdrop-filter: blur(40px); border-radius: 40px;">
+                    <div class="modal-header border-0 p-4 pb-0"><button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"></button></div>
                     <div class="modal-body p-5 pt-0 text-center">
-                        <!-- ОСНОВНЫЕ -->
-                        <div class="social-group mb-5">
-                            <h2 class="fw-bold text-white mb-4">꧁Социальные сети꧂</h2>
-                            <div class="row g-3">
-                                <div v-for="s in socialLinks.main" :key="s.name" class="col-md-3 col-6">
-                                    <a :href="s.url" target="_blank" class="text-decoration-none">
-                                        <div class="donate-item p-3">
-                                            <i :class="s.icon" class="fa-2x mb-2" :style="{color: s.color}"></i>
-                                            <div class="fw-bold text-white small">{{ s.name }}</div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- ДРУГИЕ -->
-                        <div class="social-group" v-if="socialLinks.others && socialLinks.others.length > 0">
-                            <h4 class="fw-bold text-white-50 mb-4">Другие ссылки</h4>
-                            <div class="row g-3">
-                                <div v-for="s in socialLinks.others" :key="s.name" class="col-md-3 col-6">
-                                    <a :href="s.url" target="_blank" class="text-decoration-none">
-                                        <div class="donate-item p-3">
-                                            <i :class="s.icon" class="fa-2x mb-2" :style="{color: s.color}"></i>
-                                            <div class="fw-bold text-white small">{{ s.name }}</div>
-                                        </div>
-                                    </a>
-                                </div>
+                        <h2 class="fw-bold text-white mb-5">꧁Социальные сети꧂</h2>
+
+                        <!-- ВЫВОД ГРУПП (СТРОК) -->
+                        <div v-for="(group, index) in socialGroups" :key="index"
+                            class="row g-3 mb-4 justify-content-center flex-wrap">
+                            <div v-for="s in group" :key="s.name" :class="group.length === 1 ? 'col-12' : 'col-size-5'">
+                                <a :href="s.url" target="_blank" class="text-decoration-none">
+                                    <div class="donate-item p-3 h-100 d-flex flex-column justify-content-center">
+                                        <i :class="s.icon" class="fa-2x mb-2" :style="{color: s.color}"></i>
+                                        <div class="fw-bold text-white small">{{ s.name }}</div>
+                                    </div>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -309,24 +356,31 @@
 
         <div class="modal fade" id="contactsModal" tabindex="-1">
             <div class="modal-dialog modal-md modal-dialog-centered">
-                <div class="modal-content border-0 p-0 shadow-lg" style="background: rgba(15, 20, 27, 0.98); backdrop-filter: blur(40px); border-radius: 40px;">
-                    <div class="modal-header border-0 p-4 pb-0"><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-content border-0 p-0 shadow-lg"
+                    style="background: rgba(15, 20, 27, 0.98); backdrop-filter: blur(40px); border-radius: 40px;">
+                    <div class="modal-header border-0 p-4 pb-0"><button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"></button></div>
                     <div class="modal-body p-5 pt-0 text-center">
                         <h2 class="fw-bold text-white mb-5">꧁{{ myContacts.name }}꧂</h2>
                         <div class="d-grid gap-3">
                             <a v-if="myContacts.phone" :href="'tel:' + myContacts.phone" class="btn btn-buy py-3 fs-5">
                                 <i class="fas fa-phone-alt me-3"></i>{{ myContacts.phone }}
                             </a>
-                            <a v-if="myContacts.email" :href="'mailto:' + myContacts.email" class="btn btn-buy py-3 fs-5" style="background: #ffc107 !important; color: #000 !important;">
+                            <a v-if="myContacts.email" :href="'mailto:' + myContacts.email"
+                                class="btn btn-buy py-3 fs-5"
+                                style="background: #ffc107 !important; color: #000 !important;">
                                 <i class="fas fa-envelope me-3"></i>{{ myContacts.email }}
                             </a>
-                            <a v-if="myContacts.telegram" :href="myContacts.telegram" target="_blank" class="btn btn-buy py-3 fs-5" style="background: #0088cc !important;">
+                            <a v-if="myContacts.telegram" :href="myContacts.telegram" target="_blank"
+                                class="btn btn-buy py-3 fs-5" style="background: #0088cc !important;">
                                 <i class="fab fa-telegram-plane me-3"></i>Написать в Telegram
                             </a>
-                            <a v-if="myContacts.website" :href="myContacts.website" target="_blank" class="btn btn-buy py-3 fs-5" style="background: #6f42c1 !important;">
+                            <a v-if="myContacts.website" :href="myContacts.website" target="_blank"
+                                class="btn btn-buy py-3 fs-5" style="background: #6f42c1 !important;">
                                 <i class="fas fa-globe me-3"></i>Перейти на сайт
                             </a>
-                            <button @click="saveVCard" class="btn btn-outline-light rounded-pill py-3 fw-bold mt-2"><i class="fas fa-user-plus me-3"></i>Сохранить контакт</button>
+                            <button @click="saveVCard" class="btn btn-outline-light rounded-pill py-3 fw-bold mt-2"><i
+                                    class="fas fa-user-plus me-3"></i>Сохранить контакт</button>
                         </div>
                     </div>
                 </div>
@@ -337,4 +391,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

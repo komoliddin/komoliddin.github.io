@@ -183,7 +183,20 @@ body.shop-page {
 
 .sale-badge { position: absolute; top: 10px; left: 10px; background: #ff3b30; color: white; font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 12px; z-index: 5; }
 
-/* TOAST */
+/* ДИНАМИЧЕСКАЯ СЕТКА ДОНАТОВ */
+.col-size-1 { flex: 0 0 100%; max-width: 100%; padding: 0 8px; }
+.col-size-2 { flex: 0 0 50%; max-width: 50%; padding: 0 8px; }
+.col-size-3 { flex: 0 0 33.333%; max-width: 33.333%; padding: 0 8px; }
+.col-size-4 { flex: 0 0 25%; max-width: 25%; padding: 0 8px; }
+.col-size-5 { flex: 0 0 20%; max-width: 20%; padding: 0 8px; }
+
+@media (max-width: 768px) {
+    .col-size-3, .col-size-4, .col-size-5 { flex: 0 0 50%; max-width: 50%; }
+}
+@media (max-width: 480px) {
+    .col-size-2, .col-size-3, .col-size-4, .col-size-5 { flex: 0 0 100%; max-width: 100%; }
+}
+
 .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; }
 .custom-toast { background: var(--glass-surface-strong); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); padding: 12px 25px; border-radius: 50px; box-shadow: var(--glass-shadow); animation: toast-in 0.3s ease-out; }
 @keyframes toast-in { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }

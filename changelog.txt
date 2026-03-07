@@ -1,3 +1,7 @@
+2026-03-07 (Update v3.1)
+- [UI] В футер добавлена надпись: "Designed by Komoliddin & Gemini )))".
+- [Docs] README и Changelog обновлены.
+
 2026-03-06 (Stable Update v3.0)
 - [Fix] Полностью устранена проблема исчезновения карточек при навигации по категориям (удален AOS, упрощен рендеринг Vue).
 - [Fix] Исправлена ошибка 404 для иконок Manifest (скорректированы пути в site.webmanifest и index.html).

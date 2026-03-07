@@ -36,7 +36,7 @@ createApp({
         };
 
         const myContacts = ref({ name: 'Komoliddin', phone: '', email: '', telegram: '', website: '' });
-        const socialLinks = ref({ main: [], others: [] });
+        const socialLinks = ref([]);
         const donateMethods = ref([]);
 
         // ВЫЧИСЛЯЕМЫЕ СВОЙСТВА
@@ -56,6 +56,26 @@ createApp({
             return cat ? (cat.subcategories || []) : [];
         });
 
+        const donateGroups = computed(() => {
+            const groups = {};
+            donateMethods.value.forEach(m => {
+                const s = m.size || 1;
+                if (!groups[s]) groups[s] = [];
+                groups[s].push(m);
+            });
+            return Object.keys(groups).sort((a,b) => a-b).map(k => groups[k]);
+        });
+
+        const socialGroups = computed(() => {
+            const groups = {};
+            socialLinks.value.forEach(s => {
+                const sz = s.size || 1;
+                if (!groups[sz]) groups[sz] = [];
+                groups[sz].push(s);
+            });
+            return Object.keys(groups).sort((a,b) => a-b).map(k => groups[k]);
+        });
+
         const loadData = async () => {
             loading.value = true;
             const v = Date.now();
@@ -63,8 +83,12 @@ createApp({
                 const conf = await fetch(`config.json?v=${v}`).then(r => r.ok ? r.json() : null).catch(() => null);
                 if (conf) {
                     if (conf.myContacts) myContacts.value = conf.myContacts;
-                    if (conf.socialLinks) socialLinks.value = conf.socialLinks;
-                    if (conf.donateMethods) donateMethods.value = conf.donateMethods;
+                    if (conf.socialLinks) {
+                        socialLinks.value = conf.socialLinks.map(s => ({ ...s, uid: Math.random().toString(36).substr(2, 9) }));
+                    }
+                    if (conf.donateMethods) {
+                        donateMethods.value = conf.donateMethods.map(m => ({ ...m, uid: Math.random().toString(36).substr(2, 9) }));
+                    }
                     if (conf.publicStats) publicStats.value = conf.publicStats;
                 }
 
@@ -230,6 +254,8 @@ createApp({
                 nextTick(() => { if(typeof AOS !== 'undefined') AOS.refreshHard(); });
             },
             applyTheme, 
+            donateGroups,
+            socialGroups,
             handleDonate: (m) => {
                 if (m.url) window.open(m.url, '_blank');
                 else navigator.clipboard.writeText(m.id).then(() => showToast(`Реквизиты ${m.name} скопированы!`));
