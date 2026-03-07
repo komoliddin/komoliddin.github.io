@@ -18,8 +18,9 @@ createApp({
         const selectedSubcategory = ref('all');
         const themeMode = ref(localStorage.getItem('theme_mode') || 'auto');
         const showTopButton = ref(false);
+        
         const toasts = ref([]);
-
+        const previewIndex = ref(0);
         const publicStats = ref({ orders_total: 0, users_total: 0, orders_delivered: 0, reviews_total: 0 });
 
         const projectImages = computed(() => {
@@ -28,6 +29,40 @@ createApp({
             if (p && p.images && p.images.length > 0) return p.images;
             return ['image/logo.png'];
         });
+
+        const openPreview = (img) => {
+            const idx = projectImages.value.indexOf(img);
+            previewIndex.value = idx !== -1 ? idx : 0;
+            const el = document.getElementById('imagePreviewModal');
+            if (el && typeof bootstrap !== 'undefined') {
+                const m = bootstrap.Modal.getOrCreateInstance(el);
+                m.show();
+                window.addEventListener('keydown', handleKeyNavigation);
+            }
+        };
+
+        const closePreview = () => {
+            const el = document.getElementById('imagePreviewModal');
+            if (el) {
+                const m = bootstrap.Modal.getOrCreateInstance(el);
+                m.hide();
+                window.removeEventListener('keydown', handleKeyNavigation);
+            }
+        };
+
+        const nextImage = () => {
+            previewIndex.value = (previewIndex.value + 1) % projectImages.value.length;
+        };
+
+        const prevImage = () => {
+            previewIndex.value = (previewIndex.value - 1 + projectImages.value.length) % projectImages.value.length;
+        };
+
+        const handleKeyNavigation = (e) => {
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'ArrowLeft') prevImage();
+            if (e.key === 'Escape') closePreview();
+        };
 
         const showToast = (msg) => {
             const id = Date.now();
@@ -272,7 +307,7 @@ createApp({
         return {
             repoOwner, repoName, products, categories, githubProjects, repoData, readmeHtml, changelogText, latestRelease,
             loading, searchQuery, selectedCategory, selectedSubcategory, currentSubcategories, themeMode, donateMethods, socialLinks, myContacts, modalTitles, modalInfo,
-            filteredProducts, displayGroups, showTopButton, publicStats, githubStats, toasts, projectImages,
+            filteredProducts, displayGroups, showTopButton, publicStats, githubStats, toasts, projectImages, previewIndex, openPreview, closePreview, nextImage, prevImage,
             goToProject: (n) => {
                 const u = new URL(window.location); u.searchParams.set('repo', n);
                 window.history.pushState({}, '', u); repoName.value = n; fetchRepoInfo(n); window.scrollTo(0, 0);

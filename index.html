@@ -165,22 +165,10 @@
                     style="background: var(--glass-surface); backdrop-filter: blur(20px);">
                     <div class="row g-4">
                         <div class="col-md-5">
-                            <div v-if="projectImages.length > 1" id="projectCarousel"
-                                class="carousel slide mb-4 shadow-sm rounded-4 overflow-hidden" data-bs-ride="carousel">
-                                <div class="carousel-inner">
-                                    <div v-for="(img, idx) in projectImages" :key="idx" class="carousel-item"
-                                        :class="{active: idx === 0}">
-                                        <img :src="img" class="d-block w-100" style="height: 300px; object-fit: cover;">
-                                    </div>
-                                </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel"
-                                    data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#projectCarousel"
-                                    data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
-                            </div>
-                            <div v-else class="text-center mb-4">
-                                <img :src="projectImages[0] || 'image/logo.png'" class="img-fluid rounded-4 shadow-sm"
-                                    style="max-height: 300px;">
+                            <!-- ЛОГОТИП (Первое изображение) -->
+                            <div class="text-center mb-4">
+                                <img :src="projectImages[0] || 'image/logo.png'" class="img-fluid rounded-4 shadow-sm main-logo-img"
+                                    style="max-height: 250px; width: 100%; object-fit: contain; background: rgba(255,255,255,0.05); padding: 20px;">
                             </div>
 
                             <div class="text-center border-end border-white border-opacity-10 pe-md-4">
@@ -188,8 +176,16 @@
                                 <div v-if="repoData.version" class="product-version mb-3">
                                     <span>Версия: <b>{{ repoData.version }}</b></span>
                                 </div>
-                                <div class="badge bg-primary rounded-pill px-3 mb-3">{{ repoData.language || 'Software'
-                                    }}</div>
+                                <div class="badge bg-primary rounded-pill px-3 mb-3">{{ repoData.language || 'Software' }}</div>
+
+                                <!-- СКРИНШОТЫ (Остальные изображения) -->
+                                <div v-if="projectImages.length > 1" class="d-flex flex-wrap gap-2 justify-content-center mb-4 mt-2">
+                                    <div v-for="(img, idx) in projectImages.slice(1)" :key="idx" 
+                                         class="screenshot-thumb-wrapper" @click="openPreview(img)">
+                                        <img :src="img" class="screenshot-thumb rounded-3 border border-white border-opacity-25 shadow-sm">
+                                    </div>
+                                </div>
+
                                 <div v-if="latestRelease || (repoData.links && repoData.links.length > 0) || repoData.download_url"
                                     class="p-3 bg-primary bg-opacity-10 rounded-4 mb-3 text-white text-start shadow-sm border border-primary border-opacity-20">
                                     <div v-if="latestRelease" class="fw-bold small mb-2 text-primary">Версия с GitHub: {{ latestRelease.tag_name }}</div>
@@ -392,6 +388,35 @@
                             </a>
                             <button @click="saveVCard" class="btn btn-outline-light rounded-pill py-3 fw-bold mt-2"><i
                                     class="fas fa-user-plus me-3"></i>Сохранить контакт</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="imagePreviewModal" tabindex="-1" @keydown.esc="closePreview">
+            <div class="modal-dialog modal-fullscreen modal-dialog-centered m-0">
+                <div class="modal-content border-0 bg-dark bg-opacity-95 shadow-none">
+                    <div class="modal-body p-0 d-flex flex-column justify-content-center align-items-center position-relative h-100">
+                        <!-- Кнопка закрытия -->
+                        <button type="button" class="btn btn-link text-white position-absolute top-0 end-0 m-4 p-2 fs-2 text-decoration-none z-3" 
+                                @click="closePreview" style="line-height: 1; opacity: 0.7;">&times;</button>
+
+                        <!-- Зоны клика для навигации -->
+                        <div class="nav-hit-box left" @click="prevImage" title="Назад (Стрелка влево)"></div>
+                        <div class="nav-hit-box right" @click="nextImage" title="Вперед (Стрелка вправо)"></div>
+
+                        <!-- Основное изображение -->
+                        <div class="preview-main-container d-flex justify-content-center align-items-center">
+                            <img :src="projectImages[previewIndex]" class="img-fluid rounded-2 shadow-lg main-preview-img">
+                        </div>
+
+                        <!-- Эскизы внизу -->
+                        <div class="preview-thumbs-row d-flex gap-2 p-3 overflow-x-auto w-100 justify-content-center position-absolute bottom-0">
+                            <div v-for="(img, idx) in projectImages" :key="idx" 
+                                 class="thumb-item" :class="{ active: previewIndex === idx }"
+                                 @click="previewIndex = idx">
+                                <img :src="img" class="rounded-2">
+                            </div>
                         </div>
                     </div>
                 </div>
