@@ -4,14 +4,14 @@ createApp({
     setup() {
         const repoOwner = 'komoliddin';
         const repoName = ref(new URLSearchParams(window.location.search).get('repo'));
-        
+
         const products = ref([]);
         const categories = ref([]);
         const repoData = ref({});
         const readmeHtml = ref('');
         const changelogText = ref('');
         const latestRelease = ref(null);
-        
+
         const loading = ref(true);
         const searchQuery = ref('');
         const selectedCategory = ref('all');
@@ -48,7 +48,7 @@ createApp({
             const gh = githubProjects.value;
             const stars = gh.reduce((acc, p) => acc + (p.stars || 0), 0);
             const langs = gh.map(p => p.language).filter(l => l);
-            const topLang = langs.length > 0 ? langs.sort((a,b) => langs.filter(v => v===a).length - langs.filter(v => v===b).length).pop() : 'Python';
+            const topLang = langs.length > 0 ? langs.sort((a, b) => langs.filter(v => v === a).length - langs.filter(v => v === b).length).pop() : 'Python';
             return { stars, topLang };
         });
 
@@ -65,7 +65,7 @@ createApp({
                 if (!groups[s]) groups[s] = [];
                 groups[s].push(m);
             });
-            return Object.keys(groups).sort((a,b) => a-b).map(k => groups[k]);
+            return Object.keys(groups).sort((a, b) => a - b).map(k => groups[k]);
         });
 
         const socialGroups = computed(() => {
@@ -75,7 +75,7 @@ createApp({
                 if (!groups[sz]) groups[sz] = [];
                 groups[sz].push(s);
             });
-            return Object.keys(groups).sort((a,b) => a-b).map(k => groups[k]);
+            return Object.keys(groups).sort((a, b) => a - b).map(k => groups[k]);
         });
 
         const loadData = async () => {
@@ -138,9 +138,9 @@ createApp({
                 });
 
             } catch (e) { console.error("Load error:", e); }
-            finally { 
+            finally {
                 loading.value = false;
-                nextTick(() => { if(typeof AOS !== 'undefined') AOS.init({duration: 800, once: true}); });
+                nextTick(() => { if (typeof AOS !== 'undefined') AOS.init({ duration: 800, once: true }); });
             }
         };
 
@@ -160,7 +160,7 @@ createApp({
                             break;
                         }
                     }
-                } catch (e) {}
+                } catch (e) { }
             }
         };
 
@@ -231,9 +231,9 @@ createApp({
         };
 
         const openModalById = (type) => {
-            const id = type === 'donate' ? 'donateModal' : 
-                       type === 'socials' ? 'socialsModal' : 
-                       type === 'contacts' ? 'contactsModal' : null;
+            const id = type === 'donate' ? 'donateModal' :
+                type === 'socials' ? 'socialsModal' :
+                    type === 'contacts' ? 'contactsModal' : null;
             if (id) {
                 const el = document.getElementById(id);
                 if (el && typeof bootstrap !== 'undefined') {
@@ -247,21 +247,21 @@ createApp({
 
         onMounted(() => {
             applyTheme(themeMode.value);
-            loadData().then(() => { 
+            loadData().then(() => {
                 if (repoName.value) fetchRepoInfo(repoName.value);
-                
+
                 // Проверка модалки при первой загрузке ПОСЛЕ загрузки данных
                 const startModal = new URLSearchParams(window.location.search).get('modal');
                 if (startModal) openModalById(startModal);
             });
-            
+
             window.addEventListener('scroll', () => showTopButton.value = window.scrollY > 300);
             window.addEventListener('popstate', () => {
                 const params = new URLSearchParams(window.location.search);
                 const urlRepo = params.get('repo');
                 repoName.value = urlRepo;
                 if (urlRepo) fetchRepoInfo(urlRepo);
-                
+
                 const mType = params.get('modal');
                 if (mType) openModalById(mType);
             });
@@ -275,15 +275,15 @@ createApp({
             filteredProducts, displayGroups, showTopButton, publicStats, githubStats, toasts, projectImages,
             goToProject: (n) => {
                 const u = new URL(window.location); u.searchParams.set('repo', n);
-                window.history.pushState({}, '', u); repoName.value = n; fetchRepoInfo(n); window.scrollTo(0,0);
+                window.history.pushState({}, '', u); repoName.value = n; fetchRepoInfo(n); window.scrollTo(0, 0);
             },
             goHome: () => {
                 const u = new URL(window.location); u.searchParams.delete('repo');
-                window.history.pushState({}, '', u); 
+                window.history.pushState({}, '', u);
                 repoName.value = null; searchQuery.value = ''; selectedCategory.value = 'all'; selectedSubcategory.value = 'all';
-                nextTick(() => { if(typeof AOS !== 'undefined') AOS.refreshHard(); });
+                nextTick(() => { if (typeof AOS !== 'undefined') AOS.refreshHard(); });
             },
-            applyTheme, 
+            applyTheme,
             donateGroups,
             socialGroups,
             handleDonate: (m) => {
@@ -297,7 +297,7 @@ createApp({
                 const email = myContacts.value.email || '';
                 const site = myContacts.value.website || '';
                 const tg = myContacts.value.telegram || '';
-                const vcard = ['BEGIN:VCARD','VERSION:3.0',`FN:${name}`,`TEL;TYPE=CELL:${phone}`,`EMAIL;TYPE=INTERNET:${email}`,`URL:${site}`,`NOTE:Telegram: ${tg}`,'END:VCARD'].join('\n');
+                const vcard = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${name}`, `TEL;TYPE=CELL:${phone}`, `EMAIL;TYPE=INTERNET:${email}`, `URL:${site}`, `NOTE:Telegram: ${tg}`, 'END:VCARD'].join('\n');
                 const a = document.createElement("a");
                 a.href = URL.createObjectURL(new Blob([vcard], { type: "text/vcard" }));
                 a.download = `${name}.vcf`;

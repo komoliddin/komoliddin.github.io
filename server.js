@@ -26,8 +26,8 @@ app.post('/upload-image', (req, res) => {
 
         const folderName = project.replace(/[^a-z0-9]/gi, '_').toLowerCase();
         const projectPath = path.join(__dirname, 'image', folderName);
-        
-        if (!fs.existsSync(projectPath)){
+
+        if (!fs.existsSync(projectPath)) {
             fs.mkdirSync(projectPath, { recursive: true });
         }
 
