@@ -113,8 +113,8 @@
 
                 <div class="shop-main">
                     <!-- TOP PROJECTS SLIDER (CUSTOM ONE-BY-ONE) -->
-                    <div v-if="!repoName && topProducts.length > 0 && selectedCategory === 'all' && !searchQuery"
-                        class="mb-5 position-relative">
+                    <div v-if="!repoName && topProducts.length > 0 && selectedCategory === 'all' && !searchQuery" 
+                         class="mb-5 position-relative" @mouseenter="stopCarousel" @mouseleave="startCarousel">
                         <div class="custom-slider-container shadow-lg"
                             style="border-radius: 30px; overflow: hidden; height: 450px; background: #000;">
                             <div class="custom-slider-track" :class="{ 'no-transition': !isTransitioning }"
@@ -249,18 +249,22 @@
                                     <template v-if="repoData.links && repoData.links.length > 0">
                                         <div class="small fw-bold mb-2 mt-2 opacity-75">Ссылки проекта:</div>
                                         <div v-for="(lnk, lIdx) in repoData.links" :key="lIdx" class="mb-2">
-                                            <a :href="lnk.url" target="_blank"
-                                                class="btn btn-outline-primary btn-sm w-100 rounded-pill d-flex justify-content-between align-items-center px-3">
+                                            <a :href="lnk.url" target="_blank" class="btn btn-outline-primary btn-sm w-100 rounded-pill d-flex justify-content-between align-items-center px-3">
                                                 <span>{{ lnk.info || 'Ссылка' }}</span>
                                                 <i class="fas fa-external-link-alt small opacity-50"></i>
                                             </a>
                                         </div>
                                     </template>
-                                </div>
-                                <a :href="repoData.html_url" target="_blank"
-                                    class="btn btn-outline-light w-100 rounded-pill mt-2">GitHub / Источник</a>
-                            </div>
-                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                    <a :href="repoData.html_url" target="_blank"
+                                        class="btn btn-outline-light w-100 rounded-pill">GitHub / Источник</a>
+                                    <button class="btn btn-outline-secondary rounded-pill px-3" @click="shareProject" title="Скопировать ссылку">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                    </div>
+                                    </div>
+                                    </div>
                         <div class="col-md-7 text-white">
                             <h5 class="fw-bold text-primary mb-3">README / Описание</h5>
                             <div class="readme-container p-3 rounded-4 mb-4 overflow-hidden"

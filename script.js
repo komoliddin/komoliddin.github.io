@@ -24,12 +24,22 @@ createApp({
         const topCarouselIndex = ref(0);
         const isMobile = ref(window.innerWidth <= 768);
         const isTransitioning = ref(true);
+        let carouselTimer = null;
 
         window.addEventListener('resize', () => { isMobile.value = window.innerWidth <= 768; });
 
+        const startCarousel = () => {
+            stopCarousel();
+            carouselTimer = setInterval(nextTop, 5000);
+        };
+
+        const stopCarousel = () => {
+            if (carouselTimer) clearInterval(carouselTimer);
+        };
+
         const topProductsLoop = computed(() => {
             if (topProducts.value.length === 0) return [];
-            // Клонируем элементы для бесконечного цикла (нужно минимум 2 допа для десктопа)
+            // Клонируем элементы для бесконечного цикла (2 для десктопа, чтобы не было дыр)
             return [...topProducts.value, ...topProducts.value.slice(0, 2)];
         });
 
@@ -43,13 +53,13 @@ createApp({
             isTransitioning.value = true;
             topCarouselIndex.value++;
 
-            // Если дошли до конца основного списка (начинаем показывать клонов)
             if (topCarouselIndex.value >= topProducts.value.length) {
                 setTimeout(() => {
-                    isTransitioning.value = false; // Выключаем анимацию
-                    topCarouselIndex.value = 0;    // Прыгаем в начало
-                }, 600); // Время должно совпадать с CSS transition
+                    isTransitioning.value = false;
+                    topCarouselIndex.value = 0;
+                }, 600);
             }
+            startCarousel(); // Сбрасываем таймер при ручном переключении
         };
 
         const prevTop = () => {
@@ -65,6 +75,7 @@ createApp({
                 isTransitioning.value = true;
                 topCarouselIndex.value--;
             }
+            startCarousel(); // Сбрасываем таймер
         };
 
         const publicStats = ref({ orders_total: 0, users_total: 0, orders_delivered: 0, reviews_total: 0 });
@@ -110,6 +121,20 @@ createApp({
             if (e.key === 'Escape') closePreview();
         };
 
+        // Глобальные хоткеи
+        window.addEventListener('keydown', (e) => {
+            // Нажатие '/' для фокуса на поиске (если не в поле ввода)
+            if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                const searchInput = document.querySelector('.search-container input');
+                if (searchInput) searchInput.focus();
+            }
+            // Esc для выхода на главную
+            if (e.key === 'Escape' && repoName.value && !document.getElementById('imagePreviewModal').classList.contains('show')) {
+                goHome();
+            }
+        });
+
         const showToast = (msg) => {
             const id = Date.now();
             toasts.value.push({ id, msg });
@@ -125,14 +150,6 @@ createApp({
         // ВЫЧИСЛЯЕМЫЕ СВОЙСТВА
         const topProducts = computed(() => products.value.filter(p => p.is_top).sort((a, b) => a.name.localeCompare(b.name)));
         
-        const topProductGroups = computed(() => {
-            const groups = [];
-            for (let i = 0; i < topProducts.value.length; i += 2) {
-                groups.push(topProducts.value.slice(i, i + 2));
-            }
-            return groups;
-        });
-
         const githubProjects = computed(() => products.value.filter(p => p.is_github));
 
         const githubStats = computed(() => {
@@ -361,7 +378,7 @@ createApp({
             });
 
             // Автопрокрутка ТОП-проектов
-            setInterval(nextTop, 5000);
+            startCarousel();
 
             window.addEventListener('scroll', () => showTopButton.value = window.scrollY > 300);
             window.addEventListener('popstate', () => {
@@ -384,14 +401,18 @@ createApp({
             goToProject: (n) => {
                 const u = new URL(window.location); u.searchParams.set('repo', n);
                 window.history.pushState({}, '', u); repoName.value = n; fetchRepoInfo(n); window.scrollTo(0, 0);
+                document.title = `${n} — PRO Projects`;
             },
             goHome: () => {
                 const u = new URL(window.location); u.searchParams.delete('repo');
                 window.history.pushState({}, '', u);
                 repoName.value = null; searchQuery.value = ''; selectedCategory.value = 'all'; selectedSubcategory.value = 'all';
                 nextTick(() => { if (typeof AOS !== 'undefined') AOS.refreshHard(); });
+                document.title = 'PRO Projects — Portfolio';
             },
             applyTheme,
+            startCarousel,
+            stopCarousel,
             donateGroups,
             socialGroups,
             handleDonate: (m) => {
@@ -410,6 +431,9 @@ createApp({
                 a.href = URL.createObjectURL(new Blob([vcard], { type: "text/vcard" }));
                 a.download = `${name}.vcf`;
                 a.click();
+            },
+            shareProject: () => {
+                navigator.clipboard.writeText(window.location.href).then(() => showToast('Ссылка скопирована!'));
             }
         };
     }
