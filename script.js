@@ -235,11 +235,33 @@ createApp({
             loadData().then(() => { if (repoName.value) fetchRepoInfo(repoName.value); });
             window.addEventListener('scroll', () => showTopButton.value = window.scrollY > 300);
             window.addEventListener('popstate', () => {
-                const urlRepo = new URLSearchParams(window.location.search).get('repo');
+                const params = new URLSearchParams(window.location.search);
+                const urlRepo = params.get('repo');
                 repoName.value = urlRepo;
                 if (urlRepo) fetchRepoInfo(urlRepo);
+                
+                // Проверка модалок при навигации назад/вперед
+                const mType = params.get('modal');
+                if (mType) openModalById(mType);
             });
+
+            // Открытие модалки при первой загрузке
+            const startModal = new URLSearchParams(window.location.search).get('modal');
+            if (startModal) nextTick(() => openModalById(startModal));
         });
+
+        const openModalById = (type) => {
+            const id = type === 'donate' ? 'donateModal' : 
+                       type === 'socials' ? 'socialsModal' : 
+                       type === 'contacts' ? 'contactsModal' : null;
+            if (id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    const m = bootstrap.Modal.getOrCreateInstance(el);
+                    m.show();
+                }
+            }
+        };
 
         watch(selectedCategory, () => { selectedSubcategory.value = 'all'; });
 

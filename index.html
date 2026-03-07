@@ -323,7 +323,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="modalInfo.donate" class="mt-5 text-white-50 small text-center opacity-75 border-top border-white border-opacity-10 pt-4" style="white-space: pre-line; max-width: 100%; margin: 0 auto; line-height: 1.6;">
+                        <div v-if="modalInfo.donate"
+                            class="mt-5 text-white-50 small text-center opacity-75 border-top border-white border-opacity-10 pt-4"
+                            style="white-space: pre-line; max-width: 100%; margin: 0 auto; line-height: 1.6;">
                             {{ modalInfo.donate }}
                         </div>
                     </div>
@@ -352,7 +354,9 @@
                                 </a>
                             </div>
                         </div>
-                        <div v-if="modalInfo.socials" class="mt-5 text-white-50 small text-center opacity-75 border-top border-white border-opacity-10 pt-4" style="white-space: pre-line; max-width: 100%; margin: 0 auto; line-height: 1.6;">
+                        <div v-if="modalInfo.socials"
+                            class="mt-5 text-white-50 small text-center opacity-75 border-top border-white border-opacity-10 pt-4"
+                            style="white-space: pre-line; max-width: 100%; margin: 0 auto; line-height: 1.6;">
                             {{ modalInfo.socials }}
                         </div>
                     </div>
@@ -367,15 +371,15 @@
                     <div class="modal-header border-0 p-4 pb-0"><button type="button" class="btn-close btn-close-white"
                             data-bs-dismiss="modal"></button></div>
                     <div class="modal-body p-5 pt-0 text-center">
-                        <h2 class="fw-bold text-white mb-3">꧁{{ myContacts.name }}꧂</h2>
+                        <h2 class="fw-bold text-white mb-3">{{ myContacts.name }}</h2>
                         <div class="d-grid gap-3">
                             <a v-if="myContacts.phone" :href="'tel:' + myContacts.phone" class="btn btn-buy py-3 fs-5">
-                                <i class="fas fa-phone-alt me-3"></i>{{ myContacts.phone }}
+                                <i class="fas fa-phone-alt me-3"></i>Позвонить
                             </a>
                             <a v-if="myContacts.email" :href="'mailto:' + myContacts.email"
                                 class="btn btn-buy py-3 fs-5"
                                 style="background: #ffc107 !important; color: #000 !important;">
-                                <i class="fas fa-envelope me-3"></i>{{ myContacts.email }}
+                                <i class="fas fa-envelope me-3"></i>Написать на почту
                             </a>
                             <a v-if="myContacts.telegram" :href="myContacts.telegram" target="_blank"
                                 class="btn btn-buy py-3 fs-5" style="background: #0088cc !important;">
