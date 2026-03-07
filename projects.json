@@ -2,7 +2,7 @@
     {
         "id": 1147342533,
         "name": "ReLoader",
-        "category": "Утилиты",
+        "category": "Desktop Apps",
         "price": 0,
         "images": [
             "image\\reloader\\png.png",
@@ -15,12 +15,14 @@
         "is_active": true,
         "is_github": true,
         "stars": 0,
-        "language": null
+        "language": null,
+        "upc": "2",
+        "version": ""
     },
     {
         "id": 1147369213,
         "name": "UniTweaker",
-        "category": "Утилиты",
+        "category": "Desktop Apps",
         "price": 0,
         "images": [
             "image\\UniTweaker\\ico.ico",
@@ -34,7 +36,8 @@
         "is_active": true,
         "is_github": true,
         "stars": 0,
-        "language": null
+        "language": null,
+        "upc": "1"
     },
     {
         "id": 1,
@@ -43,7 +46,7 @@
         "price": 150000,
         "old_price": 200000,
         "stock": 10,
-        "category": "Утилиты",
+        "category": "Scripts",
         "subcategories": [
             "Windows",
             "Скрипты"
@@ -57,7 +60,8 @@
         "is_recommended": true,
         "use_before": "01.01.2030",
         "shipping_weight_kg": 0.1,
-        "manufacturer": "PRO Projects"
+        "manufacturer": "PRO Projects",
+        "version": "v1.0.0"
     },
     {
         "id": 2,
@@ -66,11 +70,12 @@
         "price": 50000,
         "old_price": 75000,
         "stock": 100,
-        "category": "Боты",
+        "category": "Bots",
         "subcategories": [
             "Telegram"
         ],
         "images": [
+            "image/logo.png",
             "image/logo.png"
         ],
         "description": "Мощный шаблон для Telegram ботов с админ-панелью, базой данных и гибкими настройками.",
@@ -78,6 +83,8 @@
         "is_recommended": false,
         "use_before": "01.01.2030",
         "shipping_weight_kg": 0.05,
-        "manufacturer": "PRO Projects"
+        "manufacturer": "PRO Projects",
+        "is_github": false,
+        "version": "v1.0.0"
     }
 ]

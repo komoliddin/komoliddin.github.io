@@ -1,138 +1,38 @@
 {
     "myContacts": {
         "name": "Komoliddin",
-        "phone": "+99890",
+        "phone": "+998977700969",
         "email": "fuzaylitdinov@gmail.com",
         "telegram": "https://t.me/fuzaylitdinov",
         "website": "https://repack.moy.su/"
     },
     "socialLinks": {
         "main": [
-            {
-                "name": "Facebook",
-                "url": "https://www.facebook.com/fuzaylitdinov",
-                "icon": "fab fa-facebook",
-                "color": "#1877F2"
-            },
-            {
-                "name": "Instagram",
-                "url": "https://www.instagram.com/fuzaylitdinoff/",
-                "icon": "fab fa-instagram",
-                "color": "#E1306C"
-            },
-            {
-                "name": "Odnoklassniki",
-                "url": "https://ok.ru/fuzaylitdinov",
-                "icon": "fab fa-odnoklassniki",
-                "color": "#EE8208"
-            },
-            {
-                "name": "Skype",
-                "url": "https://join.skype.com/invite/HV4CzTd5Kguh",
-                "icon": "fab fa-skype",
-                "color": "#00AFF0"
-            },
-            {
-                "name": "Twitter",
-                "url": "https://twitter.com/fuzaylitdinov",
-                "icon": "fab fa-twitter",
-                "color": "#1DA1F2"
-            },
-            {
-                "name": "Viber",
-                "url": "http://tinyurl.com/s9a7d26j",
-                "icon": "fab fa-viber",
-                "color": "#665CAC"
-            },
-            {
-                "name": "VKontakte",
-                "url": "https://vk.com/fuzaylitdinov",
-                "icon": "fab fa-vk",
-                "color": "#4C75A3"
-            },
-            {
-                "name": "WhatsApp",
-                "url": "https://wa.me/998900170969",
-                "icon": "fab fa-whatsapp",
-                "color": "#25D366"
-            }
+            { "name": "Facebook", "url": "https://www.facebook.com/fuzaylitdinov", "icon": "fab fa-facebook", "color": "#1877F2" },
+            { "name": "Instagram", "url": "https://www.instagram.com/fuzaylitdinoff/", "icon": "fab fa-instagram", "color": "#E1306C" },
+            { "name": "Odnoklassniki", "url": "https://ok.ru/fuzaylitdinov", "icon": "fab fa-odnoklassniki", "color": "#EE8208" },
+            { "name": "Skype", "url": "https://join.skype.com/invite/HV4CzTd5Kguh", "icon": "fab fa-skype", "color": "#00AFF0" },
+            { "name": "Twitter", "url": "https://twitter.com/fuzaylitdinov", "icon": "fab fa-twitter", "color": "#1DA1F2" },
+            { "name": "Viber", "url": "http://tinyurl.com/s9a7d26j", "icon": "fab fa-viber", "color": "#665CAC" },
+            { "name": "VKontakte", "url": "https://vk.com/fuzaylitdinov", "icon": "fab fa-vk", "color": "#4C75A3" },
+            { "name": "WhatsApp", "url": "https://wa.me/998900170969", "icon": "fab fa-whatsapp", "color": "#25D366" }
         ],
         "others": [
-            {
-                "name": "Discord",
-                "url": "https://discord.com/users/komoliddin",
-                "icon": "fab fa-discord",
-                "color": "#5865F2"
-            },
-            {
-                "name": "GitHub",
-                "url": "https://github.com/komoliddin",
-                "icon": "fab fa-github",
-                "color": "#fff"
-            },
-            {
-                "name": "Steam",
-                "url": "https://steamcommunity.com/id/komoliddin/",
-                "icon": "fab fa-steam",
-                "color": "#000000"
-            },
-            {
-                "name": "Twitch",
-                "url": "https://www.twitch.tv/kmlddn",
-                "icon": "fab fa-twitch",
-                "color": "#9146FF"
-            }
+            { "name": "Discord", "url": "https://discord.com/users/komoliddin", "icon": "fab fa-discord", "color": "#5865F2" },
+            { "name": "GitHub", "url": "https://github.com/komoliddin", "icon": "fab fa-github", "color": "#fff" },
+            { "name": "Steam", "url": "https://steamcommunity.com/id/komoliddin/", "icon": "fab fa-steam", "color": "#000000" },
+            { "name": "Twitch", "url": "https://www.twitch.tv/kmlddn", "icon": "fab fa-twitch", "color": "#9146FF" }
         ]
     },
     "donateMethods": [
-        {
-            "url": "https://tirikchilik.uz/komoliddin",
-            "name": "Uzcard, Humo, Click, Payme, Uzum",
-            "icon": "uzcard.png",
-            "desc": "Перейти к оплате"
-        },
-        {
-            "id": "4100116824448677",
-            "name": "ЮMoney",
-            "icon": "yoomoney_yandex.png",
-            "desc": "4100 1168 2444 8677"
-        },
-        {
-            "id": "1HuJa7E3TcQKrF7BYXgeGp3AwpzY2ZArgU",
-            "name": "Bitcoin",
-            "icon": "btc.png",
-            "desc": "Bitcoin Network"
-        },
-        {
-            "id": "0xdc61c5123db3110456d6ae61efdfa67521fb274b",
-            "name": "Ethereum",
-            "icon": "eth.png",
-            "desc": "ERC-20"
-        },
-        {
-            "id": "UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy",
-            "name": "Toncoin",
-            "icon": "ton.png",
-            "desc": "Network: TON"
-        },
-        {
-            "id": "UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy",
-            "name": "Notcoin",
-            "icon": "not.png",
-            "desc": "Network: TON"
-        },
-        {
-            "id": "TQuGzNYXriigmbbkWmCJFaYvFRTshM6hbd",
-            "name": "USDT (Tether)",
-            "icon": "usdt-tether.png",
-            "desc": "TRC-20"
-        },
-        {
-            "id": "Z123456789012",
-            "name": "WebMoney",
-            "icon": "webmoney.png",
-            "desc": "Z-кошелек (USD)"
-        }
+        { "url": "https://tirikchilik.uz/komoliddin", "name": "Uzcard, Humo, Click, Payme, Uzum", "icon": "fas fa-credit-card", "color": "#28a745", "desc": "Перейти к оплате" },
+        { "id": "4100116824448677", "name": "ЮMoney", "icon": "fas fa-wallet", "color": "#673ab7", "desc": "4100 1168 2444 8677" },
+        { "id": "1HuJa7E3TcQKrF7BYXgeGp3AwpzY2ZArgU", "name": "Bitcoin", "icon": "fab fa-bitcoin", "color": "#f7931a", "desc": "Bitcoin Network" },
+        { "id": "0xdc61c5123db3110456d6ae61efdfa67521fb274b", "name": "Ethereum", "icon": "fab fa-ethereum", "color": "#3c3c3d", "desc": "ERC-20" },
+        { "id": "UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy", "name": "Toncoin", "icon": "fas fa-gem", "color": "#0088cc", "desc": "Network: TON" },
+        { "id": "UQAamz0zAXm_Drr5KjyUdsTj6UMlRaJzntaAGjv6_JMrexZy", "name": "Notcoin", "icon": "fas fa-gem", "color": "#eff1f5", "desc": "Network: TON" },
+        { "id": "TQuGzNYXriigmbbkWmCJFaYvFRTshM6hbd", "name": "USDT (Tether)", "icon": "fas fa-dollar-sign", "color": "#26a17b", "desc": "TRC-20" },
+        { "id": "Z123456789012", "name": "WebMoney", "icon": "fas fa-globe", "color": "#00adef", "desc": "Z-кошелек (USD)" }
     ],
     "publicStats": {
         "orders_total": 1250,

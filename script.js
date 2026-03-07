@@ -7,7 +7,6 @@ createApp({
         
         const products = ref([]);
         const categories = ref([]);
-        const githubProjects = ref([]);
         const repoData = ref({});
         const readmeHtml = ref('');
         const changelogText = ref('');
@@ -40,8 +39,11 @@ createApp({
         const socialLinks = ref({ main: [], others: [] });
         const donateMethods = ref([]);
 
+        // ВЫЧИСЛЯЕМЫЕ СВОЙСТВА
+        const githubProjects = computed(() => products.value.filter(p => p.is_github));
+
         const githubStats = computed(() => {
-            const gh = products.value.filter(p => p.is_github);
+            const gh = githubProjects.value;
             const stars = gh.reduce((acc, p) => acc + (p.stars || 0), 0);
             const langs = gh.map(p => p.language).filter(l => l);
             const topLang = langs.length > 0 ? langs.sort((a,b) => langs.filter(v => v===a).length - langs.filter(v => v===b).length).pop() : 'Python';
@@ -87,7 +89,8 @@ createApp({
                         repos = raw.map(r => ({
                             id: 'gh-' + r.id, name: r.name, description: r.description,
                             price: 0, images: ['image/logo.png'], category: 'GitHub Проекты',
-                            stars: r.stargazers_count, language: r.language, is_github: true, html_url: r.html_url
+                            stars: r.stargazers_count, language: r.language, is_github: true, html_url: r.html_url,
+                            version: ''
                         }));
                         localStorage.setItem(ghCacheKey, JSON.stringify(repos));
                         localStorage.setItem(ghCacheKey + '_time', Date.now());
@@ -102,10 +105,34 @@ createApp({
                 const onlyLocal = localProjects.filter(p => !ghNames.includes(p.name));
                 products.value = [...merged, ...onlyLocal];
 
+                products.value.forEach(p => {
+                    if (p.is_github && !p.version) fetchVersionFromTxt(p);
+                });
+
             } catch (e) { console.error("Load error:", e); }
             finally { 
                 loading.value = false;
                 nextTick(() => { if(typeof AOS !== 'undefined') AOS.init({duration: 800, once: true}); });
+            }
+        };
+
+        const fetchVersionFromTxt = async (p) => {
+            const branches = ['main', 'master'];
+            for (let b of branches) {
+                try {
+                    const res = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${b}/version.txt`);
+                    if (res.ok) {
+                        const ver = (await res.text()).trim();
+                        if (ver) {
+                            p.version = ver;
+                            const ghCacheKey = `gh_repos_${repoOwner}`;
+                            const cached = JSON.parse(localStorage.getItem(ghCacheKey) || '[]');
+                            const target = cached.find(x => x.name === p.name);
+                            if (target) { target.version = ver; localStorage.setItem(ghCacheKey, JSON.stringify(cached)); }
+                            break;
+                        }
+                    }
+                } catch (e) {}
             }
         };
 
@@ -116,15 +143,22 @@ createApp({
             if (p) repoData.value = { ...p };
             if (p && p.is_github) {
                 try {
-                    const [rRes, rdRes, relRes, chRes] = await Promise.all([
-                        fetch(`https://api.github.com/repos/${repoOwner}/${name}`),
-                        fetch(`https://api.github.com/repos/${repoOwner}/${name}/readme`, { headers: { 'Accept': 'application/vnd.github.v3.raw' } }),
+                    const [relRes, infoRes] = await Promise.all([
                         fetch(`https://api.github.com/repos/${repoOwner}/${name}/releases/latest`),
-                        fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/master/changelog.txt`).then(r => r.ok ? r.text() : fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/main/changelog.txt`).then(r2 => r2.ok ? r2.text() : ''))
+                        fetch(`https://api.github.com/repos/${repoOwner}/${name}`)
                     ]);
-                    if (rRes.ok) repoData.value = { ...repoData.value, ...(await rRes.json()) };
-                    if (rdRes.ok) readmeHtml.value = marked.parse(await rdRes.text());
-                    if (relRes.ok) latestRelease.value = await relRes.json();
+                    if (infoRes.ok) repoData.value = { ...repoData.value, ...(await infoRes.json()) };
+                    if (relRes.ok) {
+                        const relData = await relRes.json();
+                        latestRelease.value = relData;
+                        if (!repoData.value.version) repoData.value.version = relData.tag_name;
+                    }
+                    const branches = ['main', 'master'];
+                    for (let b of branches) {
+                        const rdRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/${b}/README.md`);
+                        if (rdRes.ok) { readmeHtml.value = marked.parse(await rdRes.text()); break; }
+                    }
+                    const chRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/master/changelog.txt`).then(r => r.ok ? r.text() : fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/main/changelog.txt`).then(r2 => r2.ok ? r2.text() : ''));
                     if (chRes) changelogText.value = chRes;
                 } catch (e) { console.error(e); }
             }
@@ -179,13 +213,6 @@ createApp({
             });
         });
 
-        watch([selectedCategory, selectedSubcategory, searchQuery], () => {
-            if (selectedCategory.value !== 'all' && arguments[0] !== selectedCategory.value) {
-                // Сбрасываем подкатегорию если сменили категорию
-            }
-            nextTick(() => { if(typeof AOS !== 'undefined') AOS.refresh(); });
-        });
-
         watch(selectedCategory, () => { selectedSubcategory.value = 'all'; });
 
         return {
@@ -214,18 +241,7 @@ createApp({
                 const email = myContacts.value.email || '';
                 const site = myContacts.value.website || '';
                 const tg = myContacts.value.telegram || '';
-
-                const vcard = [
-                    'BEGIN:VCARD',
-                    'VERSION:3.0',
-                    `FN:${name}`,
-                    `TEL;TYPE=CELL:${phone}`,
-                    `EMAIL;TYPE=INTERNET:${email}`,
-                    `URL:${site}`,
-                    `NOTE:Telegram: ${tg}`,
-                    'END:VCARD'
-                ].join('\n');
-
+                const vcard = ['BEGIN:VCARD','VERSION:3.0',`FN:${name}`,`TEL;TYPE=CELL:${phone}`,`EMAIL;TYPE=INTERNET:${email}`,`URL:${site}`,`NOTE:Telegram: ${tg}`,'END:VCARD'].join('\n');
                 const a = document.createElement("a");
                 a.href = URL.createObjectURL(new Blob([vcard], { type: "text/vcard" }));
                 a.download = `${name}.vcf`;

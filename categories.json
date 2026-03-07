@@ -1,28 +1,74 @@
 [
     {
-        "name": "Боты",
+        "name": "Bots",
         "subcategories": [
-            "Telegram",
+            "Automated",
             "Discord",
-            "WhatsApp",
-            "Другие"
+            "Slack",
+            "Telegram",
+            "Viber",
+            "WhatsApp"
         ]
     },
     {
-        "name": "Утилиты",
+        "name": "Desktop Apps",
         "subcategories": [
-            "Windows",
             "Linux",
             "macOS",
-            "Скрипты"
+            "Portable",
+            "Setup",
+            "Windows"
         ]
     },
     {
-        "name": "Прочее",
+        "name": "Games",
         "subcategories": [
-            "Веб-сайты",
-            "Дизайн",
-            "Консультации"
+            "2D",
+            "3D",
+            "Indie",
+            "Unity",
+            "Unreal Engine",
+            "WebGL"
+        ]
+    },
+    {
+        "name": "Mobile Apps",
+        "subcategories": [
+            "Android (APK)",
+            "Flutter",
+            "iOS",
+            "React Native"
+        ]
+    },
+    {
+        "name": "Scripts",
+        "subcategories": [
+            "AutoHotkey (AHK)",
+            "Bash",
+            "JavaScript",
+            "PowerShell",
+            "Python"
+        ]
+    },
+    {
+        "name": "Utilities",
+        "subcategories": [
+            "Audio/Video",
+            "Graphics",
+            "Networking",
+            "Optimization",
+            "Security",
+            "System"
+        ]
+    },
+    {
+        "name": "Web Apps",
+        "subcategories": [
+            "Backend",
+            "CMS",
+            "Dashboard",
+            "Frontend",
+            "Fullstack"
         ]
     }
 ]

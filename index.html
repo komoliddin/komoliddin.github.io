@@ -122,6 +122,9 @@
                                     </div>
                                     <div class="product-body">
                                         <div class="product-title">{{ item.name }}</div>
+                                        <div v-if="item.version" class="product-version">
+                                            <span>Версия: <b>{{ item.version }}</b></span>
+                                        </div>
                                         <div class="mt-auto">
                                             <div v-if="item.old_price > item.price" class="small text-muted text-decoration-line-through" style="font-size: 0.75rem;">
                                                 {{ item.old_price.toLocaleString() }} сум
@@ -129,7 +132,6 @@
                                             <div class="price text-primary fw-bold" style="font-size: 0.9rem;">
                                                 {{ item.price > 0 ? (item.price.toLocaleString() + ' сум') : (item.stars + ' ⭐') }}
                                             </div>
-                                            <button class="btn btn-buy mt-2 w-100">{{ item.is_github ? 'Открыть' : 'Инфо' }}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -162,7 +164,10 @@
                             </div>
 
                             <div class="text-center border-end border-white border-opacity-10 pe-md-4">
-                                <h2 class="fw-bold text-white">{{ repoData.name }}</h2>
+                                <h2 class="fw-bold text-white mb-1">{{ repoData.name }}</h2>
+                                <div v-if="repoData.version" class="product-version mb-3">
+                                    <span>Версия: <b>{{ repoData.version }}</b></span>
+                                </div>
                                 <div class="badge bg-primary rounded-pill px-3 mb-3">{{ repoData.language || 'Software' }}</div>
                                 <div v-if="latestRelease" class="p-3 bg-primary bg-opacity-10 rounded-4 mb-3 text-white text-start shadow-sm border border-primary border-opacity-20">
                                     <div class="fw-bold small mb-2">Версия: {{ latestRelease.tag_name }}</div>
@@ -198,16 +203,23 @@
         <footer class="contact-footer">
             <div class="container">
                 <div class="row g-4 text-center text-md-start">
-                    <div class="col-md-6">
+                    <div class="col-md-4 text-center text-md-start">
                         <h4 class="fw-bold text-white mb-3">PRO PROJECTS</h4>
                         <p class="small mb-3 text-white-50">Витрина моих лучших проектов и инструментов. Весь код открыт и доступен для изучения на GitHub.</p>
                         <div class="d-flex gap-3 justify-content-center justify-content-md-start">
                             <span class="small text-white-50"><i class="fas fa-code me-2 text-primary"></i>Clean Code</span>
                             <span class="small text-white-50"><i class="fas fa-bolt me-2 text-warning"></i>Performance</span>
-                            <span class="small text-white-50"><i class="fas fa-shield-alt me-2 text-success"></i>Secure</span>
                         </div>
                     </div>
-                    <div class="col-md-6 text-md-end">
+                    <div class="col-md-4 text-md-center">
+                        <h5 class="fw-bold text-white mb-3 text-uppercase small letter-spacing-1">Мои приоритеты</h5>
+                        <ul class="list-unstyled small d-flex flex-column gap-2 align-items-center align-items-md-center">
+                            <li><i class="fas fa-shield-alt me-2 text-success"></i> <strong>Безопасность:</strong> 100% защита данных</li>
+                            <li><i class="fas fa-bolt me-2 text-warning"></i> <strong>Скорость:</strong> Оптимизация кода</li>
+                            <li><i class="fas fa-headset me-2 text-info"></i> <strong>Поддержка:</strong> {{ publicStats.reviews_total }}+ часов</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 text-md-end">
                         <h5 class="fw-bold text-white mb-3 text-uppercase small letter-spacing-1">GitHub Статистика</h5>
                         <ul class="list-unstyled small d-flex flex-column gap-2 align-items-center align-items-md-end">
                             <li><i class="fas fa-book me-2 text-primary"></i> Всего репозиториев: <strong>{{ githubProjects.length }}</strong></li>
@@ -246,7 +258,7 @@
                         <div class="row g-3">
                             <div v-for="m in donateMethods" :key="m.name" class="col-md-4 col-6">
                                 <div class="donate-item p-3 h-100 d-flex flex-column justify-content-center" @click="handleDonate(m)">
-                                    <img :src="'donate/' + m.icon" height="40" class="mb-3 mx-auto">
+                                    <i :class="m.icon" class="fa-2x mb-3 mx-auto" :style="{color: m.color}"></i>
                                     <div class="fw-bold text-white small" style="font-size: 0.8rem;">{{ m.name }}</div>
                                     <div class="text-white-50 tiny mt-2" style="font-size: 0.65rem;">{{ m.desc }}</div>
                                 </div>
