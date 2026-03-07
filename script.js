@@ -36,6 +36,8 @@ createApp({
         };
 
         const myContacts = ref({ name: 'Komoliddin', phone: '', email: '', telegram: '', website: '' });
+        const modalTitles = ref({ donate: '꧁Donate꧂', socials: '꧁Социальные сети꧂' });
+        const modalInfo = ref({ donate: '', socials: '' });
         const socialLinks = ref([]);
         const donateMethods = ref([]);
 
@@ -83,6 +85,8 @@ createApp({
                 const conf = await fetch(`config.json?v=${v}`).then(r => r.ok ? r.json() : null).catch(() => null);
                 if (conf) {
                     if (conf.myContacts) myContacts.value = conf.myContacts;
+                    if (conf.modalTitles) modalTitles.value = conf.modalTitles;
+                    if (conf.modalInfo) modalInfo.value = conf.modalInfo;
                     if (conf.socialLinks) {
                         socialLinks.value = conf.socialLinks.map(s => ({ ...s, uid: Math.random().toString(36).substr(2, 9) }));
                     }
@@ -241,7 +245,7 @@ createApp({
 
         return {
             repoOwner, repoName, products, categories, githubProjects, repoData, readmeHtml, changelogText, latestRelease,
-            loading, searchQuery, selectedCategory, selectedSubcategory, currentSubcategories, themeMode, donateMethods, socialLinks, myContacts,
+            loading, searchQuery, selectedCategory, selectedSubcategory, currentSubcategories, themeMode, donateMethods, socialLinks, myContacts, modalTitles, modalInfo,
             filteredProducts, displayGroups, showTopButton, publicStats, githubStats, toasts, projectImages,
             goToProject: (n) => {
                 const u = new URL(window.location); u.searchParams.set('repo', n);

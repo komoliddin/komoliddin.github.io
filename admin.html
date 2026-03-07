@@ -53,8 +53,9 @@
             <ul class="nav nav-pills mb-4 bg-white p-2 rounded-4 shadow-sm" style="width: fit-content;">
                 <li class="nav-item"><button class="nav-link" :class="{active: tab === 'projects'}" @click="tab = 'projects'">📦 Проекты</button></li>
                 <li class="nav-item"><button class="nav-link" :class="{active: tab === 'categories'}" @click="tab = 'categories'">📂 Категории</button></li>
-                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'contacts'}" @click="tab = 'contacts'">📇 Контакты & Соцсети</button></li>
                 <li class="nav-item"><button class="nav-link" :class="{active: tab === 'donate'}" @click="tab = 'donate'">❤️ Донаты</button></li>
+                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'socials'}" @click="tab = 'socials'">🌐 Соцсети</button></li>
+                <li class="nav-item"><button class="nav-link" :class="{active: tab === 'contacts'}" @click="tab = 'contacts'">📇 Контакты</button></li>
             </ul>
 
             <!-- ТАБ: ПРОЕКТЫ -->
@@ -111,16 +112,57 @@
                 <button @click="categories.push({name:'New', subcategories:[]})" class="btn btn-primary rounded-pill">+ Категория</button>
             </div>
 
-            <!-- ТАБ: КОНТАКТЫ & СОЦСЕТИ -->
-            <div v-if="tab === 'contacts'">
+            <!-- ТАБ: ДОНАТЫ -->
+            <div v-if="tab === 'donate'">
                 <div class="admin-card">
-                    <h5 class="fw-bold mb-4">Мои контакты</h5>
+                    <h5 class="fw-bold mb-4 text-primary">Общие настройки доната</h5>
                     <div class="row g-3">
-                        <div class="col-md-6"><label class="small">Имя</label><input v-model="config.myContacts.name" class="form-control"></div>
-                        <div class="col-md-6"><label class="small">Телефон</label><input v-model="config.myContacts.phone" class="form-control"></div>
-                        <div class="col-md-6"><label class="small">Email</label><input v-model="config.myContacts.email" class="form-control"></div>
-                        <div class="col-md-6"><label class="small">Telegram URL</label><input v-model="config.myContacts.telegram" class="form-control"></div>
-                        <div class="col-md-12"><label class="small">Сайт</label><input v-model="config.myContacts.website" class="form-control"></div>
+                        <div class="col-md-12">
+                            <label class="small fw-bold">Заголовок модалки Доната</label>
+                            <input v-model="config.modalTitles.donate" class="form-control" placeholder="꧁Donate꧂">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="small fw-bold">Описание (внизу модалки)</label>
+                            <textarea v-model="config.modalInfo.donate" class="form-control" rows="4" placeholder="Текст поддержки..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <h5 class="fw-bold mb-4 text-primary">Методы доната (перетаскивание)</h5>
+                    <draggable v-model="config.donateMethods" handle=".drag-handle" item-key="uid">
+                        <template #item="{element, index}">
+                            <div class="row g-3 mb-4 border-bottom pb-4 align-items-center">
+                                <div class="col-auto"><i class="fas fa-grip-vertical drag-handle"></i></div>
+                                <div class="col-md-2"><label class="small fw-bold">Метод</label><input v-model="element.name" class="form-control"></div>
+                                <div class="col-md-3"><label class="small fw-bold">Описание</label><input v-model="element.desc" class="form-control" placeholder="Напр: Bitcoin Network"></div>
+                                <div class="col-md-3"><label class="small fw-bold">Реквизиты</label>
+                                    <input v-if="'url' in element" v-model="element.url" class="form-control">
+                                    <input v-else v-model="element.id" class="form-control">
+                                </div>
+                                <div class="col-md-1"><label class="small fw-bold">Иконка</label><input v-model="element.icon" class="form-control"></div>
+                                <div class="col-md-1"><label class="small fw-bold">Цвет</label><input v-model="element.color" class="form-control"></div>
+                                <div class="col-md-1"><label class="small fw-bold">Size</label><input type="number" v-model="element.size" class="form-control" min="1" max="5"></div>
+                                <div class="col-auto ms-auto"><button @click="config.donateMethods.splice(index, 1)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button></div>
+                            </div>
+                        </template>
+                    </draggable>
+                    <button @click="config.donateMethods.push({uid:Math.random().toString(36).substr(2,9), name:'New', id:'', desc:'', icon:'fas fa-wallet', color:'#000', size:2})" class="btn btn-primary btn-sm rounded-pill">+ Добавить</button>
+                </div>
+            </div>
+
+            <!-- ТАБ: СОЦСЕТИ -->
+            <div v-if="tab === 'socials'">
+                <div class="admin-card">
+                    <h5 class="fw-bold mb-4 text-primary">Общие настройки соцсетей</h5>
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="small fw-bold">Заголовок модалки Соцсетей</label>
+                            <input v-model="config.modalTitles.socials" class="form-control" placeholder="꧁Социальные сети꧂">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="small fw-bold">Описание (внизу модалки)</label>
+                            <textarea v-model="config.modalInfo.socials" class="form-control" rows="4" placeholder="Текст для соцсетей..."></textarea>
+                        </div>
                     </div>
                 </div>
                 <div class="admin-card">
@@ -142,27 +184,17 @@
                 </div>
             </div>
 
-            <!-- ТАБ: ДОНАТЫ -->
-            <div v-if="tab === 'donate'">
+            <!-- ТАБ: КОНТАКТЫ -->
+            <div v-if="tab === 'contacts'">
                 <div class="admin-card">
-                    <h5 class="fw-bold mb-4 text-primary">Методы доната (перетаскивание)</h5>
-                    <draggable v-model="config.donateMethods" handle=".drag-handle" item-key="uid">
-                        <template #item="{element, index}">
-                            <div class="row g-3 mb-4 border-bottom pb-4 align-items-center">
-                                <div class="col-auto"><i class="fas fa-grip-vertical drag-handle"></i></div>
-                                <div class="col-md-3"><label class="small fw-bold">Метод</label><input v-model="element.name" class="form-control"></div>
-                                <div class="col-md-3"><label class="small fw-bold">Реквизиты</label>
-                                    <input v-if="'url' in element" v-model="element.url" class="form-control">
-                                    <input v-else v-model="element.id" class="form-control">
-                                </div>
-                                <div class="col-md-2"><label class="small fw-bold">Иконка FA</label><input v-model="element.icon" class="form-control"></div>
-                                <div class="col-md-1"><label class="small fw-bold">Цвет</label><input v-model="element.color" class="form-control"></div>
-                                <div class="col-md-1"><label class="small fw-bold">Size</label><input type="number" v-model="element.size" class="form-control" min="1" max="5"></div>
-                                <div class="col-auto ms-auto"><button @click="config.donateMethods.splice(index, 1)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button></div>
-                            </div>
-                        </template>
-                    </draggable>
-                    <button @click="config.donateMethods.push({uid:Math.random().toString(36).substr(2,9), name:'New', id:'', desc:'', icon:'fas fa-wallet', color:'#000', size:2})" class="btn btn-primary btn-sm rounded-pill">+ Добавить</button>
+                    <h5 class="fw-bold mb-4">Мои контакты</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="small">Имя</label><input v-model="config.myContacts.name" class="form-control"></div>
+                        <div class="col-md-6"><label class="small">Телефон</label><input v-model="config.myContacts.phone" class="form-control"></div>
+                        <div class="col-md-6"><label class="small">Email</label><input v-model="config.myContacts.email" class="form-control"></div>
+                        <div class="col-md-6"><label class="small">Telegram URL</label><input v-model="config.myContacts.telegram" class="form-control"></div>
+                        <div class="col-md-12"><label class="small">Сайт</label><input v-model="config.myContacts.website" class="form-control"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -179,7 +211,7 @@
                 const products = ref([]); const categories = ref([]); const ghRepos = ref([]);
                 const ghError = ref(''); const uploadStatus = ref({});
                 const themeMode = ref(localStorage.getItem('theme_mode') || 'auto');
-                const config = ref({ myContacts: {}, socialLinks: [], donateMethods: [], publicStats: {} });
+                const config = ref({ modalTitles: { donate: '', socials: '' }, modalInfo: { donate: '', socials: '' }, myContacts: {}, socialLinks: [], donateMethods: [], publicStats: {} });
                 const newP = ref({ name: '', category: '', price: 0, subcategories: [], images: ['image/logo.png'], is_active: true, is_github: false });
 
                 watch(tab, (nt) => sessionStorage.setItem('admin_active_tab', nt));
@@ -199,6 +231,8 @@
                         products.value = await fetch(`projects.json?v=${v}`).then(r => r.json());
                         categories.value = await fetch(`categories.json?v=${v}`).then(r => r.json());
                         const conf = await fetch(`config.json?v=${v}`).then(r => r.json());
+                        if (!conf.modalTitles) conf.modalTitles = { donate: '꧁Donate꧂', socials: '꧁Социальные сети꧂' };
+                        if (!conf.modalInfo) conf.modalInfo = { donate: '', socials: '' };
                         addKeys(conf.socialLinks); addKeys(conf.donateMethods);
                         config.value = conf;
                         categories.value.sort((a,b) => a.name.localeCompare(b.name));
