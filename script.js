@@ -252,7 +252,12 @@ createApp({
             loading.value = true;
             readmeHtml.value = ''; changelogText.value = ''; repoData.value = {}; latestRelease.value = null;
             const p = products.value.find(x => x.name === name);
-            if (p) repoData.value = { ...p };
+            if (p) {
+                repoData.value = { ...p };
+                if (p.is_github && !repoData.value.html_url) {
+                    repoData.value.html_url = `https://github.com/${repoOwner}/${name}`;
+                }
+            }
             
             if (p && p.is_github) {
                 try {
