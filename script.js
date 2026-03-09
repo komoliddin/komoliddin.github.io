@@ -369,6 +369,15 @@ createApp({
                 const mType = params.get('modal');
                 if (mType) openModalById(mType);
             });
+
+            // Очистка URL при закрытии любой модалки Bootstrap
+            document.addEventListener('hidden.bs.modal', () => {
+                const u = new URL(window.location);
+                if (u.searchParams.has('modal')) {
+                    u.searchParams.delete('modal');
+                    window.history.replaceState({}, '', u);
+                }
+            });
         });
 
         watch(selectedCategory, () => { selectedSubcategory.value = 'all'; });
@@ -417,7 +426,9 @@ createApp({
             loading, searchQuery, selectedCategory, selectedSubcategory, currentSubcategories, themeMode, donateMethods, socialLinks, myContacts, modalTitles, modalInfo,
             filteredProducts, displayGroups, showTopButton, publicStats, githubStats, toasts, projectImages, previewIndex, openPreview, closePreview, nextImage, prevImage,
             goToProject: (n) => {
-                const u = new URL(window.location); u.searchParams.set('repo', n);
+                const u = new URL(window.location); 
+                u.searchParams.set('repo', n);
+                u.searchParams.delete('modal'); // Очищаем параметр модалки при переходе к проекту
                 window.history.pushState({}, '', u); repoName.value = n; fetchRepoInfo(n); window.scrollTo(0, 0);
                 const p = products.value.find(x => x.name === n);
                 if (p) updateMetaTags(`${n} — PRO Projects`, p.description, p.images[0]);
