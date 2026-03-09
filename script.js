@@ -11,6 +11,7 @@ createApp({
         const readmeHtml = ref('');
         const changelogText = ref('');
         const latestRelease = ref(null);
+        const oldReleases = ref([]);
 
         const loading = ref(true);
         const searchQuery = ref('');
@@ -212,46 +213,33 @@ createApp({
                 products.value = pRes.filter(p => p.is_active !== false);
                 categories.value = cRes;
 
-                // ФОНОВАЯ ЗАГРУЗКА ВЕРСИЙ И README ДЛЯ ГИТХАБА (ЧТОБЫ БЫЛО ВИДНО В КАРТОЧКАХ И КАРУСЕЛИ)
+                // ФОНОВАЯ ЗАГРУЗКА README ДЛЯ КАРУСЕЛИ (ЧТОБЫ БЫЛО ВИДНО В КАРТОЧКАХ)
                 products.value.forEach(async (p) => {
-                    if (p.is_github) {
+                    if (p.is_github && p.is_top) {
                         try {
                             const v = Date.now();
                             const branches = ['main', 'master'];
                             let activeBranch = null;
 
                             for (let b of branches) {
-                                const vRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${b}/version.txt?v=${v}`);
-                                if (vRes.ok) {
-                                    p.version = (await vRes.text()).trim();
-                                    activeBranch = b;
-                                    break;
-                                }
+                                const check = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${b}/README.md?v=${v}`, { method: 'HEAD' });
+                                if (check.ok) { activeBranch = b; break; }
                             }
 
-                            // Если это ТОП проект, подгружаем кусок README для карусели
-                            if (p.is_top) {
-                                if (!activeBranch) {
-                                    for (let b of branches) {
-                                        const check = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${b}/README.md?v=${v}`, { method: 'HEAD' });
-                                        if (check.ok) { activeBranch = b; break; }
-                                    }
-                                }
-                                if (activeBranch) {
-                                    const rRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${activeBranch}/README.md?v=${v}`);
-                                    if (rRes.ok) {
-                                        const text = await rRes.text();
-                                        // Очистка Markdown: убираем заголовки, картинки, ссылки, жирный текст и коды
-                                        p.description = text
-                                            .replace(/#+\s+.*/g, '') // Заголовки
-                                            .replace(/!\[.*?\]\(.*?\)/g, '') // Картинки
-                                            .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Ссылки (оставляем только текст)
-                                            .replace(/[`*_~]/g, '') // Спецсимволы разметки
-                                            .replace(/<[^>]*>/g, '') // HTML теги
-                                            .replace(/\s+/g, ' ') // Лишние пробелы
-                                            .trim()
-                                            .substring(0, 180) + '...';
-                                    }
+                            if (activeBranch) {
+                                const rRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${p.name}/${activeBranch}/README.md?v=${v}`);
+                                if (rRes.ok) {
+                                    const text = await rRes.text();
+                                    // Очистка Markdown: убираем заголовки, картинки, ссылки, жирный текст и коды
+                                    p.description = text
+                                        .replace(/#+\s+.*/g, '') // Заголовки
+                                        .replace(/!\[.*?\]\(.*?\)/g, '') // Картинки
+                                        .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Ссылки (оставляем только текст)
+                                        .replace(/[`*_~]/g, '') // Спецсимволы разметки
+                                        .replace(/<[^>]*>/g, '') // HTML теги
+                                        .replace(/\s+/g, ' ') // Лишние пробелы
+                                        .trim()
+                                        .substring(0, 180) + '...';
                                 }
                             }
                         } catch (e) {}
@@ -267,7 +255,7 @@ createApp({
 
         const fetchRepoInfo = async (name) => {
             loading.value = true;
-            readmeHtml.value = ''; changelogText.value = ''; repoData.value = {}; latestRelease.value = null;
+            readmeHtml.value = ''; changelogText.value = ''; repoData.value = {}; latestRelease.value = null; oldReleases.value = [];
             const p = products.value.find(x => x.name === name);
             if (p) {
                 repoData.value = { ...p };
@@ -282,7 +270,7 @@ createApp({
                     const branches = ['main', 'master'];
                     let activeBranch = 'main';
 
-                    // 1. Пытаемся найти активную ветку и README
+                    // 1. Пытаемся найти активную ветку и README (RAW ссылки обычно не имеют жестких лимитов как API)
                     for (let b of branches) {
                         const rdRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/${b}/README.md?v=${v}`);
                         if (rdRes.ok) { 
@@ -292,23 +280,14 @@ createApp({
                         }
                     }
                     
-                    // 2. Параллельно загружаем версию и ченджлог из найденной ветки
-                    const [vRes, chRes] = await Promise.all([
-                        fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/${activeBranch}/version.txt?v=${v}`).then(r => r.ok ? r.text() : null),
-                        fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/${activeBranch}/changelog.txt?v=${v}`).then(r => r.ok ? r.text() : null)
-                    ]);
-
-                    if (vRes) repoData.value.version = vRes.trim();
+                    // 2. Ченджлог (тоже через RAW)
+                    const chRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${name}/${activeBranch}/changelog.txt?v=${v}`).then(r => r.ok ? r.text() : null);
                     if (chRes) changelogText.value = chRes;
                     
-                    // 3. Fallback на API только для релизов, если нет прямой ссылки
-                    if (!p.download_url) {
-                         const relRes = await fetch(`https://api.github.com/repos/${repoOwner}/${name}/releases/latest`);
-                         if (relRes.ok) {
-                             const relData = await relRes.json();
-                             latestRelease.value = relData;
-                             if (!repoData.value.version) repoData.value.version = relData.tag_name;
-                         }
+                    // 3. РЕЛИЗЫ БЕРЕМ ИЗ ЛОКАЛЬНОГО JSON (сохранены сервером)
+                    if (p.releases && p.releases.length > 0) {
+                        latestRelease.value = p.releases[0];
+                        oldReleases.value = p.releases.slice(1);
                     }
                 } catch (e) { console.error("Repo fetch error:", e); }
             }
@@ -434,7 +413,7 @@ createApp({
         };
 
         return {
-            repoOwner, repoName, products, categories, githubProjects, topProducts, topProductsLoop, topCarouselIndex, sliderTransform, isTransitioning, nextTop, prevTop, repoData, readmeHtml, changelogText, latestRelease,
+            repoOwner, repoName, products, categories, githubProjects, topProducts, topProductsLoop, topCarouselIndex, sliderTransform, isTransitioning, nextTop, prevTop, repoData, readmeHtml, changelogText, latestRelease, oldReleases,
             loading, searchQuery, selectedCategory, selectedSubcategory, currentSubcategories, themeMode, donateMethods, socialLinks, myContacts, modalTitles, modalInfo,
             filteredProducts, displayGroups, showTopButton, publicStats, githubStats, toasts, projectImages, previewIndex, openPreview, closePreview, nextImage, prevImage,
             goToProject: (n) => {

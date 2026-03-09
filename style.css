@@ -494,6 +494,26 @@ pre:hover .code-copy-btn {
     animation: cardAppear 0.4s ease-out;
 }
 
+details summary {
+    list-style: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+details summary::-webkit-details-marker {
+    display: none;
+}
+details summary i {
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+details[open] summary i {
+    transform: rotate(90deg);
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+
 .readme-container {
     color: inherit;
     line-height: 1.6;

@@ -613,26 +613,32 @@
                             ghRepos.value = repos;
                             ghError.value = '';
 
-                            // Параллельная загрузка версий
+                            // Параллельная загрузка версий и релизов
                             await Promise.all(repos.map(async (r) => {
                                 let version = 'v1.0.0';
+                                let releases = [];
                                 try {
                                     const vRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${r.name}/${r.default_branch}/version.txt?v=${Date.now()}`);
                                     if (vRes.ok) version = (await vRes.text()).trim();
+                                    
+                                    const relRes = await fetch(`https://api.github.com/repos/${repoOwner}/${r.name}/releases`);
+                                    if (relRes.ok) releases = await relRes.json();
                                 } catch (e) { }
 
                                 const existing = products.value.find(p => p.name === r.name);
                                 if (existing) {
                                     existing.stars = r.stargazers_count;
                                     existing.language = r.language;
-                                    existing.version = version; // Vue 3 автоматически отследит изменение
+                                    existing.version = version;
+                                    existing.releases = releases; // Теперь сохраняем и здесь
                                 } else {
                                     products.value.unshift({
                                         id: r.id, name: r.name, category: 'GitHub Проекты',
                                         images: ['image/logo.png'], description: r.description || '',
                                         subcategories: [], is_active: true, is_github: true,
                                         stars: r.stargazers_count, language: r.language || 'Software',
-                                        version: version
+                                        version: version,
+                                        releases: releases
                                     });
                                 }
                             }));
