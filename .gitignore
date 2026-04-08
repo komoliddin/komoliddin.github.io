@@ -1,4 +1,43 @@
-BAC
-node_modules
-start_admin_server.bat
-start_admin_server.bat
+# Игнор всех скрытых папок (.venv, .idea и т.д.)
+.*/
+!.git/
+
+# Кэш Python
+__pycache__/
+*.pyc
+
+# ENV
+.env
+.venv/
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.cache
+
+# Бэкапы
+*.bak
+*.rar
+*.zip
+
+# Сессии
+*.session
+
+# Системные файлы Windows
+*.bat
+*.cmd
+
+# Базы/билды/мусор
+*.pdb
+
+# Папки проекта
+/BAC/
+/BACKUP/
+/chrome_profile/
+/downloads/
+/bots/
+
+# JSON — лучше точечно (пример)
+# config.json
+# secrets.json
+/node_modules
